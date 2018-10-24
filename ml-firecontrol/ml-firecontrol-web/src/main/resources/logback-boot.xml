@@ -46,6 +46,9 @@
     <!-- com.mailian，也就是只要是发生在这个根包下面的所有日志操作行为的权限都是DEBUG -->
     <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
     <logger name="com.mailian.station.dao" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="LOGFILE" />
+    </logger>
+    <logger name="com.mailian" level="DEBUG" additivity="false">
+        <appender-ref ref="LOGFILE" />
     </logger>
 </configuration>
