@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.OperLogMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.OperLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="action" jdbcType="VARCHAR" property="action" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="channel" jdbcType="INTEGER" property="channel" />
+    <result column="oper_name" jdbcType="VARCHAR" property="operName" />
+    <result column="oper_url" jdbcType="VARCHAR" property="operUrl" />
+    <result column="oper_ip" jdbcType="VARCHAR" property="operIp" />
+    <result column="oper_location" jdbcType="VARCHAR" property="operLocation" />
+    <result column="oper_param" jdbcType="VARCHAR" property="operParam" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="error_msg" jdbcType="VARCHAR" property="errorMsg" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, action, method, channel, oper_name, oper_url, oper_ip, oper_location, 
+    oper_param, status, error_msg, create_by, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_oper_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_sys_oper_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.OperLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_sys_oper_log (title, action, method, 
+      channel, oper_name, oper_url, 
+      oper_ip, oper_location, oper_param, 
+      status, error_msg, create_by, 
+      create_time)
+    values (#{title,jdbcType=VARCHAR}, #{action,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+      #{channel,jdbcType=INTEGER}, #{operName,jdbcType=VARCHAR}, #{operUrl,jdbcType=VARCHAR}, 
+      #{operIp,jdbcType=VARCHAR}, #{operLocation,jdbcType=VARCHAR}, #{operParam,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{errorMsg,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.OperLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_sys_oper_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        title,
+      </if>
+      <if test="action != null">
+        action,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="channel != null">
+        channel,
+      </if>
+      <if test="operName != null">
+        oper_name,
+      </if>
+      <if test="operUrl != null">
+        oper_url,
+      </if>
+      <if test="operIp != null">
+        oper_ip,
+      </if>
+      <if test="operLocation != null">
+        oper_location,
+      </if>
+      <if test="operParam != null">
+        oper_param,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="errorMsg != null">
+        error_msg,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null">
+        #{channel,jdbcType=INTEGER},
+      </if>
+      <if test="operName != null">
+        #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operUrl != null">
+        #{operUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="operIp != null">
+        #{operIp,jdbcType=VARCHAR},
+      </if>
+      <if test="operLocation != null">
+        #{operLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="operParam != null">
+        #{operParam,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="errorMsg != null">
+        #{errorMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.OperLog">
+    update t_sys_oper_log
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null">
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null">
+        channel = #{channel,jdbcType=INTEGER},
+      </if>
+      <if test="operName != null">
+        oper_name = #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operUrl != null">
+        oper_url = #{operUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="operIp != null">
+        oper_ip = #{operIp,jdbcType=VARCHAR},
+      </if>
+      <if test="operLocation != null">
+        oper_location = #{operLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="operParam != null">
+        oper_param = #{operParam,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="errorMsg != null">
+        error_msg = #{errorMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.OperLog">
+    update t_sys_oper_log
+    set title = #{title,jdbcType=VARCHAR},
+      action = #{action,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      channel = #{channel,jdbcType=INTEGER},
+      oper_name = #{operName,jdbcType=VARCHAR},
+      oper_url = #{operUrl,jdbcType=VARCHAR},
+      oper_ip = #{operIp,jdbcType=VARCHAR},
+      oper_location = #{operLocation,jdbcType=VARCHAR},
+      oper_param = #{operParam,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      error_msg = #{errorMsg,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_oper_log
+    <where>
+      <if test="title != null">
+         and title = #{title,jdbcType=VARCHAR}
+      </if>
+      <if test="action != null">
+         and action = #{action,jdbcType=VARCHAR}
+      </if>
+      <if test="method != null">
+         and method = #{method,jdbcType=VARCHAR}
+      </if>
+      <if test="channel != null">
+         and channel = #{channel,jdbcType=INTEGER}
+      </if>
+      <if test="operName != null">
+         and oper_name = #{operName,jdbcType=VARCHAR}
+      </if>
+      <if test="operUrl != null">
+         and oper_url = #{operUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="operIp != null">
+         and oper_ip = #{operIp,jdbcType=VARCHAR}
+      </if>
+      <if test="operLocation != null">
+         and oper_location = #{operLocation,jdbcType=VARCHAR}
+      </if>
+      <if test="operParam != null">
+         and oper_param = #{operParam,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="errorMsg != null">
+         and error_msg = #{errorMsg,jdbcType=VARCHAR}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_sys_oper_log
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_oper_log
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_sys_oper_log (title, action, method, 
+      channel, oper_name, oper_url, 
+      oper_ip, oper_location, oper_param, 
+      status, error_msg, create_by, 
+      create_time) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.title,jdbcType=VARCHAR}, #{item.action,jdbcType=VARCHAR}, #{item.method,jdbcType=VARCHAR}, 
+        #{item.channel,jdbcType=INTEGER}, #{item.operName,jdbcType=VARCHAR}, #{item.operUrl,jdbcType=VARCHAR}, 
+        #{item.operIp,jdbcType=VARCHAR}, #{item.operLocation,jdbcType=VARCHAR}, #{item.operParam,jdbcType=VARCHAR}, 
+        #{item.status,jdbcType=INTEGER}, #{item.errorMsg,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+</mapper>

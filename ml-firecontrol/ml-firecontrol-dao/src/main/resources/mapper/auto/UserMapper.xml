@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="full_name" jdbcType="VARCHAR" property="fullName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, password, full_name, phone, status, create_time, update_time, create_by, 
+    update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.User">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_user (user_name, password, full_name, 
+      phone, status, create_time, 
+      update_time, create_by, update_by
+      )
+    values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.User">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="fullName != null">
+        full_name,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullName != null">
+        #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.User">
+    update t_user
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullName != null">
+        full_name = #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.User">
+    update t_user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      full_name = #{fullName,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    <where>
+      <if test="userName != null">
+         and user_name = #{userName,jdbcType=VARCHAR}
+      </if>
+      <if test="password != null">
+         and password = #{password,jdbcType=VARCHAR}
+      </if>
+      <if test="fullName != null">
+         and full_name = #{fullName,jdbcType=VARCHAR}
+      </if>
+      <if test="phone != null">
+         and phone = #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_user
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_user (user_name, password, full_name, 
+      phone, status, create_time, 
+      update_time, create_by, update_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.userName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.fullName,jdbcType=VARCHAR}, 
+        #{item.phone,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>
