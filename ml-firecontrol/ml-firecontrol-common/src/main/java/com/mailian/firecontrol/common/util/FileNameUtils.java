@@ -36,4 +36,5 @@ public class FileNameUtils {
     public static boolean isImg(String fileOriginName){
         return CommonConstant.IMAGE_TYPE.contains(getSuffix(fileOriginName).trim().toLowerCase());
     }
+
 }
