@@ -1,15 +1,11 @@
 package com.mailian.firecontrol.api.web.controller.system;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.enums.ResponseCode;
-import com.mailian.core.manager.ViewManager;
 import com.mailian.core.shiro.JwtToken;
 import com.mailian.core.util.JwtUtils;
-import com.mailian.core.util.RedisUtils;
-import com.mailian.core.util.TreeParser;
 import com.mailian.firecontrol.dto.ShiroUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -23,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/system/login")
 @Api(description = "登录模块接口")
@@ -30,8 +28,6 @@ import springfox.documentation.annotations.ApiIgnore;
 public class LoginController {
     @Autowired
     private JwtUtils jwtUtils;
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Log(title = "系统",action = "登录")
     @ApiOperation(value = "登录", httpMethod = "POST")
