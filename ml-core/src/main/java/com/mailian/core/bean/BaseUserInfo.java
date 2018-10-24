@@ -15,6 +15,10 @@ public class BaseUserInfo implements Serializable {
     private Integer id;
     /*用户名*/
     private String userName;
+    /*用户真实姓名*/
+    private String fullName;
+    /*电话*/
+    private String phone;
     /*角色*/
     private Set<String> roles;
 
@@ -40,5 +44,21 @@ public class BaseUserInfo implements Serializable {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

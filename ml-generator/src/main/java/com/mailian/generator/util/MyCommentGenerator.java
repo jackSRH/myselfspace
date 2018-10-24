@@ -288,7 +288,7 @@ public class MyCommentGenerator extends DefaultCommentGenerator implements Comme
         }
         if(delIndex!=-1){
             lists.remove(delIndex);
-            String newNameSpace=properties.get("mapperNamespace")+orginNameSpace.substring(orginNameSpace.indexOf("."),orginNameSpace.length());
+            String newNameSpace=properties.get("mapperNamespace")+orginNameSpace.substring(orginNameSpace.lastIndexOf("."),orginNameSpace.length());
             rootElement.getAttributes().add(new Attribute("namespace", newNameSpace));
         }
     }

@@ -88,7 +88,9 @@ public abstract class BaseServiceImpl<T extends BaseDomain,M extends BaseMapper<
         String userName = "system";
         if(StringUtils.isNotNull(subject)) {
             BaseUserInfo baseUserInfo = (BaseUserInfo) subject.getPrincipal();
-            userName = baseUserInfo.getUserName();
+            if(StringUtils.isNotNull(baseUserInfo)) {
+                userName = baseUserInfo.getUserName();
+            }
         }
         if (needCreate) {
             record.setCreateBy(userName);
