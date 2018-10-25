@@ -22,6 +22,11 @@ public class DataScope {
         this.dataIds = dataIds;
     }
 
+    public DataScope(String scopeName, List<Integer> dataIds) {
+        this.scopeName = scopeName;
+        this.dataIds = dataIds;
+    }
+
     public DataScope(String scopeName, List<Integer> dataIds, String alias, boolean scopeResult) {
         this.scopeName = scopeName;
         this.dataIds = dataIds;

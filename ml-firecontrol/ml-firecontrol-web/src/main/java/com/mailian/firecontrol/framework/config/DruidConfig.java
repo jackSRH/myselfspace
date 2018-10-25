@@ -3,6 +3,7 @@ package com.mailian.firecontrol.framework.config;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.mailian.core.db.DataScopeInterceptor;
 import com.mailian.core.db.EmptyWhereInterceptor;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -54,6 +55,7 @@ public class DruidConfig {
         sessionFactory.setDataSource(dataSource);
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
                 .getResources("classpath:mapper/*/*Mapper.xml"));
+        sessionFactory.setPlugins(new Interceptor[]{new DataScopeInterceptor(),new EmptyWhereInterceptor()});
         return sessionFactory.getObject();
     }
 
@@ -64,15 +66,5 @@ public class DruidConfig {
         msc.setBasePackage("com.mailian.firecontrol.dao");
         msc.setSqlSessionFactoryBeanName("sqlSessionFactory");
         return msc;
-    }
-
-    @Bean
-    public DataScopeInterceptor dataScopeInterceptor(){
-        return new DataScopeInterceptor();
-    }
-
-    @Bean
-    public EmptyWhereInterceptor emptyWhereInterceptor(){
-        return new EmptyWhereInterceptor();
     }
 }

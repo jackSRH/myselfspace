@@ -1,8 +1,7 @@
 package com.mailian.core.db;
 
-import com.mailian.core.enums.ResponseCode;
-import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.PluginUtils;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -48,7 +47,7 @@ public class EmptyWhereInterceptor implements Interceptor {
             String originalSql = boundSql.getSql();
             if(!originalSql.contains(" where ")){
                 log.error("");
-                throw new RequestException(ResponseCode.FAIL.code,"不允许删除或修改全表数据!");
+                throw new PersistenceException("不允许删除或修改全表数据!");
             }
         }
         return invocation.proceed();

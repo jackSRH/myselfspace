@@ -1,7 +1,6 @@
 package com.mailian.core.db;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.mailian.core.handler.AsyncExceptionHandler;
 import com.mailian.core.util.PluginUtils;
 import com.mailian.core.util.StringUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -11,8 +10,6 @@ import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.Iterator;
@@ -30,6 +27,15 @@ import java.util.Properties;
         method = "prepare",
         args = {Connection.class, Integer.class}
 )})
+/*@Intercepts({@Signature(
+        type = Executor.class,
+        method = "query",
+        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
+), @Signature(
+        type = Executor.class,
+        method = "query",
+        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}
+)})*/
 public class DataScopeInterceptor implements Interceptor {
     public DataScopeInterceptor() {
     }
@@ -57,11 +63,21 @@ public class DataScopeInterceptor implements Interceptor {
                     originalSql = "select * from (" + originalSql + ") temp_data_scope where " + scopeName + " in (" + join + ")";
                 }else{
                     scopeName = StringUtils.isEmpty(alias) ? scopeName : alias+"."+scopeName;
+                    originalSql = originalSql.toLowerCase();
+                    String limitSql = "";
+                    if(originalSql.contains(" limit ")){
+                        int limitIndex = originalSql.lastIndexOf(" limit ");
+                        limitSql = originalSql.substring(limitIndex);
+                        originalSql = originalSql.substring(0,limitIndex);
+                    }
+
                     if(originalSql.contains(" where ")) {
                         originalSql = originalSql + " and " + scopeName + " in (" + join + ")";
                     }else{
                         originalSql = originalSql + " where " + scopeName + " in (" + join + ")";
                     }
+
+                    originalSql = originalSql + limitSql;
                 }
 
                 metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);
