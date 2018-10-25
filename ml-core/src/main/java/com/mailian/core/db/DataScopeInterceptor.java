@@ -27,15 +27,6 @@ import java.util.Properties;
         method = "prepare",
         args = {Connection.class, Integer.class}
 )})
-/*@Intercepts({@Signature(
-        type = Executor.class,
-        method = "query",
-        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
-), @Signature(
-        type = Executor.class,
-        method = "query",
-        args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}
-)})*/
 public class DataScopeInterceptor implements Interceptor {
     public DataScopeInterceptor() {
     }
