@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="struct_address" jdbcType="VARCHAR" property="structAddress" />
+    <result column="facilities_id" jdbcType="INTEGER" property="facilitiesId" />
+    <result column="alarm_id" jdbcType="INTEGER" property="alarmId" />
+    <result column="alarm_item_id" jdbcType="VARCHAR" property="alarmItemId" />
+    <result column="alarm_content" jdbcType="VARCHAR" property="alarmContent" />
+    <result column="alarm_level" jdbcType="INTEGER" property="alarmLevel" />
+    <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus" />
+    <result column="alarm_type" jdbcType="INTEGER" property="alarmType" />
+    <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
+    <result column="alarm_end_time" jdbcType="TIMESTAMP" property="alarmEndTime" />
+    <result column="alarm_way" jdbcType="INTEGER" property="alarmWay" />
+    <result column="handle_time" jdbcType="TIMESTAMP" property="handleTime" />
+    <result column="handle_end_time" jdbcType="TIMESTAMP" property="handleEndTime" />
+    <result column="handle_status" jdbcType="INTEGER" property="handleStatus" />
+    <result column="handle_result" jdbcType="VARCHAR" property="handleResult" />
+    <result column="handle_uid" jdbcType="INTEGER" property="handleUid" />
+    <result column="misreport" jdbcType="INTEGER" property="misreport" />
+    <result column="alarm_reason" jdbcType="VARCHAR" property="alarmReason" />
+    <result column="alarm_area" jdbcType="VARCHAR" property="alarmArea" />
+    <result column="die_num" jdbcType="VARCHAR" property="dieNum" />
+    <result column="injured" jdbcType="VARCHAR" property="injured" />
+    <result column="property_loss" jdbcType="VARCHAR" property="propertyLoss" />
+    <result column="emedial_measures" jdbcType="VARCHAR" property="emedialMeasures" />
+    <result column="up_core_time" jdbcType="TIMESTAMP" property="upCoreTime" />
+    <result column="core_confirm_time" jdbcType="TIMESTAMP" property="coreConfirmTime" />
+    <result column="core_handle_uname" jdbcType="VARCHAR" property="coreHandleUname" />
+    <result column="core_handle_result" jdbcType="VARCHAR" property="coreHandleResult" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unit_id, struct_address, facilities_id, alarm_id, alarm_item_id, alarm_content, 
+    alarm_level, alarm_status, alarm_type, alarm_time, alarm_end_time, alarm_way, handle_time, 
+    handle_end_time, handle_status, handle_result, handle_uid, misreport, alarm_reason, 
+    alarm_area, die_num, injured, property_loss, emedial_measures, up_core_time, core_confirm_time, 
+    core_handle_uname, core_handle_result, status, create_time, update_time, create_by, 
+    update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities_alarm
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_facilities_alarm
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_facilities_alarm (unit_id, struct_address, facilities_id, 
+      alarm_id, alarm_item_id, alarm_content, 
+      alarm_level, alarm_status, alarm_type, 
+      alarm_time, alarm_end_time, alarm_way, 
+      handle_time, handle_end_time, handle_status, 
+      handle_result, handle_uid, misreport, 
+      alarm_reason, alarm_area, die_num, 
+      injured, property_loss, emedial_measures, 
+      up_core_time, core_confirm_time, core_handle_uname, 
+      core_handle_result, status, create_time, 
+      update_time, create_by, update_by
+      )
+    values (#{unitId,jdbcType=INTEGER}, #{structAddress,jdbcType=VARCHAR}, #{facilitiesId,jdbcType=INTEGER}, 
+      #{alarmId,jdbcType=INTEGER}, #{alarmItemId,jdbcType=VARCHAR}, #{alarmContent,jdbcType=VARCHAR}, 
+      #{alarmLevel,jdbcType=INTEGER}, #{alarmStatus,jdbcType=INTEGER}, #{alarmType,jdbcType=INTEGER}, 
+      #{alarmTime,jdbcType=TIMESTAMP}, #{alarmEndTime,jdbcType=TIMESTAMP}, #{alarmWay,jdbcType=INTEGER}, 
+      #{handleTime,jdbcType=TIMESTAMP}, #{handleEndTime,jdbcType=TIMESTAMP}, #{handleStatus,jdbcType=INTEGER}, 
+      #{handleResult,jdbcType=VARCHAR}, #{handleUid,jdbcType=INTEGER}, #{misreport,jdbcType=INTEGER}, 
+      #{alarmReason,jdbcType=VARCHAR}, #{alarmArea,jdbcType=VARCHAR}, #{dieNum,jdbcType=VARCHAR}, 
+      #{injured,jdbcType=VARCHAR}, #{propertyLoss,jdbcType=VARCHAR}, #{emedialMeasures,jdbcType=VARCHAR}, 
+      #{upCoreTime,jdbcType=TIMESTAMP}, #{coreConfirmTime,jdbcType=TIMESTAMP}, #{coreHandleUname,jdbcType=VARCHAR}, 
+      #{coreHandleResult,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_facilities_alarm
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        unit_id,
+      </if>
+      <if test="structAddress != null">
+        struct_address,
+      </if>
+      <if test="facilitiesId != null">
+        facilities_id,
+      </if>
+      <if test="alarmId != null">
+        alarm_id,
+      </if>
+      <if test="alarmItemId != null">
+        alarm_item_id,
+      </if>
+      <if test="alarmContent != null">
+        alarm_content,
+      </if>
+      <if test="alarmLevel != null">
+        alarm_level,
+      </if>
+      <if test="alarmStatus != null">
+        alarm_status,
+      </if>
+      <if test="alarmType != null">
+        alarm_type,
+      </if>
+      <if test="alarmTime != null">
+        alarm_time,
+      </if>
+      <if test="alarmEndTime != null">
+        alarm_end_time,
+      </if>
+      <if test="alarmWay != null">
+        alarm_way,
+      </if>
+      <if test="handleTime != null">
+        handle_time,
+      </if>
+      <if test="handleEndTime != null">
+        handle_end_time,
+      </if>
+      <if test="handleStatus != null">
+        handle_status,
+      </if>
+      <if test="handleResult != null">
+        handle_result,
+      </if>
+      <if test="handleUid != null">
+        handle_uid,
+      </if>
+      <if test="misreport != null">
+        misreport,
+      </if>
+      <if test="alarmReason != null">
+        alarm_reason,
+      </if>
+      <if test="alarmArea != null">
+        alarm_area,
+      </if>
+      <if test="dieNum != null">
+        die_num,
+      </if>
+      <if test="injured != null">
+        injured,
+      </if>
+      <if test="propertyLoss != null">
+        property_loss,
+      </if>
+      <if test="emedialMeasures != null">
+        emedial_measures,
+      </if>
+      <if test="upCoreTime != null">
+        up_core_time,
+      </if>
+      <if test="coreConfirmTime != null">
+        core_confirm_time,
+      </if>
+      <if test="coreHandleUname != null">
+        core_handle_uname,
+      </if>
+      <if test="coreHandleResult != null">
+        core_handle_result,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="structAddress != null">
+        #{structAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="facilitiesId != null">
+        #{facilitiesId,jdbcType=INTEGER},
+      </if>
+      <if test="alarmId != null">
+        #{alarmId,jdbcType=INTEGER},
+      </if>
+      <if test="alarmItemId != null">
+        #{alarmItemId,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmContent != null">
+        #{alarmContent,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmLevel != null">
+        #{alarmLevel,jdbcType=INTEGER},
+      </if>
+      <if test="alarmStatus != null">
+        #{alarmStatus,jdbcType=INTEGER},
+      </if>
+      <if test="alarmType != null">
+        #{alarmType,jdbcType=INTEGER},
+      </if>
+      <if test="alarmTime != null">
+        #{alarmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alarmEndTime != null">
+        #{alarmEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alarmWay != null">
+        #{alarmWay,jdbcType=INTEGER},
+      </if>
+      <if test="handleTime != null">
+        #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleEndTime != null">
+        #{handleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleStatus != null">
+        #{handleStatus,jdbcType=INTEGER},
+      </if>
+      <if test="handleResult != null">
+        #{handleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="handleUid != null">
+        #{handleUid,jdbcType=INTEGER},
+      </if>
+      <if test="misreport != null">
+        #{misreport,jdbcType=INTEGER},
+      </if>
+      <if test="alarmReason != null">
+        #{alarmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmArea != null">
+        #{alarmArea,jdbcType=VARCHAR},
+      </if>
+      <if test="dieNum != null">
+        #{dieNum,jdbcType=VARCHAR},
+      </if>
+      <if test="injured != null">
+        #{injured,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyLoss != null">
+        #{propertyLoss,jdbcType=VARCHAR},
+      </if>
+      <if test="emedialMeasures != null">
+        #{emedialMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="upCoreTime != null">
+        #{upCoreTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coreConfirmTime != null">
+        #{coreConfirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coreHandleUname != null">
+        #{coreHandleUname,jdbcType=VARCHAR},
+      </if>
+      <if test="coreHandleResult != null">
+        #{coreHandleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
+    update t_facilities_alarm
+    <set>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="structAddress != null">
+        struct_address = #{structAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="facilitiesId != null">
+        facilities_id = #{facilitiesId,jdbcType=INTEGER},
+      </if>
+      <if test="alarmId != null">
+        alarm_id = #{alarmId,jdbcType=INTEGER},
+      </if>
+      <if test="alarmItemId != null">
+        alarm_item_id = #{alarmItemId,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmContent != null">
+        alarm_content = #{alarmContent,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmLevel != null">
+        alarm_level = #{alarmLevel,jdbcType=INTEGER},
+      </if>
+      <if test="alarmStatus != null">
+        alarm_status = #{alarmStatus,jdbcType=INTEGER},
+      </if>
+      <if test="alarmType != null">
+        alarm_type = #{alarmType,jdbcType=INTEGER},
+      </if>
+      <if test="alarmTime != null">
+        alarm_time = #{alarmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alarmEndTime != null">
+        alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alarmWay != null">
+        alarm_way = #{alarmWay,jdbcType=INTEGER},
+      </if>
+      <if test="handleTime != null">
+        handle_time = #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleEndTime != null">
+        handle_end_time = #{handleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleStatus != null">
+        handle_status = #{handleStatus,jdbcType=INTEGER},
+      </if>
+      <if test="handleResult != null">
+        handle_result = #{handleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="handleUid != null">
+        handle_uid = #{handleUid,jdbcType=INTEGER},
+      </if>
+      <if test="misreport != null">
+        misreport = #{misreport,jdbcType=INTEGER},
+      </if>
+      <if test="alarmReason != null">
+        alarm_reason = #{alarmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmArea != null">
+        alarm_area = #{alarmArea,jdbcType=VARCHAR},
+      </if>
+      <if test="dieNum != null">
+        die_num = #{dieNum,jdbcType=VARCHAR},
+      </if>
+      <if test="injured != null">
+        injured = #{injured,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyLoss != null">
+        property_loss = #{propertyLoss,jdbcType=VARCHAR},
+      </if>
+      <if test="emedialMeasures != null">
+        emedial_measures = #{emedialMeasures,jdbcType=VARCHAR},
+      </if>
+      <if test="upCoreTime != null">
+        up_core_time = #{upCoreTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coreConfirmTime != null">
+        core_confirm_time = #{coreConfirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coreHandleUname != null">
+        core_handle_uname = #{coreHandleUname,jdbcType=VARCHAR},
+      </if>
+      <if test="coreHandleResult != null">
+        core_handle_result = #{coreHandleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
+    update t_facilities_alarm
+    set unit_id = #{unitId,jdbcType=INTEGER},
+      struct_address = #{structAddress,jdbcType=VARCHAR},
+      facilities_id = #{facilitiesId,jdbcType=INTEGER},
+      alarm_id = #{alarmId,jdbcType=INTEGER},
+      alarm_item_id = #{alarmItemId,jdbcType=VARCHAR},
+      alarm_content = #{alarmContent,jdbcType=VARCHAR},
+      alarm_level = #{alarmLevel,jdbcType=INTEGER},
+      alarm_status = #{alarmStatus,jdbcType=INTEGER},
+      alarm_type = #{alarmType,jdbcType=INTEGER},
+      alarm_time = #{alarmTime,jdbcType=TIMESTAMP},
+      alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP},
+      alarm_way = #{alarmWay,jdbcType=INTEGER},
+      handle_time = #{handleTime,jdbcType=TIMESTAMP},
+      handle_end_time = #{handleEndTime,jdbcType=TIMESTAMP},
+      handle_status = #{handleStatus,jdbcType=INTEGER},
+      handle_result = #{handleResult,jdbcType=VARCHAR},
+      handle_uid = #{handleUid,jdbcType=INTEGER},
+      misreport = #{misreport,jdbcType=INTEGER},
+      alarm_reason = #{alarmReason,jdbcType=VARCHAR},
+      alarm_area = #{alarmArea,jdbcType=VARCHAR},
+      die_num = #{dieNum,jdbcType=VARCHAR},
+      injured = #{injured,jdbcType=VARCHAR},
+      property_loss = #{propertyLoss,jdbcType=VARCHAR},
+      emedial_measures = #{emedialMeasures,jdbcType=VARCHAR},
+      up_core_time = #{upCoreTime,jdbcType=TIMESTAMP},
+      core_confirm_time = #{coreConfirmTime,jdbcType=TIMESTAMP},
+      core_handle_uname = #{coreHandleUname,jdbcType=VARCHAR},
+      core_handle_result = #{coreHandleResult,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities_alarm
+    <where>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="structAddress != null">
+         and struct_address = #{structAddress,jdbcType=VARCHAR}
+      </if>
+      <if test="facilitiesId != null">
+         and facilities_id = #{facilitiesId,jdbcType=INTEGER}
+      </if>
+      <if test="alarmId != null">
+         and alarm_id = #{alarmId,jdbcType=INTEGER}
+      </if>
+      <if test="alarmItemId != null">
+         and alarm_item_id = #{alarmItemId,jdbcType=VARCHAR}
+      </if>
+      <if test="alarmContent != null">
+         and alarm_content = #{alarmContent,jdbcType=VARCHAR}
+      </if>
+      <if test="alarmLevel != null">
+         and alarm_level = #{alarmLevel,jdbcType=INTEGER}
+      </if>
+      <if test="alarmStatus != null">
+         and alarm_status = #{alarmStatus,jdbcType=INTEGER}
+      </if>
+      <if test="alarmType != null">
+         and alarm_type = #{alarmType,jdbcType=INTEGER}
+      </if>
+      <if test="alarmTime != null">
+         and alarm_time = #{alarmTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="alarmEndTime != null">
+         and alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="alarmWay != null">
+         and alarm_way = #{alarmWay,jdbcType=INTEGER}
+      </if>
+      <if test="handleTime != null">
+         and handle_time = #{handleTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="handleEndTime != null">
+         and handle_end_time = #{handleEndTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="handleStatus != null">
+         and handle_status = #{handleStatus,jdbcType=INTEGER}
+      </if>
+      <if test="handleResult != null">
+         and handle_result = #{handleResult,jdbcType=VARCHAR}
+      </if>
+      <if test="handleUid != null">
+         and handle_uid = #{handleUid,jdbcType=INTEGER}
+      </if>
+      <if test="misreport != null">
+         and misreport = #{misreport,jdbcType=INTEGER}
+      </if>
+      <if test="alarmReason != null">
+         and alarm_reason = #{alarmReason,jdbcType=VARCHAR}
+      </if>
+      <if test="alarmArea != null">
+         and alarm_area = #{alarmArea,jdbcType=VARCHAR}
+      </if>
+      <if test="dieNum != null">
+         and die_num = #{dieNum,jdbcType=VARCHAR}
+      </if>
+      <if test="injured != null">
+         and injured = #{injured,jdbcType=VARCHAR}
+      </if>
+      <if test="propertyLoss != null">
+         and property_loss = #{propertyLoss,jdbcType=VARCHAR}
+      </if>
+      <if test="emedialMeasures != null">
+         and emedial_measures = #{emedialMeasures,jdbcType=VARCHAR}
+      </if>
+      <if test="upCoreTime != null">
+         and up_core_time = #{upCoreTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="coreConfirmTime != null">
+         and core_confirm_time = #{coreConfirmTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="coreHandleUname != null">
+         and core_handle_uname = #{coreHandleUname,jdbcType=VARCHAR}
+      </if>
+      <if test="coreHandleResult != null">
+         and core_handle_result = #{coreHandleResult,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_facilities_alarm
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities_alarm
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_facilities_alarm (unit_id, struct_address, facilities_id, 
+      alarm_id, alarm_item_id, alarm_content, 
+      alarm_level, alarm_status, alarm_type, 
+      alarm_time, alarm_end_time, 
+      alarm_way, handle_time, handle_end_time, 
+      handle_status, handle_result, handle_uid, 
+      misreport, alarm_reason, alarm_area, 
+      die_num, injured, property_loss, 
+      emedial_measures, up_core_time, 
+      core_confirm_time, core_handle_uname, 
+      core_handle_result, status, create_time, 
+      update_time, create_by, update_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.unitId,jdbcType=INTEGER}, #{item.structAddress,jdbcType=VARCHAR}, #{item.facilitiesId,jdbcType=INTEGER}, 
+        #{item.alarmId,jdbcType=INTEGER}, #{item.alarmItemId,jdbcType=VARCHAR}, #{item.alarmContent,jdbcType=VARCHAR}, 
+        #{item.alarmLevel,jdbcType=INTEGER}, #{item.alarmStatus,jdbcType=INTEGER}, #{item.alarmType,jdbcType=INTEGER}, 
+        #{item.alarmTime,jdbcType=TIMESTAMP}, #{item.alarmEndTime,jdbcType=TIMESTAMP}, 
+        #{item.alarmWay,jdbcType=INTEGER}, #{item.handleTime,jdbcType=TIMESTAMP}, #{item.handleEndTime,jdbcType=TIMESTAMP}, 
+        #{item.handleStatus,jdbcType=INTEGER}, #{item.handleResult,jdbcType=VARCHAR}, #{item.handleUid,jdbcType=INTEGER}, 
+        #{item.misreport,jdbcType=INTEGER}, #{item.alarmReason,jdbcType=VARCHAR}, #{item.alarmArea,jdbcType=VARCHAR}, 
+        #{item.dieNum,jdbcType=VARCHAR}, #{item.injured,jdbcType=VARCHAR}, #{item.propertyLoss,jdbcType=VARCHAR}, 
+        #{item.emedialMeasures,jdbcType=VARCHAR}, #{item.upCoreTime,jdbcType=TIMESTAMP}, 
+        #{item.coreConfirmTime,jdbcType=TIMESTAMP}, #{item.coreHandleUname,jdbcType=VARCHAR}, 
+        #{item.coreHandleResult,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>

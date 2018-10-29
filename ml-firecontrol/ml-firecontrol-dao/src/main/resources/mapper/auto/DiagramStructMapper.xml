@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.DiagramStructMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.DiagramStruct">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="struct_type" jdbcType="INTEGER" property="structType" />
+    <result column="struct_name" jdbcType="VARCHAR" property="structName" />
+    <result column="struct_desc" jdbcType="VARCHAR" property="structDesc" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
+    <result column="facilities_id" jdbcType="INTEGER" property="facilitiesId" />
+    <result column="fa_system_id" jdbcType="INTEGER" property="faSystemId" />
+    <result column="struct_address" jdbcType="VARCHAR" property="structAddress" />
+    <result column="struct_pic" jdbcType="VARCHAR" property="structPic" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, parent_id, struct_type, struct_name, struct_desc, unit_id, precinct_id, facilities_id, 
+    fa_system_id, struct_address, struct_pic, status, create_time, update_time, create_by, 
+    update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_diagram_struct
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_diagram_struct
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.DiagramStruct">
+    insert into t_diagram_struct (id, parent_id, struct_type, 
+      struct_name, struct_desc, unit_id, 
+      precinct_id, facilities_id, fa_system_id, 
+      struct_address, struct_pic, status, 
+      create_time, update_time, create_by, 
+      update_by)
+    values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{structType,jdbcType=INTEGER}, 
+      #{structName,jdbcType=VARCHAR}, #{structDesc,jdbcType=VARCHAR}, #{unitId,jdbcType=INTEGER}, 
+      #{precinctId,jdbcType=INTEGER}, #{facilitiesId,jdbcType=INTEGER}, #{faSystemId,jdbcType=INTEGER}, 
+      #{structAddress,jdbcType=VARCHAR}, #{structPic,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+      #{updateBy,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.DiagramStruct">
+    insert into t_diagram_struct
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="structType != null">
+        struct_type,
+      </if>
+      <if test="structName != null">
+        struct_name,
+      </if>
+      <if test="structDesc != null">
+        struct_desc,
+      </if>
+      <if test="unitId != null">
+        unit_id,
+      </if>
+      <if test="precinctId != null">
+        precinct_id,
+      </if>
+      <if test="facilitiesId != null">
+        facilities_id,
+      </if>
+      <if test="faSystemId != null">
+        fa_system_id,
+      </if>
+      <if test="structAddress != null">
+        struct_address,
+      </if>
+      <if test="structPic != null">
+        struct_pic,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="structType != null">
+        #{structType,jdbcType=INTEGER},
+      </if>
+      <if test="structName != null">
+        #{structName,jdbcType=VARCHAR},
+      </if>
+      <if test="structDesc != null">
+        #{structDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="facilitiesId != null">
+        #{facilitiesId,jdbcType=INTEGER},
+      </if>
+      <if test="faSystemId != null">
+        #{faSystemId,jdbcType=INTEGER},
+      </if>
+      <if test="structAddress != null">
+        #{structAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="structPic != null">
+        #{structPic,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.DiagramStruct">
+    update t_diagram_struct
+    <set>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="structType != null">
+        struct_type = #{structType,jdbcType=INTEGER},
+      </if>
+      <if test="structName != null">
+        struct_name = #{structName,jdbcType=VARCHAR},
+      </if>
+      <if test="structDesc != null">
+        struct_desc = #{structDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="facilitiesId != null">
+        facilities_id = #{facilitiesId,jdbcType=INTEGER},
+      </if>
+      <if test="faSystemId != null">
+        fa_system_id = #{faSystemId,jdbcType=INTEGER},
+      </if>
+      <if test="structAddress != null">
+        struct_address = #{structAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="structPic != null">
+        struct_pic = #{structPic,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.DiagramStruct">
+    update t_diagram_struct
+    set parent_id = #{parentId,jdbcType=INTEGER},
+      struct_type = #{structType,jdbcType=INTEGER},
+      struct_name = #{structName,jdbcType=VARCHAR},
+      struct_desc = #{structDesc,jdbcType=VARCHAR},
+      unit_id = #{unitId,jdbcType=INTEGER},
+      precinct_id = #{precinctId,jdbcType=INTEGER},
+      facilities_id = #{facilitiesId,jdbcType=INTEGER},
+      fa_system_id = #{faSystemId,jdbcType=INTEGER},
+      struct_address = #{structAddress,jdbcType=VARCHAR},
+      struct_pic = #{structPic,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_diagram_struct
+    <where>
+      <if test="parentId != null">
+         and parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="structType != null">
+         and struct_type = #{structType,jdbcType=INTEGER}
+      </if>
+      <if test="structName != null">
+         and struct_name = #{structName,jdbcType=VARCHAR}
+      </if>
+      <if test="structDesc != null">
+         and struct_desc = #{structDesc,jdbcType=VARCHAR}
+      </if>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
+      </if>
+      <if test="facilitiesId != null">
+         and facilities_id = #{facilitiesId,jdbcType=INTEGER}
+      </if>
+      <if test="faSystemId != null">
+         and fa_system_id = #{faSystemId,jdbcType=INTEGER}
+      </if>
+      <if test="structAddress != null">
+         and struct_address = #{structAddress,jdbcType=VARCHAR}
+      </if>
+      <if test="structPic != null">
+         and struct_pic = #{structPic,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_diagram_struct
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_diagram_struct
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_diagram_struct (id, parent_id, struct_type, 
+      struct_name, struct_desc, unit_id, 
+      precinct_id, facilities_id, fa_system_id, 
+      struct_address, struct_pic, status, 
+      create_time, update_time, create_by, 
+      update_by) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.id,jdbcType=INTEGER}, #{item.parentId,jdbcType=INTEGER}, #{item.structType,jdbcType=INTEGER}, 
+        #{item.structName,jdbcType=VARCHAR}, #{item.structDesc,jdbcType=VARCHAR}, #{item.unitId,jdbcType=INTEGER}, 
+        #{item.precinctId,jdbcType=INTEGER}, #{item.facilitiesId,jdbcType=INTEGER}, #{item.faSystemId,jdbcType=INTEGER}, 
+        #{item.structAddress,jdbcType=VARCHAR}, #{item.structPic,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, 
+        #{item.updateBy,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+</mapper>

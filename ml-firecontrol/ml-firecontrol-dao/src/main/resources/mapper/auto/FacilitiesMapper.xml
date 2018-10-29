@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.FacilitiesMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.Facilities">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
+    <result column="fa_name" jdbcType="VARCHAR" property="faName" />
+    <result column="fa_system_id" jdbcType="INTEGER" property="faSystemId" />
+    <result column="fa_type_id" jdbcType="INTEGER" property="faTypeId" />
+    <result column="fa_number" jdbcType="INTEGER" property="faNumber" />
+    <result column="use_date" jdbcType="DATE" property="useDate" />
+    <result column="unit_name" jdbcType="VARCHAR" property="unitName" />
+    <result column="unit_phone" jdbcType="VARCHAR" property="unitPhone" />
+    <result column="maintain_name" jdbcType="VARCHAR" property="maintainName" />
+    <result column="maintain_phone" jdbcType="VARCHAR" property="maintainPhone" />
+    <result column="service_status" jdbcType="INTEGER" property="serviceStatus" />
+    <result column="upstatus_time" jdbcType="TIMESTAMP" property="upstatusTime" />
+    <result column="camera_name" jdbcType="VARCHAR" property="cameraName" />
+    <result column="camera_address" jdbcType="VARCHAR" property="cameraAddress" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unit_id, precinct_id, fa_name, fa_system_id, fa_type_id, fa_number, use_date, 
+    unit_name, unit_phone, maintain_name, maintain_phone, service_status, upstatus_time, 
+    camera_name, camera_address, status, create_time, update_time, create_by, update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_facilities
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.Facilities">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_facilities (unit_id, precinct_id, fa_name, 
+      fa_system_id, fa_type_id, fa_number, 
+      use_date, unit_name, unit_phone, 
+      maintain_name, maintain_phone, service_status, 
+      upstatus_time, camera_name, camera_address, 
+      status, create_time, update_time, 
+      create_by, update_by)
+    values (#{unitId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, #{faName,jdbcType=VARCHAR}, 
+      #{faSystemId,jdbcType=INTEGER}, #{faTypeId,jdbcType=INTEGER}, #{faNumber,jdbcType=INTEGER}, 
+      #{useDate,jdbcType=DATE}, #{unitName,jdbcType=VARCHAR}, #{unitPhone,jdbcType=VARCHAR}, 
+      #{maintainName,jdbcType=VARCHAR}, #{maintainPhone,jdbcType=VARCHAR}, #{serviceStatus,jdbcType=INTEGER}, 
+      #{upstatusTime,jdbcType=TIMESTAMP}, #{cameraName,jdbcType=VARCHAR}, #{cameraAddress,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.Facilities">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_facilities
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        unit_id,
+      </if>
+      <if test="precinctId != null">
+        precinct_id,
+      </if>
+      <if test="faName != null">
+        fa_name,
+      </if>
+      <if test="faSystemId != null">
+        fa_system_id,
+      </if>
+      <if test="faTypeId != null">
+        fa_type_id,
+      </if>
+      <if test="faNumber != null">
+        fa_number,
+      </if>
+      <if test="useDate != null">
+        use_date,
+      </if>
+      <if test="unitName != null">
+        unit_name,
+      </if>
+      <if test="unitPhone != null">
+        unit_phone,
+      </if>
+      <if test="maintainName != null">
+        maintain_name,
+      </if>
+      <if test="maintainPhone != null">
+        maintain_phone,
+      </if>
+      <if test="serviceStatus != null">
+        service_status,
+      </if>
+      <if test="upstatusTime != null">
+        upstatus_time,
+      </if>
+      <if test="cameraName != null">
+        camera_name,
+      </if>
+      <if test="cameraAddress != null">
+        camera_address,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="faName != null">
+        #{faName,jdbcType=VARCHAR},
+      </if>
+      <if test="faSystemId != null">
+        #{faSystemId,jdbcType=INTEGER},
+      </if>
+      <if test="faTypeId != null">
+        #{faTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="faNumber != null">
+        #{faNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useDate != null">
+        #{useDate,jdbcType=DATE},
+      </if>
+      <if test="unitName != null">
+        #{unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPhone != null">
+        #{unitPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="maintainName != null">
+        #{maintainName,jdbcType=VARCHAR},
+      </if>
+      <if test="maintainPhone != null">
+        #{maintainPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceStatus != null">
+        #{serviceStatus,jdbcType=INTEGER},
+      </if>
+      <if test="upstatusTime != null">
+        #{upstatusTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cameraName != null">
+        #{cameraName,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraAddress != null">
+        #{cameraAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.Facilities">
+    update t_facilities
+    <set>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="faName != null">
+        fa_name = #{faName,jdbcType=VARCHAR},
+      </if>
+      <if test="faSystemId != null">
+        fa_system_id = #{faSystemId,jdbcType=INTEGER},
+      </if>
+      <if test="faTypeId != null">
+        fa_type_id = #{faTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="faNumber != null">
+        fa_number = #{faNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useDate != null">
+        use_date = #{useDate,jdbcType=DATE},
+      </if>
+      <if test="unitName != null">
+        unit_name = #{unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPhone != null">
+        unit_phone = #{unitPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="maintainName != null">
+        maintain_name = #{maintainName,jdbcType=VARCHAR},
+      </if>
+      <if test="maintainPhone != null">
+        maintain_phone = #{maintainPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceStatus != null">
+        service_status = #{serviceStatus,jdbcType=INTEGER},
+      </if>
+      <if test="upstatusTime != null">
+        upstatus_time = #{upstatusTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cameraName != null">
+        camera_name = #{cameraName,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraAddress != null">
+        camera_address = #{cameraAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.Facilities">
+    update t_facilities
+    set unit_id = #{unitId,jdbcType=INTEGER},
+      precinct_id = #{precinctId,jdbcType=INTEGER},
+      fa_name = #{faName,jdbcType=VARCHAR},
+      fa_system_id = #{faSystemId,jdbcType=INTEGER},
+      fa_type_id = #{faTypeId,jdbcType=INTEGER},
+      fa_number = #{faNumber,jdbcType=INTEGER},
+      use_date = #{useDate,jdbcType=DATE},
+      unit_name = #{unitName,jdbcType=VARCHAR},
+      unit_phone = #{unitPhone,jdbcType=VARCHAR},
+      maintain_name = #{maintainName,jdbcType=VARCHAR},
+      maintain_phone = #{maintainPhone,jdbcType=VARCHAR},
+      service_status = #{serviceStatus,jdbcType=INTEGER},
+      upstatus_time = #{upstatusTime,jdbcType=TIMESTAMP},
+      camera_name = #{cameraName,jdbcType=VARCHAR},
+      camera_address = #{cameraAddress,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities
+    <where>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
+      </if>
+      <if test="faName != null">
+         and fa_name = #{faName,jdbcType=VARCHAR}
+      </if>
+      <if test="faSystemId != null">
+         and fa_system_id = #{faSystemId,jdbcType=INTEGER}
+      </if>
+      <if test="faTypeId != null">
+         and fa_type_id = #{faTypeId,jdbcType=INTEGER}
+      </if>
+      <if test="faNumber != null">
+         and fa_number = #{faNumber,jdbcType=INTEGER}
+      </if>
+      <if test="useDate != null">
+         and use_date = #{useDate,jdbcType=DATE}
+      </if>
+      <if test="unitName != null">
+         and unit_name = #{unitName,jdbcType=VARCHAR}
+      </if>
+      <if test="unitPhone != null">
+         and unit_phone = #{unitPhone,jdbcType=VARCHAR}
+      </if>
+      <if test="maintainName != null">
+         and maintain_name = #{maintainName,jdbcType=VARCHAR}
+      </if>
+      <if test="maintainPhone != null">
+         and maintain_phone = #{maintainPhone,jdbcType=VARCHAR}
+      </if>
+      <if test="serviceStatus != null">
+         and service_status = #{serviceStatus,jdbcType=INTEGER}
+      </if>
+      <if test="upstatusTime != null">
+         and upstatus_time = #{upstatusTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="cameraName != null">
+         and camera_name = #{cameraName,jdbcType=VARCHAR}
+      </if>
+      <if test="cameraAddress != null">
+         and camera_address = #{cameraAddress,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_facilities
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_facilities
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_facilities (unit_id, precinct_id, fa_name, 
+      fa_system_id, fa_type_id, fa_number, 
+      use_date, unit_name, unit_phone, 
+      maintain_name, maintain_phone, 
+      service_status, upstatus_time, 
+      camera_name, camera_address, status, 
+      create_time, update_time, create_by, 
+      update_by) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.unitId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, #{item.faName,jdbcType=VARCHAR}, 
+        #{item.faSystemId,jdbcType=INTEGER}, #{item.faTypeId,jdbcType=INTEGER}, #{item.faNumber,jdbcType=INTEGER}, 
+        #{item.useDate,jdbcType=DATE}, #{item.unitName,jdbcType=VARCHAR}, #{item.unitPhone,jdbcType=VARCHAR}, 
+        #{item.maintainName,jdbcType=VARCHAR}, #{item.maintainPhone,jdbcType=VARCHAR}, 
+        #{item.serviceStatus,jdbcType=INTEGER}, #{item.upstatusTime,jdbcType=TIMESTAMP}, 
+        #{item.cameraName,jdbcType=VARCHAR}, #{item.cameraAddress,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, 
+        #{item.updateBy,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+</mapper>
