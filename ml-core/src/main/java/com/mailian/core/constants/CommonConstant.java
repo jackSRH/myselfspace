@@ -13,6 +13,9 @@ public abstract class CommonConstant {
     /** 序列号 模板名 */
     public final static String SERIAL_NUMBER_TEMPLATE = "serialNumberTemplate";
 
+    /** 超级管理员角色键值 */
+    public static final String MANAGER_ROLE_KEY = "admin";
+
     /**  token相关  */
     /*token 标识*/
     public static final String ML_TOKEN = "ml_token";
@@ -26,4 +29,9 @@ public abstract class CommonConstant {
 
     /** redis 键相关 */
     public static final String PREPARE_SERIAL_NUMBER_KEY = "preSerialNumbers:";
+
+    public static final String SYS_CONFIG_KEY = "mlfirecontrol:sysconfigs";
+    public static final String SYS_MENU_KEY = "mlfirecontrol:sysmenus";
+    public static final String SYS_ROLE_KEY = "mlfirecontrol:sysroles";
+
 }

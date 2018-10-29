@@ -3,7 +3,7 @@ package com.mailian.firecontrol.dto;
 import com.mailian.core.bean.BaseUserInfo;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 /**
  * @Auther: wangqiaoqing
@@ -12,4 +12,15 @@ import java.util.Set;
  */
 public class ShiroUser extends BaseUserInfo implements Serializable {
     private static final long serialVersionUID = 3443052449056630354L;
+
+    /*管辖区id*/
+    private List<Integer> precinctIds;
+
+    public List<Integer> getPrecinctIds() {
+        return precinctIds;
+    }
+
+    public void setPrecinctIds(List<Integer> precinctIds) {
+        this.precinctIds = precinctIds;
+    }
 }

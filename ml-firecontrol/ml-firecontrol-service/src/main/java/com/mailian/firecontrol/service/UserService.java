@@ -18,4 +18,12 @@ public interface UserService extends BaseService<User> {
      * @return
      */
     List<User> getUsersByName(String userName);
+
+    /**
+     * 获取用户的管辖区
+     * @param uid
+     * @return
+     */
+    List<Integer> getPrecinctIds(Integer uid);
+
 }

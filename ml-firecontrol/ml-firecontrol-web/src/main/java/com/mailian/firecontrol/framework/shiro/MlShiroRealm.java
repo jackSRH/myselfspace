@@ -5,6 +5,8 @@ import com.mailian.core.shiro.JwtToken;
 import com.mailian.core.util.JwtUtils;
 import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.ShiroUser;
+import com.mailian.firecontrol.service.MenuService;
+import com.mailian.firecontrol.service.RoleService;
 import com.mailian.firecontrol.service.UserService;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.SecurityUtils;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+
 import java.util.List;
 
 /**
@@ -35,6 +38,14 @@ public class MlShiroRealm extends AuthorizingRealm {
     @Autowired
     @Lazy
     private UserService userService;
+
+    @Autowired
+    @Lazy
+    private MenuService menuService;
+
+    @Autowired
+    @Lazy
+    private RoleService roleService;
 
     @Autowired
     @Lazy
@@ -53,7 +64,7 @@ public class MlShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         if(null != user) {
             info.setRoles(user.getRoles());
-            //info.addStringPermissions(menuService.selectPermsByUserId(user.getId()));
+            info.addStringPermissions(menuService.selectPermsByUserId(user.getId()));
         }
         return info;
     }
@@ -88,7 +99,8 @@ public class MlShiroRealm extends AuthorizingRealm {
 
         ShiroUser shiroUser = new ShiroUser();
         BeanUtils.copyProperties(user,shiroUser);
-        //shiroUser.setRoles(roleService.selectRoleNamesByUserId(user.getId()));
+        shiroUser.setRoles(roleService.selectRoleNamesByUserId(user.getId()));
+        shiroUser.setPrecinctIds(userService.getPrecinctIds(user.getId()));
 
         //设置盐值(保证用户密码一样的情况的下加密后的内容不一致)
         //ByteSource salt=ByteSource.Util.bytes(userName);

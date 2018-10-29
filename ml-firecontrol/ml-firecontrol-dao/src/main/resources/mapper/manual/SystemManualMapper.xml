@@ -1,4 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mailian.firecontrol.dao.manual.SystemManualMapper">
+    <select id="selectMenuIdsByUserId" resultType="java.lang.Integer">
+      select distinct rm.menu_id
+		from t_sys_role_menu rm
+		left join t_sys_user_role ur on rm.role_id = ur.role_id
+		where ur.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteRoleMenuByMap" parameterType="map">
+        delete from
+        t_sys_role_menu
+        <where>
+            <if test="roleId != null">
+                and role_id = #{roleId,jdbcType=INTEGER}
+            </if>
+            <if test="menuId != null">
+                and menu_id = #{menuId,jdbcType=INTEGER}
+            </if>
+            <if test="menuIds != null">
+                and menu_id in
+                <foreach close=")" collection="menuIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="roleIds != null">
+                and role_id in
+                <foreach close=")" collection="roleIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+
+    <select id="selectRolesByUserId" parameterType="java.lang.Integer" resultMap="com.mailian.firecontrol.dao.auto.mapper.RoleMapper.BaseResultMap">
+        SELECT r.id, r.role_name, r.role_key,r.role_sort,r.create_time
+        FROM t_user u
+             LEFT JOIN t_sys_user_role ur ON u.id = ur.user_id
+             LEFT JOIN t_sys_role r ON ur.role_id = r.id
+        WHERE ur.user_id = #{userId}
+    </select>
+
+
+    <delete id="deleteUserRoleByMap" parameterType="map">
+        delete from
+        t_sys_user_role
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId,jdbcType=INTEGER}
+            </if>
+            <if test="userIds != null">
+                and user_id in
+                <foreach close=")" collection="userIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="roleIds != null">
+                and role_id in
+                <foreach close=")" collection="roleIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+    </delete>
 </mapper>
