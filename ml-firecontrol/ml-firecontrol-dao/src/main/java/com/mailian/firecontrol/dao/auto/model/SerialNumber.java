@@ -2,7 +2,7 @@
 *
 * SerialNumber.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-26
+* @date 2018-10-29
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -33,7 +33,7 @@ public class SerialNumber extends BaseDomain implements Serializable {
     /**
      * 当前序列号
      */
-    private String curSerial;
+    private Integer curSerial;
 
     /**
      * 预生成序列号存放在缓存中的个数
@@ -82,12 +82,12 @@ public class SerialNumber extends BaseDomain implements Serializable {
         this.configTemplet = configTemplet == null ? null : configTemplet.trim();
     }
 
-    public String getCurSerial() {
+    public Integer getCurSerial() {
         return curSerial;
     }
 
-    public void setCurSerial(String curSerial) {
-        this.curSerial = curSerial == null ? null : curSerial.trim();
+    public void setCurSerial(Integer curSerial) {
+        this.curSerial = curSerial;
     }
 
     public Integer getPreMaxNum() {

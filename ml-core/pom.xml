@@ -27,6 +27,7 @@
         <pinyin4j.version>2.5.1</pinyin4j.version>
         <jjwt.version>0.9.0</jjwt.version>
         <hutool.version>4.1.2</hutool.version>
+        <freemarker.version>2.3.23</freemarker.version>
     </properties>
 
     <!--申明依赖关系-->
@@ -128,6 +129,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
         </dependency>
     </dependencies>
 

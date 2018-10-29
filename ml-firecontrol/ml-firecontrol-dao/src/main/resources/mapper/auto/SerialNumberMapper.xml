@@ -6,7 +6,7 @@
     <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
     <result column="module_code" jdbcType="VARCHAR" property="moduleCode" />
     <result column="config_templet" jdbcType="VARCHAR" property="configTemplet" />
-    <result column="cur_serial" jdbcType="VARCHAR" property="curSerial" />
+    <result column="cur_serial" jdbcType="INTEGER" property="curSerial" />
     <result column="pre_max_num" jdbcType="INTEGER" property="preMaxNum" />
     <result column="is_auto_increment" jdbcType="INTEGER" property="isAutoIncrement" />
   </resultMap>
@@ -31,7 +31,7 @@
       cur_serial, pre_max_num, is_auto_increment
       )
     values (#{moduleName,jdbcType=VARCHAR}, #{moduleCode,jdbcType=VARCHAR}, #{configTemplet,jdbcType=VARCHAR}, 
-      #{curSerial,jdbcType=VARCHAR}, #{preMaxNum,jdbcType=INTEGER}, #{isAutoIncrement,jdbcType=INTEGER}
+      #{curSerial,jdbcType=INTEGER}, #{preMaxNum,jdbcType=INTEGER}, #{isAutoIncrement,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.SerialNumber">
@@ -70,7 +70,7 @@
         #{configTemplet,jdbcType=VARCHAR},
       </if>
       <if test="curSerial != null">
-        #{curSerial,jdbcType=VARCHAR},
+        #{curSerial,jdbcType=INTEGER},
       </if>
       <if test="preMaxNum != null">
         #{preMaxNum,jdbcType=INTEGER},
@@ -93,7 +93,7 @@
         config_templet = #{configTemplet,jdbcType=VARCHAR},
       </if>
       <if test="curSerial != null">
-        cur_serial = #{curSerial,jdbcType=VARCHAR},
+        cur_serial = #{curSerial,jdbcType=INTEGER},
       </if>
       <if test="preMaxNum != null">
         pre_max_num = #{preMaxNum,jdbcType=INTEGER},
@@ -109,7 +109,7 @@
     set module_name = #{moduleName,jdbcType=VARCHAR},
       module_code = #{moduleCode,jdbcType=VARCHAR},
       config_templet = #{configTemplet,jdbcType=VARCHAR},
-      cur_serial = #{curSerial,jdbcType=VARCHAR},
+      cur_serial = #{curSerial,jdbcType=INTEGER},
       pre_max_num = #{preMaxNum,jdbcType=INTEGER},
       is_auto_increment = #{isAutoIncrement,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
@@ -129,7 +129,7 @@
          and config_templet = #{configTemplet,jdbcType=VARCHAR}
       </if>
       <if test="curSerial != null">
-         and cur_serial = #{curSerial,jdbcType=VARCHAR}
+         and cur_serial = #{curSerial,jdbcType=INTEGER}
       </if>
       <if test="preMaxNum != null">
          and pre_max_num = #{preMaxNum,jdbcType=INTEGER}
@@ -161,7 +161,7 @@
       ) values 
     <foreach collection="objs" index="index" item="item" separator=",">
        (#{item.moduleName,jdbcType=VARCHAR}, #{item.moduleCode,jdbcType=VARCHAR}, #{item.configTemplet,jdbcType=VARCHAR}, 
-        #{item.curSerial,jdbcType=VARCHAR}, #{item.preMaxNum,jdbcType=INTEGER}, #{item.isAutoIncrement,jdbcType=INTEGER}
+        #{item.curSerial,jdbcType=INTEGER}, #{item.preMaxNum,jdbcType=INTEGER}, #{item.isAutoIncrement,jdbcType=INTEGER}
         )
     </foreach>
   </insert>

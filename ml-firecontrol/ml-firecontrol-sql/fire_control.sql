@@ -235,14 +235,19 @@ create table t_sys_serial_number(
 	id          	 	int(11) 		 NOT NULL auto_increment    comment 'id',
 	module_name			varchar(32)		 default null				comment '模块名称',
 	module_code			varchar(32)      default null				comment '模块编码',
-	config_templet		varchar(32)      default null				comment '使用的序列号模板',
-	cur_serial			varchar(32)		 default null				comment '当前序列号',
+	config_templet		varchar(512)     default null				comment '使用的序列号模板',
+	cur_serial			int(11)		 	 default null				comment '当前序列号',
 	pre_max_num			int(11)			 default null				comment '预生成序列号存放在缓存中的个数',
 	is_auto_increment	int(2)			 default null				comment '是否自增长 0否 1是',
 	primary key (id),
 	unique key (module_code)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '序列号策略表';
 
+
+-- ----------------------------
+-- 初始化- 序列号数据
+-- ----------------------------
+insert into t_sys_serial_number VALUES (1,'系统图模块','sys_diagram_struct','${number}',0,100,1);
 
 
 -- ----------------------------
@@ -404,7 +409,7 @@ create table `t_facilities` (
 -- ----------------------------
 drop table if exists `t_diagram_struct`;
 create table `t_diagram_struct` (
-  `id` 				int(11) 		not null auto_increment    	comment 'ID',
+  `id` 				int(11) 		not null 			    	comment 'ID',
   `parent_id` 		int(11) 		DEFAULT NULL 				comment '父级id',
   `struct_type` 	int(2) 			DEFAULT NULL 				COMMENT '数据类型 1:遥控数据 2:开关配置 3:设施监测',
   `struct_name` 	varchar(64)		DEFAULT NULL 				COMMENT '数据名称',
