@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.UnitCameraMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.UnitCamera">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
+    <result column="monitor_name" jdbcType="VARCHAR" property="monitorName" />
+    <result column="important_site" jdbcType="VARCHAR" property="importantSite" />
+    <result column="app_key" jdbcType="VARCHAR" property="appKey" />
+    <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
+    <result column="camera_name" jdbcType="VARCHAR" property="cameraName" />
+    <result column="device_serial" jdbcType="VARCHAR" property="deviceSerial" />
+    <result column="channel_no" jdbcType="INTEGER" property="channelNo" />
+    <result column="camera_url" jdbcType="VARCHAR" property="cameraUrl" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unit_id, precinct_id, monitor_name, important_site, app_key, app_secret, camera_name, 
+    device_serial, channel_no, camera_url, status, create_time, update_time, create_by, 
+    update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit_camera
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_unit_camera
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.UnitCamera">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_unit_camera (unit_id, precinct_id, monitor_name, 
+      important_site, app_key, app_secret, 
+      camera_name, device_serial, channel_no, 
+      camera_url, status, create_time, 
+      update_time, create_by, update_by
+      )
+    values (#{unitId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, #{monitorName,jdbcType=VARCHAR}, 
+      #{importantSite,jdbcType=VARCHAR}, #{appKey,jdbcType=VARCHAR}, #{appSecret,jdbcType=VARCHAR}, 
+      #{cameraName,jdbcType=VARCHAR}, #{deviceSerial,jdbcType=VARCHAR}, #{channelNo,jdbcType=INTEGER}, 
+      #{cameraUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.UnitCamera">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_unit_camera
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        unit_id,
+      </if>
+      <if test="precinctId != null">
+        precinct_id,
+      </if>
+      <if test="monitorName != null">
+        monitor_name,
+      </if>
+      <if test="importantSite != null">
+        important_site,
+      </if>
+      <if test="appKey != null">
+        app_key,
+      </if>
+      <if test="appSecret != null">
+        app_secret,
+      </if>
+      <if test="cameraName != null">
+        camera_name,
+      </if>
+      <if test="deviceSerial != null">
+        device_serial,
+      </if>
+      <if test="channelNo != null">
+        channel_no,
+      </if>
+      <if test="cameraUrl != null">
+        camera_url,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="monitorName != null">
+        #{monitorName,jdbcType=VARCHAR},
+      </if>
+      <if test="importantSite != null">
+        #{importantSite,jdbcType=VARCHAR},
+      </if>
+      <if test="appKey != null">
+        #{appKey,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraName != null">
+        #{cameraName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSerial != null">
+        #{deviceSerial,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNo != null">
+        #{channelNo,jdbcType=INTEGER},
+      </if>
+      <if test="cameraUrl != null">
+        #{cameraUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.UnitCamera">
+    update t_unit_camera
+    <set>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="monitorName != null">
+        monitor_name = #{monitorName,jdbcType=VARCHAR},
+      </if>
+      <if test="importantSite != null">
+        important_site = #{importantSite,jdbcType=VARCHAR},
+      </if>
+      <if test="appKey != null">
+        app_key = #{appKey,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        app_secret = #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="cameraName != null">
+        camera_name = #{cameraName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSerial != null">
+        device_serial = #{deviceSerial,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNo != null">
+        channel_no = #{channelNo,jdbcType=INTEGER},
+      </if>
+      <if test="cameraUrl != null">
+        camera_url = #{cameraUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.UnitCamera">
+    update t_unit_camera
+    set unit_id = #{unitId,jdbcType=INTEGER},
+      precinct_id = #{precinctId,jdbcType=INTEGER},
+      monitor_name = #{monitorName,jdbcType=VARCHAR},
+      important_site = #{importantSite,jdbcType=VARCHAR},
+      app_key = #{appKey,jdbcType=VARCHAR},
+      app_secret = #{appSecret,jdbcType=VARCHAR},
+      camera_name = #{cameraName,jdbcType=VARCHAR},
+      device_serial = #{deviceSerial,jdbcType=VARCHAR},
+      channel_no = #{channelNo,jdbcType=INTEGER},
+      camera_url = #{cameraUrl,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit_camera
+    <where>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
+      </if>
+      <if test="monitorName != null">
+         and monitor_name = #{monitorName,jdbcType=VARCHAR}
+      </if>
+      <if test="importantSite != null">
+         and important_site = #{importantSite,jdbcType=VARCHAR}
+      </if>
+      <if test="appKey != null">
+         and app_key = #{appKey,jdbcType=VARCHAR}
+      </if>
+      <if test="appSecret != null">
+         and app_secret = #{appSecret,jdbcType=VARCHAR}
+      </if>
+      <if test="cameraName != null">
+         and camera_name = #{cameraName,jdbcType=VARCHAR}
+      </if>
+      <if test="deviceSerial != null">
+         and device_serial = #{deviceSerial,jdbcType=VARCHAR}
+      </if>
+      <if test="channelNo != null">
+         and channel_no = #{channelNo,jdbcType=INTEGER}
+      </if>
+      <if test="cameraUrl != null">
+         and camera_url = #{cameraUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_unit_camera
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit_camera
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_unit_camera (unit_id, precinct_id, monitor_name, 
+      important_site, app_key, app_secret, 
+      camera_name, device_serial, channel_no, 
+      camera_url, status, create_time, 
+      update_time, create_by, update_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.unitId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, #{item.monitorName,jdbcType=VARCHAR}, 
+        #{item.importantSite,jdbcType=VARCHAR}, #{item.appKey,jdbcType=VARCHAR}, #{item.appSecret,jdbcType=VARCHAR}, 
+        #{item.cameraName,jdbcType=VARCHAR}, #{item.deviceSerial,jdbcType=VARCHAR}, #{item.channelNo,jdbcType=INTEGER}, 
+        #{item.cameraUrl,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>

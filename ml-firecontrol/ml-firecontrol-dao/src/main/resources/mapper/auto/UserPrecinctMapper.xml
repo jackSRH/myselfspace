@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.UserPrecinctMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.UserPrecinct">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, precinct_id, uid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_precinct
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_precinct
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.UserPrecinct">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_user_precinct (precinct_id, uid)
+    values (#{precinctId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.UserPrecinct">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_user_precinct
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="precinctId != null">
+        precinct_id,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.UserPrecinct">
+    update t_user_precinct
+    <set>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.UserPrecinct">
+    update t_user_precinct
+    set precinct_id = #{precinctId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_precinct
+    <where>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
+      </if>
+      <if test="uid != null">
+         and uid = #{uid,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_user_precinct
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_precinct
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_user_precinct (precinct_id, uid) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.precinctId,jdbcType=INTEGER}, #{item.uid,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+</mapper>

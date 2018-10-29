@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.UnitMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.Unit">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unit_name" jdbcType="VARCHAR" property="unitName" />
+    <result column="area_id" jdbcType="INTEGER" property="areaId" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="business_scope" jdbcType="VARCHAR" property="businessScope" />
+    <result column="unit_type" jdbcType="INTEGER" property="unitType" />
+    <result column="supervise_level" jdbcType="INTEGER" property="superviseLevel" />
+    <result column="transactor" jdbcType="VARCHAR" property="transactor" />
+    <result column="economy_system" jdbcType="INTEGER" property="economySystem" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="employee_num" jdbcType="INTEGER" property="employeeNum" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
+    <result column="items" jdbcType="VARCHAR" property="items" />
+    <result column="unit_pic" jdbcType="VARCHAR" property="unitPic" />
+    <result column="iot_status" jdbcType="INTEGER" property="iotStatus" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unit_name, area_id, precinct_id, address, business_scope, unit_type, supervise_level, 
+    transactor, economy_system, id_card, employee_num, contact_phone, join_time, items, 
+    unit_pic, iot_status, status, create_time, update_time, create_by, update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_unit
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.Unit">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_unit (unit_name, area_id, precinct_id, 
+      address, business_scope, unit_type, 
+      supervise_level, transactor, economy_system, 
+      id_card, employee_num, contact_phone, 
+      join_time, items, unit_pic, 
+      iot_status, status, create_time, 
+      update_time, create_by, update_by
+      )
+    values (#{unitName,jdbcType=VARCHAR}, #{areaId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, 
+      #{address,jdbcType=VARCHAR}, #{businessScope,jdbcType=VARCHAR}, #{unitType,jdbcType=INTEGER}, 
+      #{superviseLevel,jdbcType=INTEGER}, #{transactor,jdbcType=VARCHAR}, #{economySystem,jdbcType=INTEGER}, 
+      #{idCard,jdbcType=VARCHAR}, #{employeeNum,jdbcType=INTEGER}, #{contactPhone,jdbcType=VARCHAR}, 
+      #{joinTime,jdbcType=TIMESTAMP}, #{items,jdbcType=VARCHAR}, #{unitPic,jdbcType=VARCHAR}, 
+      #{iotStatus,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.Unit">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_unit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unitName != null">
+        unit_name,
+      </if>
+      <if test="areaId != null">
+        area_id,
+      </if>
+      <if test="precinctId != null">
+        precinct_id,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="businessScope != null">
+        business_scope,
+      </if>
+      <if test="unitType != null">
+        unit_type,
+      </if>
+      <if test="superviseLevel != null">
+        supervise_level,
+      </if>
+      <if test="transactor != null">
+        transactor,
+      </if>
+      <if test="economySystem != null">
+        economy_system,
+      </if>
+      <if test="idCard != null">
+        id_card,
+      </if>
+      <if test="employeeNum != null">
+        employee_num,
+      </if>
+      <if test="contactPhone != null">
+        contact_phone,
+      </if>
+      <if test="joinTime != null">
+        join_time,
+      </if>
+      <if test="items != null">
+        items,
+      </if>
+      <if test="unitPic != null">
+        unit_pic,
+      </if>
+      <if test="iotStatus != null">
+        iot_status,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unitName != null">
+        #{unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null">
+        #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="businessScope != null">
+        #{businessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="unitType != null">
+        #{unitType,jdbcType=INTEGER},
+      </if>
+      <if test="superviseLevel != null">
+        #{superviseLevel,jdbcType=INTEGER},
+      </if>
+      <if test="transactor != null">
+        #{transactor,jdbcType=VARCHAR},
+      </if>
+      <if test="economySystem != null">
+        #{economySystem,jdbcType=INTEGER},
+      </if>
+      <if test="idCard != null">
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeNum != null">
+        #{employeeNum,jdbcType=INTEGER},
+      </if>
+      <if test="contactPhone != null">
+        #{contactPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="joinTime != null">
+        #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="items != null">
+        #{items,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPic != null">
+        #{unitPic,jdbcType=VARCHAR},
+      </if>
+      <if test="iotStatus != null">
+        #{iotStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.Unit">
+    update t_unit
+    <set>
+      <if test="unitName != null">
+        unit_name = #{unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null">
+        area_id = #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="businessScope != null">
+        business_scope = #{businessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="unitType != null">
+        unit_type = #{unitType,jdbcType=INTEGER},
+      </if>
+      <if test="superviseLevel != null">
+        supervise_level = #{superviseLevel,jdbcType=INTEGER},
+      </if>
+      <if test="transactor != null">
+        transactor = #{transactor,jdbcType=VARCHAR},
+      </if>
+      <if test="economySystem != null">
+        economy_system = #{economySystem,jdbcType=INTEGER},
+      </if>
+      <if test="idCard != null">
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeNum != null">
+        employee_num = #{employeeNum,jdbcType=INTEGER},
+      </if>
+      <if test="contactPhone != null">
+        contact_phone = #{contactPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="joinTime != null">
+        join_time = #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="items != null">
+        items = #{items,jdbcType=VARCHAR},
+      </if>
+      <if test="unitPic != null">
+        unit_pic = #{unitPic,jdbcType=VARCHAR},
+      </if>
+      <if test="iotStatus != null">
+        iot_status = #{iotStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.Unit">
+    update t_unit
+    set unit_name = #{unitName,jdbcType=VARCHAR},
+      area_id = #{areaId,jdbcType=INTEGER},
+      precinct_id = #{precinctId,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      business_scope = #{businessScope,jdbcType=VARCHAR},
+      unit_type = #{unitType,jdbcType=INTEGER},
+      supervise_level = #{superviseLevel,jdbcType=INTEGER},
+      transactor = #{transactor,jdbcType=VARCHAR},
+      economy_system = #{economySystem,jdbcType=INTEGER},
+      id_card = #{idCard,jdbcType=VARCHAR},
+      employee_num = #{employeeNum,jdbcType=INTEGER},
+      contact_phone = #{contactPhone,jdbcType=VARCHAR},
+      join_time = #{joinTime,jdbcType=TIMESTAMP},
+      items = #{items,jdbcType=VARCHAR},
+      unit_pic = #{unitPic,jdbcType=VARCHAR},
+      iot_status = #{iotStatus,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit
+    <where>
+      <if test="unitName != null">
+         and unit_name = #{unitName,jdbcType=VARCHAR}
+      </if>
+      <if test="areaId != null">
+         and area_id = #{areaId,jdbcType=INTEGER}
+      </if>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
+      </if>
+      <if test="address != null">
+         and address = #{address,jdbcType=VARCHAR}
+      </if>
+      <if test="businessScope != null">
+         and business_scope = #{businessScope,jdbcType=VARCHAR}
+      </if>
+      <if test="unitType != null">
+         and unit_type = #{unitType,jdbcType=INTEGER}
+      </if>
+      <if test="superviseLevel != null">
+         and supervise_level = #{superviseLevel,jdbcType=INTEGER}
+      </if>
+      <if test="transactor != null">
+         and transactor = #{transactor,jdbcType=VARCHAR}
+      </if>
+      <if test="economySystem != null">
+         and economy_system = #{economySystem,jdbcType=INTEGER}
+      </if>
+      <if test="idCard != null">
+         and id_card = #{idCard,jdbcType=VARCHAR}
+      </if>
+      <if test="employeeNum != null">
+         and employee_num = #{employeeNum,jdbcType=INTEGER}
+      </if>
+      <if test="contactPhone != null">
+         and contact_phone = #{contactPhone,jdbcType=VARCHAR}
+      </if>
+      <if test="joinTime != null">
+         and join_time = #{joinTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="items != null">
+         and items = #{items,jdbcType=VARCHAR}
+      </if>
+      <if test="unitPic != null">
+         and unit_pic = #{unitPic,jdbcType=VARCHAR}
+      </if>
+      <if test="iotStatus != null">
+         and iot_status = #{iotStatus,jdbcType=INTEGER}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_unit
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unit
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_unit (unit_name, area_id, precinct_id, 
+      address, business_scope, unit_type, 
+      supervise_level, transactor, economy_system, 
+      id_card, employee_num, contact_phone, 
+      join_time, items, unit_pic, 
+      iot_status, status, create_time, 
+      update_time, create_by, update_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.unitName,jdbcType=VARCHAR}, #{item.areaId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, 
+        #{item.address,jdbcType=VARCHAR}, #{item.businessScope,jdbcType=VARCHAR}, #{item.unitType,jdbcType=INTEGER}, 
+        #{item.superviseLevel,jdbcType=INTEGER}, #{item.transactor,jdbcType=VARCHAR}, #{item.economySystem,jdbcType=INTEGER}, 
+        #{item.idCard,jdbcType=VARCHAR}, #{item.employeeNum,jdbcType=INTEGER}, #{item.contactPhone,jdbcType=VARCHAR}, 
+        #{item.joinTime,jdbcType=TIMESTAMP}, #{item.items,jdbcType=VARCHAR}, #{item.unitPic,jdbcType=VARCHAR}, 
+        #{item.iotStatus,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>

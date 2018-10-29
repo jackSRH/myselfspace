@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.MenuMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.Menu">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="route_path" jdbcType="VARCHAR" property="routePath" />
+    <result column="menu_type" jdbcType="TINYINT" property="menuType" />
+    <result column="visible" jdbcType="TINYINT" property="visible" />
+    <result column="perms" jdbcType="VARCHAR" property="perms" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, menu_name, parent_id, order_num, url, route_path, menu_type, visible, perms, 
+    icon, create_by, create_time, update_by, update_time, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_menu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_sys_menu
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.Menu">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_sys_menu (menu_name, parent_id, order_num, 
+      url, route_path, menu_type, 
+      visible, perms, icon, 
+      create_by, create_time, update_by, 
+      update_time, remark)
+    values (#{menuName,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{orderNum,jdbcType=INTEGER}, 
+      #{url,jdbcType=VARCHAR}, #{routePath,jdbcType=VARCHAR}, #{menuType,jdbcType=TINYINT}, 
+      #{visible,jdbcType=TINYINT}, #{perms,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.Menu">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_sys_menu
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="menuName != null">
+        menu_name,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="orderNum != null">
+        order_num,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="routePath != null">
+        route_path,
+      </if>
+      <if test="menuType != null">
+        menu_type,
+      </if>
+      <if test="visible != null">
+        visible,
+      </if>
+      <if test="perms != null">
+        perms,
+      </if>
+      <if test="icon != null">
+        icon,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="menuName != null">
+        #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null">
+        #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="routePath != null">
+        #{routePath,jdbcType=VARCHAR},
+      </if>
+      <if test="menuType != null">
+        #{menuType,jdbcType=TINYINT},
+      </if>
+      <if test="visible != null">
+        #{visible,jdbcType=TINYINT},
+      </if>
+      <if test="perms != null">
+        #{perms,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.Menu">
+    update t_sys_menu
+    <set>
+      <if test="menuName != null">
+        menu_name = #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null">
+        order_num = #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="routePath != null">
+        route_path = #{routePath,jdbcType=VARCHAR},
+      </if>
+      <if test="menuType != null">
+        menu_type = #{menuType,jdbcType=TINYINT},
+      </if>
+      <if test="visible != null">
+        visible = #{visible,jdbcType=TINYINT},
+      </if>
+      <if test="perms != null">
+        perms = #{perms,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.Menu">
+    update t_sys_menu
+    set menu_name = #{menuName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      order_num = #{orderNum,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      route_path = #{routePath,jdbcType=VARCHAR},
+      menu_type = #{menuType,jdbcType=TINYINT},
+      visible = #{visible,jdbcType=TINYINT},
+      perms = #{perms,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_menu
+    <where>
+      <if test="menuName != null">
+         and menu_name = #{menuName,jdbcType=VARCHAR}
+      </if>
+      <if test="parentId != null">
+         and parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="orderNum != null">
+         and order_num = #{orderNum,jdbcType=INTEGER}
+      </if>
+      <if test="url != null">
+         and url = #{url,jdbcType=VARCHAR}
+      </if>
+      <if test="routePath != null">
+         and route_path = #{routePath,jdbcType=VARCHAR}
+      </if>
+      <if test="menuType != null">
+         and menu_type = #{menuType,jdbcType=TINYINT}
+      </if>
+      <if test="visible != null">
+         and visible = #{visible,jdbcType=TINYINT}
+      </if>
+      <if test="perms != null">
+         and perms = #{perms,jdbcType=VARCHAR}
+      </if>
+      <if test="icon != null">
+         and icon = #{icon,jdbcType=VARCHAR}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="remark != null">
+         and remark = #{remark,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_sys_menu
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_menu
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_sys_menu (menu_name, parent_id, order_num, 
+      url, route_path, menu_type, 
+      visible, perms, icon, 
+      create_by, create_time, update_by, 
+      update_time, remark) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.menuName,jdbcType=VARCHAR}, #{item.parentId,jdbcType=INTEGER}, #{item.orderNum,jdbcType=INTEGER}, 
+        #{item.url,jdbcType=VARCHAR}, #{item.routePath,jdbcType=VARCHAR}, #{item.menuType,jdbcType=TINYINT}, 
+        #{item.visible,jdbcType=TINYINT}, #{item.perms,jdbcType=VARCHAR}, #{item.icon,jdbcType=VARCHAR}, 
+        #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+</mapper>
