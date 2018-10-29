@@ -79,5 +79,66 @@
         <table tableName="t_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
         </table>
+
+        <table tableName="t_sys_menu" domainObjectName="Menu" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_role_menu" domainObjectName="RoleMenu" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_area" domainObjectName="Area" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_config" domainObjectName="SysConfig" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_job" domainObjectName="Job" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_job_log" domainObjectName="JobLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_serial_number" domainObjectName="SerialNumber" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_dict_type" domainObjectName="DictType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_sys_dict_data" domainObjectName="DictData" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_precinct" domainObjectName="Precinct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_user_precinct" domainObjectName="UserPrecinct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_unit" domainObjectName="Unit" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_facilities" domainObjectName="Facilities" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_diagram_struct" domainObjectName="DiagramStruct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+        <table tableName="t_diagram_item" domainObjectName="DiagramItem" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_unit_camera" domainObjectName="UnitCamera" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_unit_patrol" domainObjectName="UnitPatrol" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_load" domainObjectName="Load" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_load_max" domainObjectName="LoadMax" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+        <table tableName="t_facilities_alarm" domainObjectName="FacilitiesAlarm" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
+
     </context>
 </generatorConfiguration>

@@ -97,7 +97,7 @@ insert into `t_sys_user_role` values (1,1, 1);
 -- ----------------------------
 drop table if exists `t_sys_menu`;
 create table `t_sys_menu` (
-  `menu_id` 			int(11) 			not null 	auto_increment    		comment '菜单ID',
+  `id` 					int(11) 			not null 	auto_increment    		comment '菜单ID',
   `menu_name` 			varchar(64) 		not null 				   			comment '菜单名称',
   `parent_id` 			int(11) 			default 0 			       			comment '父菜单ID',
   `order_num` 			int(4) 				default null 			   			comment '显示顺序',
@@ -112,7 +112,7 @@ create table `t_sys_menu` (
   `update_by` 			varchar(64) 		default NULL		       			comment '更新者',
   `update_time` 		datetime                                  				comment '更新时间',
   `remark` 				varchar(500) 		default NULL			   			comment '备注',
-  primary key (`menu_id`)
+  primary key (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '菜单权限表';
 
 
@@ -320,24 +320,6 @@ create table `t_precinct` (
   primary key (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '管辖区信息';
 
-
--- ----------------------------
--- 15、管辖区信息表
--- ----------------------------
-drop table if exists `t_precinct`;
-create table `t_precinct` (
-  `id` 				int(11) 		not null auto_increment    	comment 'ID',
-  `precinct_name` 	varchar(64) 	DEFAULT NULL 				comment '管辖区名称',
-  `duty_name` 		varchar(32) 	DEFAULT NULL 				comment '负责人',
-  `duty_phone`     	varchar(32)     DEFAULT NULL               	comment '负责人电话',
-  `area_id` 		int(11) 		DEFAULT NULL 				COMMENT '区域id',
-  `status` 			int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
-  `create_time` 	datetime 		DEFAULT NULL 				COMMENT '创建时间',
-  `update_time` 	datetime 		DEFAULT NULL 				COMMENT '更新时间',
-  `create_by` 		varchar(32) 	DEFAULT NULL 				COMMENT '创建者',
-  `update_by` 		varchar(32) 	DEFAULT NULL 				COMMENT '更新者',
-  primary key (`id`)
-) engine=innodb auto_increment=1 default charset=utf8 comment = '管辖区信息';
 
 
 -- ----------------------------
