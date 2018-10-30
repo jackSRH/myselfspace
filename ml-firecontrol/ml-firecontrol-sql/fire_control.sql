@@ -579,3 +579,19 @@ create table `t_facilities_alarm` (
   `update_by` 			varchar(32) 	DEFAULT NULL 				COMMENT '更新者',
   primary key (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '警情表';
+
+
+-- ----------------------------
+-- 26、单位网关关联关系
+-- ----------------------------
+drop table if exists t_unit_device;
+CREATE TABLE `t_unit_device`(
+  `id` 				int(11) 	    NOT NULL AUTO_INCREMENT,
+  `device_id` 		varchar(32) 	DEFAULT NULL 				COMMENT '网关id',
+  `unit_id` 		int(11) 		DEFAULT NULL 				COMMENT '单位id',
+  `create_time` 	datetime 		DEFAULT NULL 				COMMENT '创建时间',
+  `update_time` 	datetime 		DEFAULT NULL 				COMMENT '更新时间',
+  `create_by` 		varchar(32) 	DEFAULT NULL 				COMMENT '创建者',
+  `update_by` 		varchar(32) 	DEFAULT NULL 				COMMENT '更新者',
+  PRIMARY KEY (`id`)
+) engine=innodb auto_increment=1 default charset=utf8 comment = '';

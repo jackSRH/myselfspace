@@ -139,5 +139,8 @@
         <table tableName="t_facilities_alarm" domainObjectName="FacilitiesAlarm" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
         </table>
+        <table tableName="t_unit_device" domainObjectName="UnitDevice" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>
