@@ -34,4 +34,7 @@ public abstract class CommonConstant {
     public static final String SYS_MENU_KEY = "mlfirecontrol:sysmenus";
     public static final String SYS_ROLE_KEY = "mlfirecontrol:sysroles";
 
+    /**图片存放路径 */
+    public final static String UPLOAD_IMG_DIR = "images";
+
 }

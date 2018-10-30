@@ -1,110 +1,44 @@
-/*
-*
-* Unit.java
-* Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-30
-*/
-package com.mailian.firecontrol.dao.auto.model;
+package com.mailian.firecontrol.dto.web;
 
-import com.mailian.core.base.model.BaseDomain;
-import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
-public class Unit extends BaseDomain implements Serializable {
-    /**
-     * ID
-     */
+@ApiModel(description = "单位信息参数")
+public class UnitInfo {
+    @ApiModelProperty(value = "单位id")
     private Integer id;
-
-    /**
-     * 单位名称
-     */
+    @ApiModelProperty(value = "单位名称")
     private String unitName;
-
-    /**
-     * 区域id
-     */
+    @ApiModelProperty(value = "区域id")
     private Integer areaId;
-
-    /**
-     * 管辖区id
-     */
+    @ApiModelProperty(value = "管辖区id")
     private Integer precinctId;
-
-    /**
-     * 单位地址
-     */
+    @ApiModelProperty(value = "单位地址")
     private String address;
-
-    /**
-     * 经营范围
-     */
+    @ApiModelProperty(value = "经营范围")
     private String businessScope;
-
-    /**
-     * 单位类型
-     */
+    @ApiModelProperty(value = "单位类型")
     private Integer unitType;
-
-    /**
-     * 监管等级：1:一级,2:二级,3:三级
-     */
+    @ApiModelProperty(value = "监管等级")
     private Integer superviseLevel;
-
-    /**
-     * 经营人
-     */
+    @ApiModelProperty(value = "经营人")
     private String transactor;
-
-    /**
-     * 经济所有制 1:私营经济、2:个体经济、3:外资经济、4:混合经济、5:国有经济、6:集体经济、7:混合所有制经济
-     */
+    @ApiModelProperty(value = "经济所有制")
     private Integer economySystem;
-
-    /**
-     * 身份证号码
-     */
+    @ApiModelProperty(value = "身份证号码")
     private String idCard;
-
-    /**
-     * 职工人数
-     */
+    @ApiModelProperty(value = "职工人数")
     private Integer employeeNum;
-
-    /**
-     * 联系电话
-     */
+    @ApiModelProperty(value = "联系电话")
     private String contactPhone;
-
-    /**
-     * 接入时间
-     */
+    @ApiModelProperty(value = "接入时间")
     private Date joinTime;
-
-    /**
-     * 物品存储
-     */
+    @ApiModelProperty(value = "物品存储")
     private String items;
-
-    /**
-     * 单位图片
-     */
+    @ApiModelProperty(value = "单位图片")
     private String unitPic;
-
-    /**
-     * 物联状态（0在线 1离线）
-     */
-    private Integer iotStatus;
-
-    /**
-     * 状态（0正常 1停用）
-     */
-    private Integer status;
-
-    /**
-     * t_unit
-     */
-    private static final long serialVersionUID = 1L;
 
     public Integer getId() {
         return id;
@@ -119,7 +53,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setUnitName(String unitName) {
-        this.unitName = unitName == null ? null : unitName.trim();
+        this.unitName = unitName;
     }
 
     public Integer getAreaId() {
@@ -143,7 +77,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setAddress(String address) {
-        this.address = address == null ? null : address.trim();
+        this.address = address;
     }
 
     public String getBusinessScope() {
@@ -151,7 +85,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setBusinessScope(String businessScope) {
-        this.businessScope = businessScope == null ? null : businessScope.trim();
+        this.businessScope = businessScope;
     }
 
     public Integer getUnitType() {
@@ -170,14 +104,6 @@ public class Unit extends BaseDomain implements Serializable {
         this.superviseLevel = superviseLevel;
     }
 
-    public String getTransactor() {
-        return transactor;
-    }
-
-    public void setTransactor(String transactor) {
-        this.transactor = transactor == null ? null : transactor.trim();
-    }
-
     public Integer getEconomySystem() {
         return economySystem;
     }
@@ -191,7 +117,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setIdCard(String idCard) {
-        this.idCard = idCard == null ? null : idCard.trim();
+        this.idCard = idCard;
     }
 
     public Integer getEmployeeNum() {
@@ -207,7 +133,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone == null ? null : contactPhone.trim();
+        this.contactPhone = contactPhone;
     }
 
     public Date getJoinTime() {
@@ -223,7 +149,7 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setItems(String items) {
-        this.items = items == null ? null : items.trim();
+        this.items = items;
     }
 
     public String getUnitPic() {
@@ -231,22 +157,14 @@ public class Unit extends BaseDomain implements Serializable {
     }
 
     public void setUnitPic(String unitPic) {
-        this.unitPic = unitPic == null ? null : unitPic.trim();
+        this.unitPic = unitPic;
     }
 
-    public Integer getIotStatus() {
-        return iotStatus;
+    public String getTransactor() {
+        return transactor;
     }
 
-    public void setIotStatus(Integer iotStatus) {
-        this.iotStatus = iotStatus;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setTransactor(String transactor) {
+        this.transactor = transactor;
     }
 }
