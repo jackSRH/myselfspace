@@ -30,4 +30,8 @@ public class CommonConstant {
 
 
     public static final Float ITEM_INITIAL_VALUE = -99.9f;
+
+
+    /**图片存放路径 */
+    public final static String UPLOAD_IMG_DIR = "images";
 }
