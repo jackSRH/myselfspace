@@ -1,12 +1,14 @@
 package com.mailian.firecontrol.framework.handler;
 
 import com.mailian.core.adapter.MqttMessageHandlerAdapter;
+import com.mailian.core.bean.SpringContext;
 import com.mailian.core.enums.Status;
 import com.mailian.core.util.JsonUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.PushMessageTopic;
-import com.mailian.firecontrol.dto.web.DeviceCommunicationStatus;
+import com.mailian.firecontrol.dto.push.DeviceCommunicationStatus;
 import com.mailian.firecontrol.framework.util.MqttTopicUtil;
+import com.mailian.firecontrol.service.cache.DeviceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,9 @@ public class GwstateMessageHandler implements MqttMessageHandlerAdapter {
             DeviceCommunicationStatus deviceCommunicationStatus = JsonUtils.getObjectFromJsonString(message,DeviceCommunicationStatus.class);
 
             if(StringUtils.isNotNull(deviceCommunicationStatus)){
+                DeviceCache deviceCache = (DeviceCache) SpringContext.getBean("deviceCache");
+                deviceCache.updateStatus(deviceCommunicationStatus);
+
                 if(Status.NORMAL.id.intValue() == deviceCommunicationStatus.getStatus().intValue()){
                     MqttTopicUtil.addTopic(deviceCommunicationStatus.getGwid());
                 }

@@ -1,6 +1,6 @@
 package com.mailian.firecontrol.common.manager;
 
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 
 /**
  * @Auther: wangqiaoqing
@@ -14,5 +14,5 @@ public class SystemManager {
      * @param roleKey
      * @return
      */
-    public static boolean isAdminRole(String roleKey){ return CommonConstant.MANAGER_ROLE_KEY.equals(roleKey);}
+    public static boolean isAdminRole(String roleKey){ return CoreCommonConstant.MANAGER_ROLE_KEY.equals(roleKey);}
 }

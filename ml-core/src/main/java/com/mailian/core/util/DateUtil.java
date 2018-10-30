@@ -745,23 +745,6 @@ public class DateUtil {
         return day; 
     }
     
-    public static String addOneHour(String beforeDate) throws ParseException{
-		String tempDate = "";
-		String AfterDate = "";
-		if("0".equals(beforeDate.substring(11, 12)) && !"9".equals(beforeDate.substring(12, 13))) {
-			tempDate = String.valueOf(Integer.valueOf(beforeDate.substring(12, 13)) + 1);
-			StringBuilder sb = new StringBuilder(beforeDate);
-			sb.replace(12, 13,tempDate);
-			AfterDate = sb.toString();
-		}else {
-			tempDate = String.valueOf(Integer.valueOf(beforeDate.substring(11, 13)) + 1);
-			StringBuilder sb = new StringBuilder(beforeDate);
-			sb.replace(11, 13,tempDate);
-			AfterDate = sb.toString();
-		}
-		return AfterDate;
-    }
-
 	/**
 	 * 判断时间是否在时间段内
 	 * @param nowTime

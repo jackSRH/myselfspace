@@ -442,4 +442,20 @@ public class StringUtils
         return !isEmpty(num);
     }
 
+    /**
+     * 获取hash码
+     * @param key
+     * @return
+     */
+    public static int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    }
+
+    public static String valueOf(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return String.valueOf(obj);
+    }
 }

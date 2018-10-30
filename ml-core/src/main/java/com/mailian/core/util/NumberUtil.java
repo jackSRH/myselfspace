@@ -9,7 +9,7 @@ public class NumberUtil {
 	
 	public static Integer toInteger(Object obj,Integer defaultValue){
 		try {
-			return Integer.parseInt(getNumbers(StringUtil.valueOf(obj)));
+			return Integer.parseInt(getNumbers(StringUtils.valueOf(obj)));
 		} catch (Exception e) {
                return defaultValue;
 		}
@@ -26,15 +26,14 @@ public class NumberUtil {
 	
 	public static Double toDouble(Object obj,Double defaultValue){
 		try {
-			return Double.parseDouble(StringUtil.valueOf(obj));
+			return Double.parseDouble(StringUtils.valueOf(obj));
 		} catch (Exception e) {
                return defaultValue;
 		}
 	}
 
 	/**
-	 * obj 鏄笉鏄暟瀛楃被鍨�鎴栬�鍙互杞垚number绫诲瀷
-	 * 
+	 * 判断是否数字
 	 * @param obj
 	 * @return
 	 */
@@ -66,7 +65,7 @@ public class NumberUtil {
 	}
 	
 	public static BigDecimal createBigDecimal(String value,BigDecimal defualtBigDecimal){
-		 if(StringUtil.isEmpty(value)){
+		 if(StringUtils.isEmpty(value)){
 			 return defualtBigDecimal;
 		 }
 		 return new BigDecimal(value);

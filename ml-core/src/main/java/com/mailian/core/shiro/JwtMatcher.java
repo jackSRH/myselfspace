@@ -1,7 +1,7 @@
 package com.mailian.core.shiro;
 
 import com.mailian.core.config.SystemConfig;
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.RedisKeys;
 import com.mailian.core.util.RedisUtils;
@@ -39,7 +39,7 @@ public class JwtMatcher implements CredentialsMatcher {
         String token = (String) jwtToken.getPrincipal();
         Claims claims = jwtUtils.getClaimByToken(token);
         String userName = jwtUtils.getUserName(claims);
-        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CommonConstant.REDIS_TOKEN_KEY+userName);
+        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
         String redisToken = redisUtils.get(redisKey);
         if(StringUtils.isEmpty(redisToken)){
             throw new AuthenticationException("token失效"); // token失效
@@ -51,12 +51,12 @@ public class JwtMatcher implements CredentialsMatcher {
         }
 
         if(!token.equals(redisToken)){
-            throw new AuthenticationException(CommonConstant.REFRESH_TOKEN+redisToken);
+            throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN+redisToken);
         }
 
         if(jwtUtils.isRefreshToken(claims)){
             String newToken = jwtUtils.generateToken(UUID.randomUUID().toString(),userName,password);
-            throw new AuthenticationException(CommonConstant.REFRESH_TOKEN+newToken);
+            throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN+newToken);
         }
         return true;
     }

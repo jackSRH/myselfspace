@@ -120,8 +120,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    public RedisTemplate redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
+        RedisTemplate template = new RedisTemplate();
         template.setConnectionFactory(jedisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
@@ -130,27 +130,27 @@ public class RedisConfig {
     }
 
     @Bean
-    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
+    public HashOperations hashOperations(RedisTemplate redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     @Bean
-    public ValueOperations<String, String> valueOperations(RedisTemplate<String, String> redisTemplate) {
+    public ValueOperations<String,String> valueOperations(RedisTemplate redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     @Bean
-    public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ListOperations listOperations(RedisTemplate redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     @Bean
-    public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
+    public SetOperations setOperations(RedisTemplate redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     @Bean
-    public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ZSetOperations zSetOperations(RedisTemplate redisTemplate) {
         return redisTemplate.opsForZSet();
     }
 }

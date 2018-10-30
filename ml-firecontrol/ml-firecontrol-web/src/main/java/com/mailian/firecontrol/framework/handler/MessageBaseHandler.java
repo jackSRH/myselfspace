@@ -21,6 +21,11 @@ public class MessageBaseHandler {
     private static List<MqttMessageHandlerAdapter> handlerAdapters = new ArrayList<>();
 
     public MessageBaseHandler(){
+        handlerAdapters.add(new AlarmMessageHandler());
+        handlerAdapters.add(new DataitemMessageHandler());
+        handlerAdapters.add(new GwinfoMessageHandler());
+        handlerAdapters.add(new RtuinfoMessageHandler());
+        handlerAdapters.add(new SignalMessageHandler());
         handlerAdapters.add(new GwstateMessageHandler());
     }
 

@@ -1,8 +1,8 @@
 package com.mailian.firecontrol.service.impl;
 
 import com.mailian.core.base.service.impl.BaseServiceImpl;
-import com.mailian.core.constants.CommonConstant;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.SysConfigType;
 import com.mailian.firecontrol.dao.auto.mapper.SysConfigMapper;
 import com.mailian.firecontrol.dao.auto.model.SysConfig;

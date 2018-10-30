@@ -2,13 +2,13 @@ package com.mailian.firecontrol.service.impl;
 
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.ResponseResult;
-import com.mailian.core.constants.CommonConstant;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.enums.Status;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.FilterUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.core.util.TreeParser;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.MenuType;
 import com.mailian.firecontrol.dao.auto.mapper.MenuMapper;
 import com.mailian.firecontrol.dao.auto.model.Menu;

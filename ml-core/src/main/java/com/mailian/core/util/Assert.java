@@ -164,7 +164,7 @@ public abstract class Assert {
 	 * @see StringUtil#hasLength
 	 */
 	public static void hasLength(String text, String message) {
-		if (!StringUtil.hasLength(text)) {
+		if (StringUtils.isEmpty(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -200,7 +200,7 @@ public abstract class Assert {
 	 * @see StringUtil#hasText
 	 */
 	public static void hasText(String text, String message) {
-		if (!StringUtil.hasText(text)) {
+		if (StringUtils.isEmpty(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -237,7 +237,7 @@ public abstract class Assert {
 	 *            the exception message to use if the assertion fails
 	 */
 	public static void doesNotContain(String textToSearch, String substring, String message) {
-		if (StringUtil.hasLength(textToSearch) && StringUtil.hasLength(substring)
+		if (StringUtils.isNotEmpty(textToSearch) && StringUtils.isNotEmpty(substring)
 				&& textToSearch.indexOf(substring) != -1) {
 			throw new IllegalArgumentException(message);
 		}

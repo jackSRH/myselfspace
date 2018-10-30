@@ -1,6 +1,6 @@
 package com.mailian.firecontrol.common.util;
 
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 
 import java.util.UUID;
 
@@ -34,7 +34,7 @@ public class FileNameUtils {
      * @return
      */
     public static boolean isImg(String fileOriginName){
-        return CommonConstant.IMAGE_TYPE.contains(getSuffix(fileOriginName).trim().toLowerCase());
+        return CoreCommonConstant.IMAGE_TYPE.contains(getSuffix(fileOriginName).trim().toLowerCase());
     }
 
 }

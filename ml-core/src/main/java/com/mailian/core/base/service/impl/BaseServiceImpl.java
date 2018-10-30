@@ -5,7 +5,7 @@ import com.mailian.core.base.model.BaseDomain;
 import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.BaseUserInfo;
 import com.mailian.core.bean.SpringContext;
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.PageUtil;
@@ -106,10 +106,10 @@ public abstract class BaseServiceImpl<T extends BaseDomain,M extends BaseMapper<
             throw new RequestException(ResponseCode.FAIL.code,"删除ids不能为空!");
         }
 
-        Integer totalPage = PageUtil.getTotalPage(CommonConstant.BATCH_MAX_SIZE,ids.size());
+        Integer totalPage = PageUtil.getTotalPage(CoreCommonConstant.BATCH_MAX_SIZE,ids.size());
         int result = 0;
         for (int i=1; i<=totalPage;i++) {
-            List<T> addList = PageUtil.pagedList(i,CommonConstant.BATCH_MAX_SIZE,ids);
+            List<T> addList = PageUtil.pagedList(i,CoreCommonConstant.BATCH_MAX_SIZE,ids);
             result = result + baseMapper.deleteBatchIds(addList);
         }
         return result;
@@ -125,7 +125,7 @@ public abstract class BaseServiceImpl<T extends BaseDomain,M extends BaseMapper<
         if(StringUtils.isEmpty(objs)){
             throw new RequestException(ResponseCode.FAIL.code,"新增的数据不能为空!");
         }
-        Integer totalPage = PageUtil.getTotalPage(CommonConstant.BATCH_MAX_SIZE,objs.size());
+        Integer totalPage = PageUtil.getTotalPage(CoreCommonConstant.BATCH_MAX_SIZE,objs.size());
         int result = 0;
         SqlSession batchSqlSession = null;
         try {
@@ -133,7 +133,7 @@ public abstract class BaseServiceImpl<T extends BaseDomain,M extends BaseMapper<
             batchSqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);// 获取批量方式的sqlsession
             M baseMapper = batchSqlSession.getMapper(this.currentModelClass());
             for (int i=1; i<=totalPage;i++) {
-                List<T> addList = PageUtil.pagedList(i,CommonConstant.BATCH_MAX_SIZE,objs);
+                List<T> addList = PageUtil.pagedList(i,CoreCommonConstant.BATCH_MAX_SIZE,objs);
                 result = result + baseMapper.insertBatch(addList);
                 //提交事务
                 batchSqlSession.commit();

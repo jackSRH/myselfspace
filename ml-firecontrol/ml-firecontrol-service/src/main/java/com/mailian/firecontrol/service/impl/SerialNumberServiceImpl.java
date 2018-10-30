@@ -2,19 +2,19 @@ package com.mailian.firecontrol.service.impl;
 
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.config.SystemConfig;
-import com.mailian.core.constants.CommonConstant;
 import com.mailian.core.enums.BooleanEnum;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.FreeMarkerUtil;
 import com.mailian.core.util.RedisKeys;
+import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.SerialNumModule;
 import com.mailian.firecontrol.dao.auto.mapper.SerialNumberMapper;
 import com.mailian.firecontrol.dao.auto.model.SerialNumber;
 import com.mailian.firecontrol.service.SerialNumberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SerialNumberServiceImpl extends BaseServiceImpl<SerialNumber,SerialNumberMapper> implements SerialNumberService {
 
     @Autowired
-    private ListOperations<String, Object> listOperations;
+    private RedisUtils redisUtils;
 
     @Autowired
     private SystemConfig systemConfig;
@@ -45,7 +45,7 @@ public class SerialNumberServiceImpl extends BaseServiceImpl<SerialNumber,Serial
         int prepare = serialNumber.getPreMaxNum();//预生成流水号数量
 
         //临时List变量
-        Collection<String> resultList = new ArrayList<String>(prepare);
+        List<String> resultList = new ArrayList<String>(prepare);
         lock.lock();
         String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CommonConstant.PREPARE_SERIAL_NUMBER_KEY+moduleCode);
         try{
@@ -70,11 +70,11 @@ public class SerialNumberServiceImpl extends BaseServiceImpl<SerialNumber,Serial
             systemSerialNumber.setUpdateTime(new Date());
             baseMapper.updateByPrimaryKeySelective(systemSerialNumber);
 
-            listOperations.rightPushAll(redisKey,resultList.toArray());
+            redisUtils.rightPushAll(redisKey,resultList);
         }finally{
             lock.unlock();
         }
-        return (String) listOperations.leftPop(redisKey);
+        return redisUtils.leftPop(redisKey);
     }
 
     @Override
@@ -84,11 +84,11 @@ public class SerialNumberServiceImpl extends BaseServiceImpl<SerialNumber,Serial
         prepareLock.lock();
         String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CommonConstant.PREPARE_SERIAL_NUMBER_KEY+moduleCode);
         try{
-            long size = listOperations.size(redisKey);
+            long size = redisUtils.size(redisKey);
             //判断内存中是否还有序列号
             if(size > 0){
                 //若有，返回第一个，并删除
-                String result = (String) listOperations.leftPop(redisKey);
+                String result = redisUtils.leftPop(redisKey);
                 return result;
             }
         }finally {

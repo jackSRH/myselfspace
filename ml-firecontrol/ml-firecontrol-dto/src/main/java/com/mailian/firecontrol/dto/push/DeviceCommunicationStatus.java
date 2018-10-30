@@ -1,4 +1,4 @@
-package com.mailian.firecontrol.dto.web;
+package com.mailian.firecontrol.dto.push;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

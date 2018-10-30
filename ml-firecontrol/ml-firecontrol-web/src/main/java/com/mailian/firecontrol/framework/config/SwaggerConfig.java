@@ -2,7 +2,7 @@ package com.mailian.firecontrol.framework.config;
 
 import com.mailian.core.annotation.AppAPI;
 import com.mailian.core.annotation.WebAPI;
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.firecontrol.dto.ShiroUser;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class SwaggerConfig {
     public Docket webApi() {
         ParameterBuilder tokenPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<Parameter>();
-        tokenPar.name(CommonConstant.ML_TOKEN).description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+        tokenPar.name(CoreCommonConstant.ML_TOKEN).description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
         pars.add(tokenPar.build());
 
         List<ResponseMessage> responseMessages = ResponseCode.getResponseMessageList();
@@ -65,7 +65,7 @@ public class SwaggerConfig {
     public Docket appApi() {
         ParameterBuilder tokenPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<Parameter>();
-        tokenPar.name(CommonConstant.ML_TOKEN).description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+        tokenPar.name(CoreCommonConstant.ML_TOKEN).description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
         pars.add(tokenPar.build());
 
         List<ResponseMessage> responseMessages = ResponseCode.getResponseMessageList();

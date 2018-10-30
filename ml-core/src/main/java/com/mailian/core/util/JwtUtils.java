@@ -1,7 +1,7 @@
 package com.mailian.core.util;
 
 import com.mailian.core.config.SystemConfig;
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -59,8 +59,8 @@ public class JwtUtils {
                 .claim("username",userName)
                 .claim("password",password)
                 .compact();
-        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CommonConstant.REDIS_TOKEN_KEY+userName);
-        redisUtils.set(redisKey,token,CommonConstant.REFRESH_TOKEN_TIME);
+        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
+        redisUtils.set(redisKey,token,CoreCommonConstant.REFRESH_TOKEN_TIME);
         return token;
     }
 
@@ -114,7 +114,7 @@ public class JwtUtils {
      * @return
      */
     public String getLoginToken(final String userName,final String password){
-        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CommonConstant.REDIS_TOKEN_KEY+userName);
+        String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
         String token = redisUtils.get(redisKey);
         if(StringUtils.isEmpty(token)){
             token = generateTokenByMd5(UUID.randomUUID().toString(),userName,password);

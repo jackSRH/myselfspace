@@ -94,21 +94,5 @@ public class JsonUtils {
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(list));
         return jsonArray.toArray();  
     }  
-  
-    public static boolean httpRequestRes(String res) {
-		if(null == res) {
-			return false;
-		}else {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map = JSONObject.parseObject(res, map.getClass());
-			String code = (String)map.get("code");
-			if("0".equals(code)) {
-				return true;
-			}else {
-				return false;
-			}
-		}
-    }
-    
 }
 

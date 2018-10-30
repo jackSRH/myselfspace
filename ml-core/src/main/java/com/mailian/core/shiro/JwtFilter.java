@@ -1,7 +1,7 @@
 package com.mailian.core.shiro;
 
 import com.mailian.core.bean.ResponseResult;
-import com.mailian.core.constants.CommonConstant;
+import com.mailian.core.constants.CoreCommonConstant;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.RedisUtils;
@@ -78,8 +78,8 @@ public class JwtFilter extends AuthenticatingFilter {
             return true;
         }catch (AuthenticationException e){
             // 如果需要刷新token
-            if (StringUtils.isNotEmpty(e.getMessage()) && e.getMessage().startsWith(CommonConstant.REFRESH_TOKEN)) {
-                String newToken = e.getMessage().substring(CommonConstant.REFRESH_TOKEN.length());
+            if (StringUtils.isNotEmpty(e.getMessage()) && e.getMessage().startsWith(CoreCommonConstant.REFRESH_TOKEN)) {
+                String newToken = e.getMessage().substring(CoreCommonConstant.REFRESH_TOKEN.length());
                 Map<String,String> resultMap = new HashMap<>();
                 resultMap.put("token",newToken);
                 Tools.writeJson(ResponseResult.buildResult(ResponseCode.REFRESH_TOKEN,resultMap),response);
@@ -125,11 +125,11 @@ public class JwtFilter extends AuthenticatingFilter {
      */
     private String getRequestToken(HttpServletRequest httpRequest){
         //从header中获取token
-        String token = httpRequest.getHeader(CommonConstant.ML_TOKEN);
+        String token = httpRequest.getHeader(CoreCommonConstant.ML_TOKEN);
 
         //如果header中不存在token，则从参数中获取token
         if(StringUtils.isEmpty(token)){
-            token = httpRequest.getParameter(CommonConstant.ML_TOKEN);
+            token = httpRequest.getParameter(CoreCommonConstant.ML_TOKEN);
         }
 
         return token;
