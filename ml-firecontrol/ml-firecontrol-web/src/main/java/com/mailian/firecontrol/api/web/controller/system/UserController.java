@@ -9,7 +9,6 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.manager.ValidationManager;
 import com.mailian.core.manager.ViewManager;
-import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.User;
@@ -44,8 +43,6 @@ public class UserController extends BaseController {
     private UserRoleService userRoleService;
     @Autowired
     private RoleService roleService;
-    @Autowired
-    private JwtUtils jwtUtils;
 
 
     @Log(title = "系统",action = "获取用户列表")
@@ -68,6 +65,7 @@ public class UserController extends BaseController {
     }
 
 
+    @Log(title = "系统",action = "用户详情")
     @ApiOperation(value = "用户详情", httpMethod = "GET",notes = "根据用户id获取用户详细信息")
     @RequestMapping(value="/userDetail/{uid}",method = RequestMethod.GET)
     @JsonView(value = ViewManager.WebDetailView.class)
@@ -88,6 +86,7 @@ public class UserController extends BaseController {
         return ResponseResult.buildOkResult(userInfo);
     }
 
+    @Log(title = "系统",action = "修改密码")
     @ApiOperation(value = "修改密码", httpMethod = "POST")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "uid", value = "用户id", required = true, paramType = "query", dataType = "String"),
@@ -118,6 +117,7 @@ public class UserController extends BaseController {
     }
 
 
+    @Log(title = "系统",action = "删除用户")
     @ApiOperation(value = "删除用户", httpMethod = "GET")
     @RequestMapping(value="/delete/{uid}",method = RequestMethod.GET)
     public ResponseResult delete(@CurUser ShiroUser shiroUser,@ApiParam(name="uid",value = "用户id",required = true) @PathVariable("uid") Integer uid){

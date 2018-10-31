@@ -5,6 +5,8 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="unit_name" jdbcType="VARCHAR" property="unitName" />
     <result column="area_id" jdbcType="INTEGER" property="areaId" />
+    <result column="province_id" jdbcType="INTEGER" property="provinceId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
     <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="business_scope" jdbcType="VARCHAR" property="businessScope" />
@@ -26,9 +28,10 @@
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, unit_name, area_id, precinct_id, address, business_scope, unit_type, supervise_level, 
-    transactor, economy_system, id_card, employee_num, contact_phone, join_time, items, 
-    unit_pic, iot_status, status, create_time, update_time, create_by, update_by
+    id, unit_name, area_id, province_id, city_id, precinct_id, address, business_scope, 
+    unit_type, supervise_level, transactor, economy_system, id_card, employee_num, contact_phone, 
+    join_time, items, unit_pic, iot_status, status, create_time, update_time, create_by, 
+    update_by
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -44,22 +47,22 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into t_unit (unit_name, area_id, precinct_id, 
-      address, business_scope, unit_type, 
-      supervise_level, transactor, economy_system, 
-      id_card, employee_num, contact_phone, 
-      join_time, items, unit_pic, 
-      iot_status, status, create_time, 
-      update_time, create_by, update_by
-      )
-    values (#{unitName,jdbcType=VARCHAR}, #{areaId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, 
-      #{address,jdbcType=VARCHAR}, #{businessScope,jdbcType=VARCHAR}, #{unitType,jdbcType=INTEGER}, 
-      #{superviseLevel,jdbcType=INTEGER}, #{transactor,jdbcType=VARCHAR}, #{economySystem,jdbcType=INTEGER}, 
-      #{idCard,jdbcType=VARCHAR}, #{employeeNum,jdbcType=INTEGER}, #{contactPhone,jdbcType=VARCHAR}, 
-      #{joinTime,jdbcType=TIMESTAMP}, #{items,jdbcType=VARCHAR}, #{unitPic,jdbcType=VARCHAR}, 
-      #{iotStatus,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
-      )
+    insert into t_unit (unit_name, area_id, province_id, 
+      city_id, precinct_id, address, 
+      business_scope, unit_type, supervise_level, 
+      transactor, economy_system, id_card, 
+      employee_num, contact_phone, join_time, 
+      items, unit_pic, iot_status, 
+      status, create_time, update_time, 
+      create_by, update_by)
+    values (#{unitName,jdbcType=VARCHAR}, #{areaId,jdbcType=INTEGER}, #{provinceId,jdbcType=INTEGER}, 
+      #{cityId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, 
+      #{businessScope,jdbcType=VARCHAR}, #{unitType,jdbcType=INTEGER}, #{superviseLevel,jdbcType=INTEGER}, 
+      #{transactor,jdbcType=VARCHAR}, #{economySystem,jdbcType=INTEGER}, #{idCard,jdbcType=VARCHAR}, 
+      #{employeeNum,jdbcType=INTEGER}, #{contactPhone,jdbcType=VARCHAR}, #{joinTime,jdbcType=TIMESTAMP}, 
+      #{items,jdbcType=VARCHAR}, #{unitPic,jdbcType=VARCHAR}, #{iotStatus,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.Unit">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -72,6 +75,12 @@
       </if>
       <if test="areaId != null">
         area_id,
+      </if>
+      <if test="provinceId != null">
+        province_id,
+      </if>
+      <if test="cityId != null">
+        city_id,
       </if>
       <if test="precinctId != null">
         precinct_id,
@@ -137,6 +146,12 @@
       </if>
       <if test="areaId != null">
         #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
       </if>
       <if test="precinctId != null">
         #{precinctId,jdbcType=INTEGER},
@@ -206,6 +221,12 @@
       <if test="areaId != null">
         area_id = #{areaId,jdbcType=INTEGER},
       </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
       <if test="precinctId != null">
         precinct_id = #{precinctId,jdbcType=INTEGER},
       </if>
@@ -270,6 +291,8 @@
     update t_unit
     set unit_name = #{unitName,jdbcType=VARCHAR},
       area_id = #{areaId,jdbcType=INTEGER},
+      province_id = #{provinceId,jdbcType=INTEGER},
+      city_id = #{cityId,jdbcType=INTEGER},
       precinct_id = #{precinctId,jdbcType=INTEGER},
       address = #{address,jdbcType=VARCHAR},
       business_scope = #{businessScope,jdbcType=VARCHAR},
@@ -301,6 +324,12 @@
       </if>
       <if test="areaId != null">
          and area_id = #{areaId,jdbcType=INTEGER}
+      </if>
+      <if test="provinceId != null">
+         and province_id = #{provinceId,jdbcType=INTEGER}
+      </if>
+      <if test="cityId != null">
+         and city_id = #{cityId,jdbcType=INTEGER}
       </if>
       <if test="precinctId != null">
          and precinct_id = #{precinctId,jdbcType=INTEGER}
@@ -378,23 +407,23 @@
     </foreach>
   </select>
   <insert id="insertBatch" parameterType="java.util.List">
-    insert into t_unit (unit_name, area_id, precinct_id, 
-      address, business_scope, unit_type, 
-      supervise_level, transactor, economy_system, 
-      id_card, employee_num, contact_phone, 
-      join_time, items, unit_pic, 
-      iot_status, status, create_time, 
-      update_time, create_by, update_by
-      ) values 
+    insert into t_unit (unit_name, area_id, province_id, 
+      city_id, precinct_id, address, 
+      business_scope, unit_type, supervise_level, 
+      transactor, economy_system, id_card, 
+      employee_num, contact_phone, join_time, 
+      items, unit_pic, iot_status, 
+      status, create_time, update_time, 
+      create_by, update_by) values 
     <foreach collection="objs" index="index" item="item" separator=",">
-       (#{item.unitName,jdbcType=VARCHAR}, #{item.areaId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, 
-        #{item.address,jdbcType=VARCHAR}, #{item.businessScope,jdbcType=VARCHAR}, #{item.unitType,jdbcType=INTEGER}, 
-        #{item.superviseLevel,jdbcType=INTEGER}, #{item.transactor,jdbcType=VARCHAR}, #{item.economySystem,jdbcType=INTEGER}, 
-        #{item.idCard,jdbcType=VARCHAR}, #{item.employeeNum,jdbcType=INTEGER}, #{item.contactPhone,jdbcType=VARCHAR}, 
-        #{item.joinTime,jdbcType=TIMESTAMP}, #{item.items,jdbcType=VARCHAR}, #{item.unitPic,jdbcType=VARCHAR}, 
-        #{item.iotStatus,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
-        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
-        )
+       (#{item.unitName,jdbcType=VARCHAR}, #{item.areaId,jdbcType=INTEGER}, #{item.provinceId,jdbcType=INTEGER}, 
+        #{item.cityId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, #{item.address,jdbcType=VARCHAR}, 
+        #{item.businessScope,jdbcType=VARCHAR}, #{item.unitType,jdbcType=INTEGER}, #{item.superviseLevel,jdbcType=INTEGER}, 
+        #{item.transactor,jdbcType=VARCHAR}, #{item.economySystem,jdbcType=INTEGER}, #{item.idCard,jdbcType=VARCHAR}, 
+        #{item.employeeNum,jdbcType=INTEGER}, #{item.contactPhone,jdbcType=VARCHAR}, #{item.joinTime,jdbcType=TIMESTAMP}, 
+        #{item.items,jdbcType=VARCHAR}, #{item.unitPic,jdbcType=VARCHAR}, #{item.iotStatus,jdbcType=INTEGER}, 
+        #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+        #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR})
     </foreach>
   </insert>
 </mapper>

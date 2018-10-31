@@ -54,4 +54,9 @@ public class RequestException extends RuntimeException implements Serializable {
     public void setE(Exception e) {
         this.e = e;
     }
+
+    @Override
+    public String getMessage() {
+        return msg;
+    }
 }

@@ -79,4 +79,8 @@
             </if>
         </where>
     </delete>
+
+    <select id="countPrecinctByNameAndAreaId" resultType="java.lang.Integer">
+        select count(1) from t_precinct where precinct_name=#{precinctName,jdbcType=VARCHAR} and area_id=#{areaId,jdbcType=INTEGER}
+    </select>
 </mapper>

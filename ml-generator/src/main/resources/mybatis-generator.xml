@@ -115,6 +115,7 @@
             <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
         </table>
         <table tableName="t_unit" domainObjectName="Unit" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="likeNames" value="unit_name"/>
             <generatedKey column="id" sqlStatement="Mysql"  identity="true"/>
         </table>
         <table tableName="t_facilities" domainObjectName="Facilities" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">

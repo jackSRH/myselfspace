@@ -25,6 +25,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,7 +104,7 @@ public class LogAspect {
             String methodName = joinPoint.getSignature().getName();
             operLog.setMethod(className + "." + methodName + "()");
             // 处理设置注解上的参数
-            getControllerMethodDescription(controllerLog, operLog);
+            getControllerMethodDescription(controllerLog, operLog,joinPoint.getArgs());
             // 保存数据库
             operLogService.insert(operLog);
         } catch (Exception exp) {
@@ -118,7 +120,7 @@ public class LogAspect {
      * @param operLog
      * @throws Exception
      */
-    public void getControllerMethodDescription(Log log, OperLog operLog) throws Exception {
+    public void getControllerMethodDescription(Log log, OperLog operLog,Object [] params) throws Exception {
         // 设置action动作
         operLog.setAction(log.action());
         // 设置标题
@@ -128,7 +130,7 @@ public class LogAspect {
         // 是否需要保存request，参数和值
         if (log.isSaveRequestData()) {
             // 获取参数的信息，传入到数据库中。
-            setRequestValue(operLog);
+            setRequestValue(operLog,params);
         }
     }
 
@@ -137,11 +139,23 @@ public class LogAspect {
      *
      * @param operLog
      */
-    private void setRequestValue(OperLog operLog)
+    private void setRequestValue(OperLog operLog,Object [] params)
     {
+        String paramsStr = "";
         Map<String, String[]> map = Tools.getRequest().getParameterMap();
-        String params = JSONObject.toJSONString(map);
-        operLog.setOperParam(StringUtils.substring(params, 0, 500));
+        if(StringUtils.isEmpty(map)){
+            List<Object> paramList = new ArrayList<>();
+            for (Object o : params) {
+                if(o instanceof ShiroUser){
+                    continue;
+                }
+                paramList.add(o);
+            }
+            paramsStr = JSONObject.toJSONString(paramList);
+        }else{
+            paramsStr = JSONObject.toJSONString(map);
+        }
+        operLog.setOperParam(StringUtils.substring(paramsStr, 0, 500));
     }
 
     /**
@@ -158,5 +172,4 @@ public class LogAspect {
         }
         return null;
     }
-
 }

@@ -2,7 +2,7 @@
 *
 * Precinct.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-26
+* @date 2018-10-31
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -34,6 +34,16 @@ public class Precinct extends BaseDomain implements Serializable {
      * 区域id
      */
     private Integer areaId;
+
+    /**
+     * 省份id
+     */
+    private Integer provinceId;
+
+    /**
+     * 城市id
+     */
+    private Integer cityId;
 
     /**
      * 状态（0正常 1停用）
@@ -83,6 +93,22 @@ public class Precinct extends BaseDomain implements Serializable {
 
     public void setAreaId(Integer areaId) {
         this.areaId = areaId;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
     }
 
     public Integer getStatus() {
