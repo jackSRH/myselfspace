@@ -39,6 +39,26 @@ public class UnitInfo {
     private String items;
     @ApiModelProperty(value = "单位图片")
     private String unitPic;
+    @ApiModelProperty(value = "省份id")
+    private Integer provinceId;
+    @ApiModelProperty(value = "城市id")
+    private Integer cityId;
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
 
     public Integer getId() {
         return id;

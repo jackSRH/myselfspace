@@ -1,26 +1,46 @@
 package com.mailian.firecontrol.api.web.controller.management;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.mailian.core.annotation.CurUser;
+import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.constants.CoreCommonConstant;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
+import com.mailian.firecontrol.common.enums.StructType;
+import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.common.util.FileNameUtils;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.UnitInfo;
+import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
+import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
+import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.component.UploadComponent;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/management/unit")
@@ -31,12 +51,18 @@ public class UnitController extends BaseController {
     private UnitService unitService;
     @Resource
     private UploadComponent uploadComponent;
+    @Resource
+    private DiagramStructService diagramStructService;
 
+
+    @Log(title = "配置管理",action = "新增更新单位")
     @ApiOperation(value = "新增或者更新单位", httpMethod = "POST")
     @RequestMapping(value="/insertOrUpdate",method = RequestMethod.POST)
     public ResponseResult insertOrUpdate(UnitInfo unitInfo,
                                          @ApiParam(value = "单位图片") @RequestParam(value = "attachFile",required = false) MultipartFile attachFile) throws Exception {
-
+        if(StringUtils.isNull(unitInfo)){
+            return error("参数不能为空");
+        }
         if(StringUtils.isNotNull(attachFile)){
             if(!FileNameUtils.isImg(attachFile.getOriginalFilename())){
                 return error("仅支持图片格式:"+ CoreCommonConstant.IMAGE_TYPE +"上传");
@@ -48,6 +74,7 @@ public class UnitController extends BaseController {
         return insertOrUpdateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
+    @Log(title = "配置管理",action = "修改单位状态")
     @ApiOperation(value = "修改单位状态", httpMethod = "POST")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "unitId", value = "单位id", required = true, paramType = "query", dataType = "Integer"),
@@ -71,23 +98,28 @@ public class UnitController extends BaseController {
         return changeRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
+    @Log(title = "配置管理",action = "获取单位列表")
     @ApiOperation(value = "获取单位列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getUnitList",method = RequestMethod.GET)
     public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,
                                                               @ApiParam(value = "单位名称") @RequestParam(required = false) String unitName,
-                                                              @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer pageNo,
+                                                              @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer currentPage,
                                                               @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize){
-
-        if(StringUtils.isEmpty(shiroUser.getPrecinctIds())){
-            return error("当前用户无管辖区权限");
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
         }
-        PageBean<UnitListResp> res = unitService.getUnitList(shiroUser.getPrecinctIds(),unitName,pageNo,pageSize);
+        PageBean<UnitListResp> res = unitService.getUnitList(dataScope,unitName,currentPage,pageSize);
         return ResponseResult.buildOkResult(res);
     }
 
+    @Log(title = "配置管理",action = "获取单位详情")
     @ApiOperation(value = "获取单位详情", httpMethod = "GET")
     @RequestMapping(value="/getUnitInfoById/{unitId}",method = RequestMethod.GET)
     public ResponseResult<UnitInfo> getUnitInfoById(@ApiParam(value = "单位id") @PathVariable("unitId") Integer unitId){
+        if(StringUtils.isEmpty(unitId)){
+            return error("单位id不能为空");
+        }
         Unit unit = unitService.selectByPrimaryKey(unitId);
         if(StringUtils.isNull(unit)){
             return error("该单位不存在");
@@ -96,4 +128,61 @@ public class UnitController extends BaseController {
         BeanUtils.copyProperties(unit,unitInfo);
         return ResponseResult.buildOkResult(unitInfo);
     }
+
+    @Log(title = "配置管理",action = "获取单位遥控配置列表")
+    @ApiOperation(value = "获取单位详情", httpMethod = "GET")
+    @RequestMapping(value="/getYcStructsByUnitId/{unitId}",method = RequestMethod.GET)
+    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(@ApiParam(value = "单位id") @PathVariable("unitId") Integer unitId,
+                      @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer currentPage,
+                      @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize){
+
+        if(StringUtils.isEmpty(unitId)){
+            return error("单位id不能为空");
+        }
+        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        queryMap.put("structType", StructType.REMOTE.id);
+        List<DiagramStructResp> diagramStructResps = diagramStructService.getDiagramStructByMap(queryMap);
+        PageBean<DiagramStructResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),diagramStructResps);
+        return ResponseResult.buildOkResult(pageBean);
+    }
+
+    @Log(title = "配置管理",action = "删除单位遥控配置")
+    @ApiOperation(value = "删除单位遥控配置", httpMethod = "DELETE")
+    @RequestMapping(value="/deleteYcStructByDsId/{dsId}",method = RequestMethod.DELETE)
+    public ResponseResult deleteYcStructByDsId(@ApiParam(value = "模块id") @PathVariable("dsId") Integer dsId){
+        if(StringUtils.isEmpty(dsId)){
+            return error("id不能为空");
+        }
+        Boolean deleteRes = diagramStructService.delete(dsId);
+        return deleteRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+    }
+
+    @Log(title = "配置管理",action = "新增单位遥控配置")
+    @ApiOperation(value = "新增单位遥控配置", httpMethod = "POST")
+    @RequestMapping(value="/insertYcStruct",method = RequestMethod.POST)
+    public ResponseResult insertYcStruct(DiagramStructReq diagramStructReq){
+        if(StringUtils.isNull(diagramStructReq)){
+            return error("参数不能空");
+        }
+       Boolean insertRes = diagramStructService.insert(diagramStructReq,null);
+       return insertRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+    }
+
+    @Log(title = "配置管理",action = "更新单位遥控配置")
+    @ApiOperation(value = "更新单位遥控配置", httpMethod = "POST")
+    @RequestMapping(value="/updateYcStruct",method = RequestMethod.POST)
+    public ResponseResult updateYcStruct(DiagramStructReq diagramStructReq){
+        if(StringUtils.isNull(diagramStructReq)){
+            return error("参数不能空");
+        }
+        if(StringUtils.isEmpty(diagramStructReq.getId())){
+            return error("id不能为空");
+        }
+        Boolean updateRes = diagramStructService.update(diagramStructReq,null);
+        return updateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+    }
+
+
 }
