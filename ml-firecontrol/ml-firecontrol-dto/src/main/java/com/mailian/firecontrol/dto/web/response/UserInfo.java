@@ -30,6 +30,10 @@ public class UserInfo extends BaseInfo implements Serializable {
     private String token;
     @ApiModelProperty(value = "菜单信息")
     private List<MenuResp> menuInfoList;
+    @ApiModelProperty(value = "拥有的角色列表")
+    private List<Integer> roleIds;
+    @ApiModelProperty(value = "拥有的管辖区列表")
+    private List<Integer> precinctIds;
 
     @JsonView(value = ViewManager.SimpleView.class)
     public Integer getId() {
@@ -83,5 +87,21 @@ public class UserInfo extends BaseInfo implements Serializable {
 
     public void setMenuInfoList(List<MenuResp> menuInfoList) {
         this.menuInfoList = menuInfoList;
+    }
+
+    public List<Integer> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Integer> roleIds) {
+        this.roleIds = roleIds;
+    }
+
+    public List<Integer> getPrecinctIds() {
+        return precinctIds;
+    }
+
+    public void setPrecinctIds(List<Integer> precinctIds) {
+        this.precinctIds = precinctIds;
     }
 }

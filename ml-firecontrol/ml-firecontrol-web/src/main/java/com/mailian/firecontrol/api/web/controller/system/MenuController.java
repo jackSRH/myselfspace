@@ -1,6 +1,7 @@
 package com.mailian.firecontrol.api.web.controller.system;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
@@ -9,6 +10,7 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.model.Menu;
 import com.mailian.firecontrol.dto.web.request.MenuReq;
 import com.mailian.firecontrol.dto.web.response.MenuResp;
+import com.mailian.firecontrol.framework.util.ShiroUtils;
 import com.mailian.firecontrol.service.MenuService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,6 +37,7 @@ public class MenuController extends BaseController {
     @Autowired
     private MenuService menuService;
 
+    @Log(title = "系统",action = "获取菜单列表")
     @ApiOperation(value = "获取菜单列表", httpMethod = "POST",notes = "所有数据，展示层级")
     @ApiImplicitParam(name = "menuReq", value = "菜单查询参数", required = false, dataType = "MenuReq")
     @RequestMapping(value="/getList",method = RequestMethod.POST)
@@ -43,6 +46,7 @@ public class MenuController extends BaseController {
         return ResponseResult.buildOkResult(menuService.queryListByMenu(menuReq));
     }
 
+    @Log(title = "系统",action = "获取菜单详情")
     @ApiOperation(value = "菜单详情", httpMethod = "GET",notes = "根据菜单id获取菜单详细信息")
     @RequestMapping(value="/detail/{menuId}",method = RequestMethod.GET)
     @JsonView(value = ViewManager.WebDetailView.class)
@@ -63,18 +67,23 @@ public class MenuController extends BaseController {
         return ResponseResult.buildOkResult(menuInfo);
     }
 
+    @Log(title = "系统",action = "修改或新增菜单")
     @ApiOperation(value = "保存", httpMethod = "POST",notes = "支持新增修改")
     @ApiImplicitParam(name = "menuReq", value = "菜单参数", required = true, dataType = "MenuReq")
     @RequestMapping(value="/save",method = RequestMethod.POST)
     public ResponseResult save(@RequestBody MenuReq menuReq){
-        return menuService.insertOrUpdate(menuReq);
+        ResponseResult responseResult = menuService.insertOrUpdate(menuReq);
+        ShiroUtils.clearCachedAuthorizationInfo();
+        return responseResult;
     }
 
 
+    @Log(title = "系统",action = "删除菜单")
     @ApiOperation(value = "删除菜单", httpMethod = "GET")
     @RequestMapping(value="/delete/{menuId}",method = RequestMethod.GET)
     public ResponseResult delete(@ApiParam(name="menuId",value = "菜单ID",required = true) @PathVariable("menuId") Integer menuId){
         int result = menuService.deleteByPrimaryKey(menuId);
+        ShiroUtils.clearCachedAuthorizationInfo();
         return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 }

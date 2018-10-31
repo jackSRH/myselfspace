@@ -162,7 +162,7 @@
          and password = #{password,jdbcType=VARCHAR}
       </if>
       <if test="fullName != null">
-         and full_name = #{fullName,jdbcType=VARCHAR}
+         and full_name like concat('%',#{fullName,jdbcType=VARCHAR},'%') 
       </if>
       <if test="phone != null">
          and phone = #{phone,jdbcType=VARCHAR}

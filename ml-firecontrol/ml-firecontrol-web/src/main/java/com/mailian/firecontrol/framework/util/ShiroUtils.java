@@ -2,6 +2,7 @@ package com.mailian.firecontrol.framework.util;
 
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dto.ShiroUser;
+import com.mailian.firecontrol.framework.shiro.MlShiroRealm;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.session.Session;
@@ -18,9 +19,9 @@ public class ShiroUtils {
      */
     public static void clearCachedAuthorizationInfo()
     {
-        /*RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
+        RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
         MlShiroRealm realm = (MlShiroRealm) rsm.getRealms().iterator().next();
-        realm.clearCachedAuthorizationInfo();*/
+        realm.clearCachedAuthorizationInfo();
     }
 
     public static String getIp()

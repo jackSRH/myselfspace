@@ -21,6 +21,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,6 +66,14 @@ public class LoginController {
         userInfo.setToken(token);
         userInfo.setMenuInfoList(menuInfoList);
         return ResponseResult.buildOkResult(userInfo);
+    }
+
+    @Log(title = "系统",action = "退出登录")
+    @ApiOperation(value = "退出登录", httpMethod = "GET")
+    @GetMapping(value = "/loginOut")
+    public ResponseResult loginOut(){
+        jwtUtils.loginOut();
+        return ResponseResult.buildOkResult();
     }
 
     @ApiIgnore(value = "未登录") //生成文档忽略方法

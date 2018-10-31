@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.api.web.controller.system;
 
+import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
@@ -26,6 +27,7 @@ public class JobController extends BaseController {
     @Autowired
     private JobService jobService;
 
+    @Log(title = "系统",action = "立即执行任务")
     @ApiOperation(value = "立即执行任务", httpMethod = "GET",notes = "根据任务id立即执行任务")
     @RequestMapping(value="/run/{jobId}",method = RequestMethod.GET)
     public ResponseResult run(@ApiParam(name="jobId",value = "任务id",required = true) @PathVariable("jobId") Integer jobId) {
@@ -33,6 +35,7 @@ public class JobController extends BaseController {
         return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
+    @Log(title = "系统",action = "暂停任务")
     @ApiOperation(value = "暂停任务", httpMethod = "GET",notes = "根据任务id 暂停任务")
     @RequestMapping(value="/pauseJob/{jobId}",method = RequestMethod.GET)
     public ResponseResult pauseJob(@ApiParam(name="jobId",value = "任务id",required = true) @PathVariable("jobId") Integer jobId) {
@@ -40,6 +43,7 @@ public class JobController extends BaseController {
         return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
+    @Log(title = "系统",action = "恢复任务")
     @ApiOperation(value = "恢复任务", httpMethod = "GET",notes = "根据任务id恢复任务")
     @RequestMapping(value="/resumeJob/{jobId}",method = RequestMethod.GET)
     public ResponseResult resumeJob(@ApiParam(name="jobId",value = "任务id",required = true) @PathVariable("jobId") Integer jobId) {

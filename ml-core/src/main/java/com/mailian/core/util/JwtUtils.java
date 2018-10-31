@@ -1,17 +1,19 @@
 package com.mailian.core.util;
 
+import com.mailian.core.bean.BaseUserInfo;
 import com.mailian.core.config.SystemConfig;
 import com.mailian.core.constants.CoreCommonConstant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -131,6 +133,17 @@ public class JwtUtils {
             }
         }
         return token;
+    }
+
+    public void loginOut(){
+        Subject subject = SecurityUtils.getSubject();
+        if(StringUtils.isNotNull(subject)){
+            BaseUserInfo baseUserInfo = (BaseUserInfo) subject.getPrincipal();
+            String userName = baseUserInfo.getUserName();
+            String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
+            redisUtils.delete(redisKey);
+            subject.logout();
+        }
     }
 
     public String getSecret() {

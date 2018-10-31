@@ -66,4 +66,17 @@
             </if>
         </where>
     </delete>
+
+    <delete id="deleteUserPrecinct" parameterType="map">
+        delete from
+        t_user_precinct
+        <where>
+            <if test="uid != null">
+                and uid = #{uid,jdbcType=INTEGER}
+            </if>
+            <if test="precinctId != null">
+                and precinct_id = #{precinctId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
 </mapper>

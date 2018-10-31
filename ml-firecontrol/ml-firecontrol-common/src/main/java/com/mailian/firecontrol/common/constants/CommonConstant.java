@@ -34,4 +34,7 @@ public class CommonConstant {
 
     /**图片存放路径 */
     public final static String UPLOAD_IMG_DIR = "images";
+
+    /* 默认用户密码 */
+    public final static String DEFAULT_PASSWORD = "123456";
 }

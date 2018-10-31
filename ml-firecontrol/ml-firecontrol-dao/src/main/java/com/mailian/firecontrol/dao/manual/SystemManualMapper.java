@@ -18,4 +18,6 @@ public interface SystemManualMapper {
     List<Role> selectRolesByUserId(Integer uid);
 
     int deleteUserRoleByMap(Map<String,Object> map);
+
+    int deleteUserPrecinct(Map<String,Object> map);
 }
