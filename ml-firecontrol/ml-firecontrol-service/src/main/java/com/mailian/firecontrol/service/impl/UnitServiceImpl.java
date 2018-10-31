@@ -13,6 +13,7 @@ import com.mailian.firecontrol.dao.auto.model.Area;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.UnitInfo;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.UnitService;
@@ -37,7 +38,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
 
     @Override
-    public PageBean<UnitListResp> getUnitList(DataScope dataScope, String unitName, Integer currentPage, Integer pageSize) {
+    public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
+        Integer currentPage = searchReq.getCurrentPage();
+        Integer pageSize = searchReq.getPageSize();
+        String unitName = searchReq.getUnitName();
         Page page = PageHelper.offsetPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
         Map<String,Object> queryMap = new HashMap<>();

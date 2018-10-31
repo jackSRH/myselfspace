@@ -9,6 +9,7 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.StructType;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.FacilitiesService;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -51,13 +51,11 @@ public class FacilitiesController extends BaseController {
     @Log(title = "配置管理",action = "获取设施列表")
     @ApiOperation(value = "获取设施列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getFacilitiesList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList( @ApiParam(value = "单位id") @RequestParam Integer unitId,
-                                         @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer pageNo,
-                                         @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize){
-        if(StringUtils.isEmpty(unitId)){
+    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(@RequestBody SearchReq searchReq){
+        if(StringUtils.isEmpty(searchReq.getUnitId())){
             return error("单位id不能为空");
         }
-        PageBean<FacilitiesListResp> res = facilitiesService.getFacilitiesList(unitId,pageNo,pageSize);
+        PageBean<FacilitiesListResp> res = facilitiesService.getFacilitiesList(searchReq);
         return ResponseResult.buildOkResult(res);
     }
 

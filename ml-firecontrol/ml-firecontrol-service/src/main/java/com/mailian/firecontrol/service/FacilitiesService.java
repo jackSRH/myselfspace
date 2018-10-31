@@ -4,18 +4,17 @@ import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.PageBean;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
 
 public interface FacilitiesService extends BaseService<Facilities> {
 
     /**
      * 查找设施列表
-     * @param unitId 单位id
-     * @param pageNo 页数
-     * @param pageSize 每页条数
+     * @param searchReq
      * @return
      */
-    PageBean<FacilitiesListResp> getFacilitiesList(Integer unitId, Integer pageNo, Integer pageSize);
+    PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq);
 
     /**
      * 查找设施列表

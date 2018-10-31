@@ -19,6 +19,7 @@ import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.DiagramStructService;
@@ -31,6 +32,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -101,15 +103,12 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位列表")
     @ApiOperation(value = "获取单位列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getUnitList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,
-                                                              @ApiParam(value = "单位名称") @RequestParam(required = false) String unitName,
-                                                              @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer currentPage,
-                                                              @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize){
+    public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,@RequestBody SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
         }
-        PageBean<UnitListResp> res = unitService.getUnitList(dataScope,unitName,currentPage,pageSize);
+        PageBean<UnitListResp> res = unitService.getUnitList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }
 
@@ -132,10 +131,10 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位遥控配置列表")
     @ApiOperation(value = "获取单位详情", httpMethod = "GET")
     @RequestMapping(value="/getYcStructsByUnitId/{unitId}",method = RequestMethod.GET)
-    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(@ApiParam(value = "单位id") @PathVariable("unitId") Integer unitId,
-                      @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer currentPage,
-                      @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize){
-
+    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(@RequestBody SearchReq searchReq){
+        Integer unitId = searchReq.getUnitId();
+        Integer currentPage = searchReq.getCurrentPage();
+        Integer pageSize = searchReq.getPageSize();
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }

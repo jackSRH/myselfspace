@@ -9,6 +9,7 @@ import com.mailian.firecontrol.dao.auto.mapper.FacilitiesMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
@@ -30,11 +31,13 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
 
 
     @Override
-    public PageBean<FacilitiesListResp> getFacilitiesList(Integer unitId, Integer pageNo, Integer pageSize){
+    public PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq){
+        Integer currentPage = searchReq.getCurrentPage();
+        Integer pageSize = searchReq.getPageSize();
         Map<String,Object> queryMap = new HashMap<>();
-        Page page = PageHelper.offsetPage(pageNo,pageSize);
+        Page page = PageHelper.offsetPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
-        queryMap.put("unitId",unitId);
+        queryMap.put("unitId",searchReq.getUnitId());
         List<Facilities> facilitiess =  super.selectByMap(queryMap);
         if(StringUtils.isEmpty(facilitiess)){
             return new PageBean<>();
@@ -57,7 +60,7 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
             BeanUtils.copyProperties(facilities,facilitiesListResp);
             facilitiesListResp.setUnitName(unitId2Name.get(facilities.getUnitId()));
         }
-        PageBean<FacilitiesListResp> pageBean = new PageBean<>(pageNo,pageSize,(int)page.getTotal(),facilitiesListResps);
+        PageBean<FacilitiesListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),facilitiesListResps);
         return pageBean;
     }
 
