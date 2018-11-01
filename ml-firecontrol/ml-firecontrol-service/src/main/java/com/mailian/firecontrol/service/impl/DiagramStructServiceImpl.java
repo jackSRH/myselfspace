@@ -58,8 +58,7 @@ public class DiagramStructServiceImpl extends BaseServiceImpl<DiagramStruct, Dia
                 diagramStruct.setUnitId(facilities.getUnitId());
                 diagramStruct.setPrecinctId(facilities.getPrecinctId());
                 diagramStruct.setFaSystemId(facilities.getFaSystemId());
-                //TODO StructAddress 放什么数据
-                // diagramStruct.setStructAddress(facilities.get);
+                diagramStruct.setStructAddress(diagramStructReq.getStructName());
             }
         }else{
             diagramStruct.setStructType(StructType.REMOTE.id);
@@ -113,14 +112,16 @@ public class DiagramStructServiceImpl extends BaseServiceImpl<DiagramStruct, Dia
 
             List<DiagramItemResp> diagramItemResps;
             DiagramItemResp diagramItemResp;
+            DeviceItem deviceItem;
             for(DiagramItem diagramItem : diagramItems){
                 diagramItemResps = dsId2DiagramItems.get(diagramItem.getDsId());
                 if(StringUtils.isNotNull(diagramItemResps)){
                     diagramItemResp = new DiagramItemResp();
                     diagramItemResp.setItemId(diagramItem.getItemId());
                     diagramItemResp.setDisplay(diagramItem.getDisplay());
-                    if(StringUtils.isNotEmpty(deviceItemMap) && StringUtils.isNotNull(deviceItemMap.get(diagramItem.getItemId()))){
-                        diagramItemResp.setItemName(deviceItemMap.get(diagramItem.getItemId()).getShortname());
+                    deviceItem = deviceItemMap.get(diagramItem.getItemId());
+                    if(StringUtils.isNotEmpty(deviceItemMap) && StringUtils.isNotNull(deviceItem)){
+                        diagramItemResp.setItemName(deviceItem.getShortname());
                     }
                     diagramItemResps.add(diagramItemResp);
                 }

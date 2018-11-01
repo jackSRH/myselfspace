@@ -51,7 +51,7 @@ public class FacilitiesController extends BaseController {
     @Log(title = "配置管理",action = "获取设施列表")
     @ApiOperation(value = "获取设施列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getFacilitiesList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(@RequestBody SearchReq searchReq){
+    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(SearchReq searchReq){
         if(StringUtils.isEmpty(searchReq.getUnitId())){
             return error("单位id不能为空");
         }

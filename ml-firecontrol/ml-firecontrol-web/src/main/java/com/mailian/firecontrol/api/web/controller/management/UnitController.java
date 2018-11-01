@@ -32,7 +32,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,15 +94,17 @@ public class UnitController extends BaseController {
         if(StringUtils.isNull(unit)){
             return error("该单位不存在");
         }
-        unit.setStatus(status);
-        boolean changeRes = unitService.updateByPrimaryKeySelective(unit) > 0;
+        Unit updateUnit = new Unit();
+        updateUnit.setId(unitId);
+        updateUnit.setStatus(status);
+        boolean changeRes = unitService.updateByPrimaryKeySelective(updateUnit) > 0;
         return changeRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
     @Log(title = "配置管理",action = "获取单位列表")
     @ApiOperation(value = "获取单位列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getUnitList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,@RequestBody SearchReq searchReq){
+    public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
@@ -131,7 +132,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位遥控配置列表")
     @ApiOperation(value = "获取单位详情", httpMethod = "GET")
     @RequestMapping(value="/getYcStructsByUnitId/{unitId}",method = RequestMethod.GET)
-    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(@RequestBody SearchReq searchReq){
+    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(SearchReq searchReq){
         Integer unitId = searchReq.getUnitId();
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();

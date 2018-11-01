@@ -68,9 +68,18 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         //查找地址信息
         Set<Integer> areaIds = new HashSet<>();
         for(Unit unit:units){
-            areaIds.add(unit.getAreaId());
-            areaIds.add(unit.getProvinceId());
-            areaIds.add(unit.getCityId());
+            Integer areaId = unit.getAreaId();
+            Integer provinceId = unit.getProvinceId();
+            Integer cityId = unit.getCityId();
+            if(StringUtils.isNotEmpty(areaId)){
+                areaIds.add(areaId);
+            }
+            if(StringUtils.isNotEmpty(provinceId)){
+                areaIds.add(provinceId);
+            }
+            if(StringUtils.isNotEmpty(cityId)){
+                areaIds.add(cityId);
+            }
         }
         List<Area> areas = areaService.selectBatchIds(areaIds);
         Map<Integer,String> areaId2Name = new HashMap<>();
@@ -80,11 +89,27 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         List<UnitListResp> unitListResps = new ArrayList<>();
         UnitListResp unitListResp;
+        String areaInfo;
+        Integer areaId = 0 ,provinceId = 0,cityId = 0 ;
         for(Unit unit:units){
             unitListResp = new UnitListResp();
             BeanUtils.copyProperties(unit,unitListResp);
             unitListResp.setPrecinct(precinetId2Name.get(unit.getPrecinctId()));
-            unitListResp.setAreaInfo(areaId2Name.get(unit.getProvinceId()) + areaId2Name.get(unit.getCityId()) + areaId2Name.get(unit.getAreaId()));
+
+            areaId = unit.getAreaId();
+            provinceId = unit.getProvinceId();
+            cityId = unit.getCityId();
+            areaInfo = "";
+            if(StringUtils.isNotEmpty(provinceId)){
+                areaInfo += areaId2Name.get(provinceId);
+            }
+            if(StringUtils.isNotEmpty(cityId)){
+                areaInfo += areaId2Name.get(cityId);
+            }
+            if(StringUtils.isNotEmpty(areaId)){
+                areaInfo += areaId2Name.get(areaId);
+            }
+            unitListResp.setAreaInfo(areaInfo);
             unitListResps.add(unitListResp);
         }
 
