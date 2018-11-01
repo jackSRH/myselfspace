@@ -53,7 +53,7 @@ public class MqttTopicUtil {
             adapter.addTopic(defaultTopic);
         }
 
-        if(!adapter.isRunning() && StringUtils.isNotEmpty(adapter.getTopic())){
+        if(!adapter.isRunning() && StringUtils.isNotEmpty(existsTopic)){
             adapter.start();
         }
     }
@@ -80,15 +80,19 @@ public class MqttTopicUtil {
 
         List<String> topicList = PushMessageTopic.getTopicsByDeviceId(deviceId);
         MqttPahoMessageDrivenChannelAdapter adapter = (MqttPahoMessageDrivenChannelAdapter) SpringContext.getBean("mqttInbound");
+        List<String> existsTopic = Arrays.asList(adapter.getTopic());
 
         String defaultTopic = String.format(String.format(PushMessageTopic.GWSTATE.topic,deviceId));
         for (String topic : topicList) {
+            if(!existsTopic.contains(topic)){
+                continue;
+            }
             if(removeAll || !defaultTopic.equals(topic)){
                 adapter.removeTopic(topic);
             }
         }
 
-        if(adapter.isRunning() && StringUtils.isEmpty(adapter.getTopic())){
+        if(adapter.isRunning() && StringUtils.isEmpty(existsTopic)){
             adapter.stop();
         }
     }
