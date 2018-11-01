@@ -6,7 +6,10 @@ import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
+
+import java.util.List;
 
 public interface UnitService extends BaseService<Unit> {
 
@@ -25,4 +28,9 @@ public interface UnitService extends BaseService<Unit> {
      */
     Boolean insertOrUpdate(UnitInfo unitInfo);
 
+    /**
+     * 获取未分配的设备列表
+     * @return
+     */
+    List<DeviceResp> getUnallotDevice();
 }

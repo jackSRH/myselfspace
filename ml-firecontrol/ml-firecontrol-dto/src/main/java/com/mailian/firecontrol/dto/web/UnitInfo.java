@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
+import java.util.List;
 
 @ApiModel(description = "单位信息参数")
 public class UnitInfo {
@@ -43,6 +44,9 @@ public class UnitInfo {
     private Integer provinceId;
     @ApiModelProperty(value = "城市id")
     private Integer cityId;
+    @ApiModelProperty(value = "网关id")
+    private List<String> deviceIds;
+
 
     public Integer getProvinceId() {
         return provinceId;
@@ -186,5 +190,13 @@ public class UnitInfo {
 
     public void setTransactor(String transactor) {
         this.transactor = transactor;
+    }
+
+    public List<String> getDeviceIds() {
+        return deviceIds;
+    }
+
+    public void setDeviceIds(List<String> deviceIds) {
+        this.deviceIds = deviceIds;
     }
 }

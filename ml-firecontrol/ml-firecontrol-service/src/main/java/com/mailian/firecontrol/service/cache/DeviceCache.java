@@ -32,13 +32,14 @@ public class DeviceCache {
      * 新增网关
      * @param devices
      */
-    public void addDevices(List<Device> devices) {
+    public Map<String,Device> addDevices(List<Device> devices) {
         Map<String,Device> codeDeviceMap = new HashMap<>();
         for (Device device : devices) {
             codeDeviceMap.put(device.getCode(),device);
         }
 
         redisUtils.addAllHashValue(CommonConstant.DEVICE_CODE_TO_DEVICE,codeDeviceMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+        return codeDeviceMap;
     }
 
     /**

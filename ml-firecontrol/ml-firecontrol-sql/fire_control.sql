@@ -583,7 +583,8 @@ create table `t_facilities_alarm` (
   `update_time` 		datetime 		DEFAULT NULL 				COMMENT '更新时间',
   `create_by` 			varchar(32) 	DEFAULT NULL 				COMMENT '创建者',
   `update_by` 			varchar(32) 	DEFAULT NULL 				COMMENT '更新者',
-  primary key (`id`)
+  primary key (`id`),
+  unique key (alarm_id)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '警情表';
 
 

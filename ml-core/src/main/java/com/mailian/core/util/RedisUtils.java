@@ -175,7 +175,7 @@ public class RedisUtils {
      * @param key       key
      * @param hashKey   hashKey
      */
-    public long deleteHashValue(String key, String hashKey) {
+    public long deleteHashValue(String key, String... hashKey) {
         return hashOperations.delete(key, hashKey);
     }
 

@@ -12,30 +12,43 @@ import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dao.auto.model.UnitDevice;
+import com.mailian.firecontrol.dao.manual.UnitManualMapper;
+import com.mailian.firecontrol.dto.push.Device;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.AreaService;
+import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.cache.DeviceCache;
+import com.mailian.firecontrol.service.cache.UnitDeviceCache;
+import com.mailian.firecontrol.service.repository.DeviceRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implements UnitService {
     @Resource
     private PrecinctMapper precinctMapper;
-    @Resource
+    @Autowired
     private AreaService areaService;
-
-
+    @Autowired
+    private DeviceRepository deviceRepository;
+    @Autowired
+    private DeviceCache deviceCache;
+    @Resource
+    private UnitManualMapper unitManualMapper;
+    @Autowired
+    private UnitDeviceService unitDeviceService;
+    @Autowired
+    private UnitDeviceCache unitDeviceCache;
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
@@ -117,16 +130,111 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         return pageBean;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean insertOrUpdate(UnitInfo unitInfo){
         Unit unit = new Unit();
         BeanUtils.copyProperties(unitInfo,unit);
+
+        List<String> deviceIds = unitInfo.getDeviceIds();
         if(StringUtils.isEmpty(unit.getId())){
-            unit.setStatus(Status.NORMAL.id.intValue());
-            return super.insert(unit) > 0;
+            unit.setStatus(Status.NORMAL.id);
+
+            int result = super.insert(unit);
+            if(result>0) {
+                Integer unitId = unit.getId();
+                addUnitDevices(unitId,deviceIds);
+            }
+            return result > 0;
         }else {
+            updateUnitDevice(unitInfo,unitInfo.getId());
+
             return super.updateByPrimaryKeySelective(unit) > 0;
         }
+    }
+
+
+    /**
+     * 更新单位网关关系
+     * @param unitInfo
+     * @param unitId
+     */
+    private void updateUnitDevice(UnitInfo unitInfo, Integer unitId) {
+        List<String> deviceIds = unitInfo.getDeviceIds();
+        if(StringUtils.isEmpty(deviceIds)){
+            unitManualMapper.deleteDeviceByUnitId(unitId);
+        }else{
+            Map<String,Object> map = new HashMap<>();
+            map.put("unitId",unitId);
+            List<UnitDevice> unitDeviceList = unitDeviceService.selectByMap(map);
+
+            String oldDeviceId;
+            List<Integer> delUnitDeviceIds = new ArrayList<>();
+            List<String> removeDeviceIds = new ArrayList<>();
+            for (UnitDevice unitDevice : unitDeviceList) {
+                oldDeviceId = unitDevice.getDeviceId();
+                boolean result = deviceIds.remove(oldDeviceId);
+                if(!result){
+                    delUnitDeviceIds.add(unitDevice.getId());
+                    removeDeviceIds.add(unitDevice.getDeviceId());
+                }
+            }
+            if(StringUtils.isNotEmpty(delUnitDeviceIds)){
+                unitDeviceService.deleteBatchIds(delUnitDeviceIds);
+                unitDeviceCache.removeUnitDevice(removeDeviceIds.toArray(new String[]{}));
+            }
+            addUnitDevices(unitId,deviceIds);
+        }
+
+    }
+
+    /**
+     * 添加用户管辖区关联
+     * @param unitId
+     * @param deviceIds
+     */
+    private void addUnitDevices(Integer unitId, List<String> deviceIds) {
+        if(StringUtils.isEmpty(deviceIds)){
+            return;
+        }
+        UnitDevice unitDevice;
+        List<UnitDevice> unitDeviceList = new ArrayList<>();
+        for (String deviceId : deviceIds) {
+            unitDevice = new UnitDevice();
+            unitDevice.setUnitId(unitId);
+            unitDevice.setDeviceId(deviceId);
+            unitDeviceList.add(unitDevice);
+        }
+        unitDeviceService.insertBatch(unitDeviceList);
+        unitDeviceCache.addOrUpdateUnitDevice(unitDeviceList);
+    }
+
+
+    @Override
+    public List<DeviceResp> getUnallotDevice() {
+        List<DeviceResp> deviceRespList = new ArrayList<>();
+        List<Device> devices = deviceRepository.getDevicesByCodes(null);
+        if(StringUtils.isEmpty(devices)){
+            return deviceRespList;
+        }
+
+        Map<String,Device> deviceMap = deviceCache.addDevices(devices);
+        List<String> deviceIds = unitManualMapper.selectDevices();
+        if(StringUtils.isNotNull(deviceIds)) {
+            for (String deviceId : deviceIds) {
+                deviceMap.remove(deviceId);
+            }
+        }
+
+        if(StringUtils.isNotEmpty(deviceMap)){
+            DeviceResp deviceResp;
+            for (Map.Entry<String, Device> deviceEntry : deviceMap.entrySet()) {
+                deviceResp = new DeviceResp();
+                BeanUtils.copyProperties(deviceEntry.getValue(),deviceResp);
+                deviceRespList.add(deviceResp);
+            }
+        }
+        return deviceRespList;
     }
 
 }

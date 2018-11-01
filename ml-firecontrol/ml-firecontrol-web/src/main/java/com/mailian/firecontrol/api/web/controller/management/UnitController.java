@@ -20,22 +20,15 @@ import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.component.UploadComponent;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -184,5 +177,10 @@ public class UnitController extends BaseController {
         return updateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
-
+    @Log(title = "配置管理",action = "获取未分配网关")
+    @ApiOperation(value = "获取未分配网关", httpMethod = "GET")
+    @GetMapping(value = "getUnallotDevice")
+    public ResponseResult<List<DeviceResp>> getUnallotDevice(){
+        return ResponseResult.buildOkResult(unitService.getUnallotDevice());
+    }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.manual.UnitManualMapper">
+
+    <resultMap id="UnitDeviceResultMap" type="com.mailian.firecontrol.dto.UnitRedisInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+        <result column="unit_name" jdbcType="VARCHAR" property="unitName" />
+    </resultMap>
+
+    <delete id="deleteDeviceByUnitId">
+        delete from t_unit_device where unit_id = #{unitId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectUnitDeviceByDeviceIds" resultMap="UnitDeviceResultMap">
+        select u.id,ud.device_id,u.unit_name from t_unit_device ud,t_unit u
+        where ud.unit_id = u.id
+        and device_id in
+        <foreach close=")" collection="deviceIds" index="i" item="item" open="(" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+    <select id="selectDevices" resultType="java.lang.String">
+        select distinct(device_id) from t_unit_device
+    </select>
+</mapper>
