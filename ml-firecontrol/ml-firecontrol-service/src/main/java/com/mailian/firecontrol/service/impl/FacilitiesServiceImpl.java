@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.FacilitiesServiceStatus;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.Unit;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +61,10 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
             facilitiesListResp = new FacilitiesListResp();
             BeanUtils.copyProperties(facilities,facilitiesListResp);
             facilitiesListResp.setUnitName(unitId2Name.get(facilities.getUnitId()));
+            facilitiesListResp.setServiceStatusDesc(FacilitiesServiceStatus.getValue(facilities.getServiceStatus()));
+            //TODO 通过设施型号id获取型号描述
+            //facilitiesListResp.setFaTypeDesc("");
+            facilitiesListResps.add(facilitiesListResp);
         }
         PageBean<FacilitiesListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),facilitiesListResps);
         return pageBean;
@@ -68,9 +74,19 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
     public Boolean insertOrUpdate(FacilitiesInfo facilitiesInfo){
         Facilities facilities = new Facilities();
         BeanUtils.copyProperties(facilitiesInfo,facilities);
+        Integer unitId = facilitiesInfo.getUnitId();
+        if(StringUtils.isNotEmpty(unitId)){
+            Unit unit = unitService.selectByPrimaryKey(unitId);
+            if(StringUtils.isNotNull(unit)){
+                facilities.setPrecinctId(unit.getPrecinctId());
+            }
+        }
         if(StringUtils.isEmpty(facilities.getId())){
             return super.insert(facilities) > 0;
         }else{
+            if(StringUtils.isNotNull(facilities.getServiceStatus())){
+                facilities.setUpstatusTime(new Date());
+            }
             return super.updateByPrimaryKeySelective(facilities) > 0;
         }
     }

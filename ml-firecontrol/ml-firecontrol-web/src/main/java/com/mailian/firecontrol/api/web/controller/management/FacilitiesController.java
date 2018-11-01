@@ -72,6 +72,9 @@ public class FacilitiesController extends BaseController {
         }
         FacilitiesInfo facilitiesInfo = new FacilitiesInfo();
         BeanUtils.copyProperties(facilities,facilitiesInfo);
+        //TODO 通过设施型号id获取型号描述
+        //facilitiesInfo.setFaTypeDesc("");
+
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("facilities_id",faId);
         queryMap.put("structType",StructType.FACILITY.id);

@@ -15,7 +15,7 @@ public class FacilitiesInfo {
     private Integer unitId;
     @ApiModelProperty(value = "设施名称")
     private String faName;
-    @ApiModelProperty(value = "设施系统类型")
+    @ApiModelProperty(value = "设施系统类型 1:火灾自动报警系统 2:智慧用电检测系统")
     private Integer faSystemId;
     @ApiModelProperty(value = "设施型号")
     private Integer faTypeId;
@@ -35,10 +35,12 @@ public class FacilitiesInfo {
     private String cameraName;
     @ApiModelProperty(value = "摄像头拍摄位置")
     private String cameraAddress;
-    @ApiModelProperty(value = "状态")
-    private Integer status;
     @ApiModelProperty(value = "监控设施")
     private List<DiagramStructResp> diagramStructs;
+    @ApiModelProperty(value = "服务状态 0:有效,1:无效")
+    private Integer serviceStatus;
+    @ApiModelProperty(value = "设施型号描述")
+    private String faTypeDesc;
 
     public Integer getId() {
         return id;
@@ -144,19 +146,27 @@ public class FacilitiesInfo {
         this.cameraAddress = cameraAddress;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public List<DiagramStructResp> getDiagramStructs() {
         return diagramStructs;
     }
 
     public void setDiagramStructs(List<DiagramStructResp> diagramStructs) {
         this.diagramStructs = diagramStructs;
+    }
+
+    public Integer getServiceStatus() {
+        return serviceStatus;
+    }
+
+    public void setServiceStatus(Integer serviceStatus) {
+        this.serviceStatus = serviceStatus;
+    }
+
+    public String getFaTypeDesc() {
+        return faTypeDesc;
+    }
+
+    public void setFaTypeDesc(String faTypeDesc) {
+        this.faTypeDesc = faTypeDesc;
     }
 }

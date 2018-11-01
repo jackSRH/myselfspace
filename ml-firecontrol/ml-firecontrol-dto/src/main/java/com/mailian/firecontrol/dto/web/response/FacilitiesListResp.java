@@ -9,12 +9,16 @@ public class FacilitiesListResp {
     private Integer id;
     @ApiModelProperty(value = "设施型号")
     private Integer faTypeId;
+    @ApiModelProperty(value = "设施型号描述")
+    private String faTypeDesc;
     @ApiModelProperty(value = "所属单位名称")
     private String unitName;
     @ApiModelProperty(value = "设施数量")
     private Integer faNumber;
-    @ApiModelProperty(value = "状态")
-    private Integer status;
+    @ApiModelProperty(value = "服务状态 0:有效,1:无效")
+    private Integer serviceStatus;
+    @ApiModelProperty(value = "服务状态描述")
+    private String serviceStatusDesc;
 
     public Integer getId() {
         return id;
@@ -48,11 +52,27 @@ public class FacilitiesListResp {
         this.faNumber = faNumber;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getServiceStatus() {
+        return serviceStatus;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setServiceStatus(Integer serviceStatus) {
+        this.serviceStatus = serviceStatus;
+    }
+
+    public String getServiceStatusDesc() {
+        return serviceStatusDesc;
+    }
+
+    public void setServiceStatusDesc(String serviceStatusDesc) {
+        this.serviceStatusDesc = serviceStatusDesc;
+    }
+
+    public String getFaTypeDesc() {
+        return faTypeDesc;
+    }
+
+    public void setFaTypeDesc(String faTypeDesc) {
+        this.faTypeDesc = faTypeDesc;
     }
 }

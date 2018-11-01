@@ -3,6 +3,7 @@ package com.mailian.firecontrol.dto.web;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +47,26 @@ public class UnitInfo {
     private Integer cityId;
     @ApiModelProperty(value = "网关id")
     private List<String> deviceIds;
+    @ApiModelProperty(value = "经度")
+    private BigDecimal lng;
+    @ApiModelProperty(value = "纬度")
+    private BigDecimal lat;
 
+    public BigDecimal getLng() {
+        return lng;
+    }
+
+    public void setLng(BigDecimal lng) {
+        this.lng = lng;
+    }
+
+    public BigDecimal getLat() {
+        return lat;
+    }
+
+    public void setLat(BigDecimal lat) {
+        this.lat = lat;
+    }
 
     public Integer getProvinceId() {
         return provinceId;
