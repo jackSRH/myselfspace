@@ -3,6 +3,7 @@ package com.mailian.firecontrol.framework.handler;
 import com.alibaba.fastjson.TypeReference;
 import com.mailian.core.adapter.MqttMessageHandlerAdapter;
 import com.mailian.core.bean.SpringContext;
+import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.JsonUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.PushMessageTopic;
@@ -11,7 +12,6 @@ import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -35,10 +35,9 @@ public class SignalMessageHandler implements MqttMessageHandlerAdapter {
             List<DeviceItemRealTimeData> deviceItemRealTimeDataList = JsonUtils.getObjectFromJsonString(message,new TypeReference<List<DeviceItemRealTimeData>>(){});
 
             if(StringUtils.isNotEmpty(deviceItemRealTimeDataList)){
-                DecimalFormat fnum = new DecimalFormat("##0.00");
                 DeviceItemRepository deviceItemRepository = (DeviceItemRepository) SpringContext.getBean("deviceItemRepository");
                 for (DeviceItemRealTimeData deviceItemRealTimeData : deviceItemRealTimeDataList) {
-                    deviceItemRealTimeData.setVal(Float.parseFloat(fnum.format(deviceItemRealTimeData.getVal())));
+                    deviceItemRealTimeData.setVal(BigDecimalUtil.keepTwoDecimals(deviceItemRealTimeData.getVal(),2));
                 }
                 deviceItemRepository.updateRealTime(deviceItemRealTimeDataList);
             }
