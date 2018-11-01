@@ -134,12 +134,13 @@ public abstract class BaseServiceImpl<T extends BaseDomain,M extends BaseMapper<
             M baseMapper = batchSqlSession.getMapper(this.currentModelClass());
             for (int i=1; i<=totalPage;i++) {
                 List<T> addList = PageUtil.pagedList(i,CoreCommonConstant.BATCH_MAX_SIZE,objs);
-                result = result + baseMapper.insertBatch(addList);
+                baseMapper.insertBatch(addList);
                 //提交事务
                 batchSqlSession.commit();
                 //清理缓存，防止溢出
                 batchSqlSession.clearCache();
             }
+            result = 1;
         }catch(Exception e) {
             //回滚没有提交的数据
             batchSqlSession.rollback();

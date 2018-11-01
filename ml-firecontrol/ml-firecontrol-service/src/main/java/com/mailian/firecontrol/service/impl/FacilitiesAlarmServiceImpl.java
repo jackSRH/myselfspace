@@ -68,7 +68,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         queryMap.put("unitIds",unitIds);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("alarm_time desc");
         List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         if(StringUtils.isEmpty(facilitiesAlarms)){
@@ -114,7 +114,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         queryMap.put("misreport", FaMisreportType.EFFECTIVE.id);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("alarm_time desc");
         List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         if(StringUtils.isEmpty(facilitiesAlarms)){

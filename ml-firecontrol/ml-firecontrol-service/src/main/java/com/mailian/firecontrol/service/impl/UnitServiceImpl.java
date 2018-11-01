@@ -7,6 +7,8 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.Status;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
+import com.mailian.firecontrol.common.enums.UnitType;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
@@ -55,7 +57,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         String unitName = searchReq.getUnitName();
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
@@ -123,6 +125,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                 areaInfo.append(areaId2Name.get(areaId));
             }
             unitListResp.setAreaInfo(areaInfo.toString());
+            unitListResp.setUnitTypeDesc(UnitType.getValue(unit.getUnitType()));
+            unitListResp.setSuperviseLevelDesc(UnitSuperviseLevel.getValue(unit.getSuperviseLevel()));
             unitListResps.add(unitListResp);
         }
 

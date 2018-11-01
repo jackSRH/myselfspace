@@ -63,7 +63,7 @@ public class UnitPatrolServiceImpl extends BaseServiceImpl<UnitPatrol, UnitPatro
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Integer patrolStatus = searchReq.getPatrolStatus();
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);

@@ -11,7 +11,7 @@ public class DiagramItemReq {
     private String itemId;
     @ApiModelProperty(value = "是否显示")
     private Integer display = 1;
-    @ApiModelProperty(value = "数据项类型")
+    @ApiModelProperty(value = "数据项类型 遥控数据传3，其余不用传或者传2")
     private Integer itemType = 2;
     @ApiModelProperty(value = "数据项类型")
     private Integer status = 0;

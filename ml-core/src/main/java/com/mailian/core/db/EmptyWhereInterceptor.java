@@ -45,6 +45,7 @@ public class EmptyWhereInterceptor implements Interceptor {
         if(INTERCEPTOR_COMMAND.contains(mappedStatement.getSqlCommandType())){
             BoundSql boundSql = (BoundSql)metaStatementHandler.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
+            originalSql = originalSql.toLowerCase();
             if(!originalSql.contains(" where ")){
                 log.error("");
                 throw new PersistenceException("不允许删除或修改全表数据!");

@@ -20,13 +20,13 @@ public class UnitInfo {
     private String address;
     @ApiModelProperty(value = "经营范围")
     private String businessScope;
-    @ApiModelProperty(value = "单位类型")
+    @ApiModelProperty(value = "单位类型 1:餐饮、2:购物、3:住宿、4:公共娱乐、5:医疗、6:教学、7:休闲健身、8:生产加工、9:易燃易爆危险品")
     private Integer unitType;
-    @ApiModelProperty(value = "监管等级")
+    @ApiModelProperty(value = "监管等级 1:一级、2:二级、3:三级")
     private Integer superviseLevel;
     @ApiModelProperty(value = "经营人")
     private String transactor;
-    @ApiModelProperty(value = "经济所有制")
+    @ApiModelProperty(value = "经济所有制 1:私营经济、2:个体经济、3:外资经济、4:混合经济、5:国有经济、6:集体经济、7:混合所有制经济")
     private Integer economySystem;
     @ApiModelProperty(value = "身份证号码")
     private String idCard;

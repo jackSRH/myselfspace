@@ -72,14 +72,14 @@ public class UnitController extends BaseController {
     @ApiOperation(value = "修改单位状态", httpMethod = "POST")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "unitId", value = "单位id", required = true, paramType = "query", dataType = "Integer"),
-            @ApiImplicitParam(name = "status", value = "状态", required = true, paramType = "query", dataType = "Integer")
+            @ApiImplicitParam(name = "status", value = "状态 0正常 1停用", required = true, paramType = "query", dataType = "Integer")
     })
     @RequestMapping(value="/changeUnitStatus",method = RequestMethod.POST)
     public ResponseResult changeUnitStatus(Integer unitId,Integer status){
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
-        if(StringUtils.isEmpty(status)){
+        if(StringUtils.isNull(status)){
             return error("状态不能为空");
         }
 
@@ -123,16 +123,16 @@ public class UnitController extends BaseController {
     }
 
     @Log(title = "配置管理",action = "获取单位遥控配置列表")
-    @ApiOperation(value = "获取单位详情", httpMethod = "GET")
-    @RequestMapping(value="/getYcStructsByUnitId/{unitId}",method = RequestMethod.GET)
-    public ResponseResult<PageBean<DiagramStructResp>> getYcItemsByUnitId(SearchReq searchReq){
+    @ApiOperation(value = "获取单位遥控配置列表", httpMethod = "GET")
+    @RequestMapping(value="/getYcStructs",method = RequestMethod.GET)
+    public ResponseResult<PageBean<DiagramStructResp>> getYcStructs(SearchReq searchReq){
         Integer unitId = searchReq.getUnitId();
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("unitId",unitId);
         queryMap.put("structType", StructType.REMOTE.id);
@@ -155,7 +155,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "新增单位遥控配置")
     @ApiOperation(value = "新增单位遥控配置", httpMethod = "POST")
     @RequestMapping(value="/insertYcStruct",method = RequestMethod.POST)
-    public ResponseResult insertYcStruct(DiagramStructReq diagramStructReq){
+    public ResponseResult insertYcStruct(@RequestBody DiagramStructReq diagramStructReq){
         if(StringUtils.isNull(diagramStructReq)){
             return error("参数不能空");
         }
@@ -166,7 +166,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "更新单位遥控配置")
     @ApiOperation(value = "更新单位遥控配置", httpMethod = "POST")
     @RequestMapping(value="/updateYcStruct",method = RequestMethod.POST)
-    public ResponseResult updateYcStruct(DiagramStructReq diagramStructReq){
+    public ResponseResult updateYcStruct(@RequestBody DiagramStructReq diagramStructReq){
         if(StringUtils.isNull(diagramStructReq)){
             return error("参数不能空");
         }

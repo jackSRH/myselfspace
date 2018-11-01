@@ -35,7 +35,7 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Map<String,Object> queryMap = new HashMap<>();
-        Page page = PageHelper.offsetPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
         queryMap.put("unitId",searchReq.getUnitId());
         List<Facilities> facilitiess =  super.selectByMap(queryMap);

@@ -11,22 +11,16 @@ public class UnitListResp {
     private String unitName;
     @ApiModelProperty(value = "单位类型")
     private Integer unitType;
+    @ApiModelProperty(value = "单位类型描述")
+    private String unitTypeDesc;
     @ApiModelProperty(value = "所属区域")
     private String areaInfo;
     @ApiModelProperty(value = "管辖区")
     private String precinct;
     @ApiModelProperty(value = "监管等级")
     private Integer superviseLevel;
-    @ApiModelProperty(value = "单位状态")
-    private Integer status;
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
+    @ApiModelProperty(value = "监管等级描述")
+    private String superviseLevelDesc;
 
     public Integer getId() {
         return id;
@@ -52,6 +46,14 @@ public class UnitListResp {
         this.precinct = precinct;
     }
 
+    public String getAreaInfo() {
+        return areaInfo;
+    }
+
+    public void setAreaInfo(String areaInfo) {
+        this.areaInfo = areaInfo;
+    }
+
     public Integer getUnitType() {
         return unitType;
     }
@@ -68,11 +70,19 @@ public class UnitListResp {
         this.superviseLevel = superviseLevel;
     }
 
-    public String getAreaInfo() {
-        return areaInfo;
+    public String getUnitTypeDesc() {
+        return unitTypeDesc;
     }
 
-    public void setAreaInfo(String areaInfo) {
-        this.areaInfo = areaInfo;
+    public void setUnitTypeDesc(String unitTypeDesc) {
+        this.unitTypeDesc = unitTypeDesc;
+    }
+
+    public String getSuperviseLevelDesc() {
+        return superviseLevelDesc;
+    }
+
+    public void setSuperviseLevelDesc(String superviseLevelDesc) {
+        this.superviseLevelDesc = superviseLevelDesc;
     }
 }
