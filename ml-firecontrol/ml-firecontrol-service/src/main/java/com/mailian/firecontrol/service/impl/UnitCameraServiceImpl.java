@@ -12,6 +12,7 @@ import com.mailian.firecontrol.dto.web.response.CameraListResp;
 import com.mailian.firecontrol.service.UnitCameraService;
 import com.mailian.firecontrol.service.UnitService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Service
 public class UnitCameraServiceImpl extends BaseServiceImpl<UnitCamera, UnitCameraMapper> implements UnitCameraService {
 
     @Resource
