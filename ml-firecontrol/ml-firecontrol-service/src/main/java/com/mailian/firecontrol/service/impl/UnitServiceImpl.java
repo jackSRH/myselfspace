@@ -89,7 +89,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         List<UnitListResp> unitListResps = new ArrayList<>();
         UnitListResp unitListResp;
-        String areaInfo;
+        StringBuffer areaInfo = new StringBuffer();
         Integer areaId = 0 ,provinceId = 0,cityId = 0 ;
         for(Unit unit:units){
             unitListResp = new UnitListResp();
@@ -99,17 +99,17 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             areaId = unit.getAreaId();
             provinceId = unit.getProvinceId();
             cityId = unit.getCityId();
-            areaInfo = "";
-            if(StringUtils.isNotEmpty(provinceId)){
-                areaInfo += areaId2Name.get(provinceId);
+            areaInfo.setLength(0);
+            if(StringUtils.isNotEmpty(provinceId) && areaId2Name.containsKey(provinceId)){
+                areaInfo.append(areaId2Name.get(provinceId));
             }
-            if(StringUtils.isNotEmpty(cityId)){
-                areaInfo += areaId2Name.get(cityId);
+            if(StringUtils.isNotEmpty(cityId) && areaId2Name.containsKey(cityId)){
+                areaInfo.append(areaId2Name.get(cityId));
             }
-            if(StringUtils.isNotEmpty(areaId)){
-                areaInfo += areaId2Name.get(areaId);
+            if(StringUtils.isNotEmpty(areaId) && areaId2Name.containsKey(areaId)){
+                areaInfo.append(areaId2Name.get(areaId));
             }
-            unitListResp.setAreaInfo(areaInfo);
+            unitListResp.setAreaInfo(areaInfo.toString());
             unitListResps.add(unitListResp);
         }
 
