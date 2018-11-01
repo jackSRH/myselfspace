@@ -47,7 +47,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
         if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitName",unitName);
+            queryMap.put("unitNameLike",unitName);
         }
         List<Unit> units = super.selectByMap(queryMap);
         if(StringUtils.isEmpty(units)){

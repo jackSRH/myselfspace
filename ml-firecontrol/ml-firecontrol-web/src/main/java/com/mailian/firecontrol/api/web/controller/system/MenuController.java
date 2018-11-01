@@ -38,9 +38,9 @@ public class MenuController extends BaseController {
     private MenuService menuService;
 
     @Log(title = "系统",action = "获取菜单列表")
-    @ApiOperation(value = "获取菜单列表", httpMethod = "POST",notes = "所有数据，展示层级")
+    @ApiOperation(value = "获取菜单列表", httpMethod = "GET",notes = "所有数据，展示层级")
     @ApiImplicitParam(name = "menuReq", value = "菜单查询参数", required = false, dataType = "MenuReq")
-    @RequestMapping(value="/getList",method = RequestMethod.POST)
+    @RequestMapping(value="/getList",method = RequestMethod.GET)
     @JsonView(value = ViewManager.WebSimpleView.class)
     public ResponseResult<List<MenuResp>> getList(MenuReq menuReq){
         return ResponseResult.buildOkResult(menuService.queryListByMenu(menuReq));

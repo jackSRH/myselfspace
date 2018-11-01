@@ -40,9 +40,9 @@ public class RoleController extends BaseController {
     private RoleService roleService;
 
     @Log(title = "系统",action = "获取角色列表")
-    @ApiOperation(value = "获取角色列表", httpMethod = "POST",notes = "支持分页,含禁用数据")
+    @ApiOperation(value = "获取角色列表", httpMethod = "GET",notes = "支持分页,含禁用数据")
     @ApiImplicitParam(name = "roleReq", value = "角色查询参数", required = false, dataType = "RoleReq")
-    @RequestMapping(value="/getList",method = RequestMethod.POST)
+    @RequestMapping(value="/getList",method = RequestMethod.GET)
     public ResponseResult<PageBean<RoleResp>> getList(RoleReq roleReq){
         return ResponseResult.buildOkResult(roleService.queryListByRole(roleReq));
     }

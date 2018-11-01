@@ -320,7 +320,10 @@
     from t_unit
     <where>
       <if test="unitName != null">
-         and unit_name like concat('%',#{unitName,jdbcType=VARCHAR},'%') 
+         and unit_name = #{unitName,jdbcType=VARCHAR}
+      </if>
+      <if test="unitNameLike != null">
+         and unit_name like concat('%',#{unitNameLike,jdbcType=VARCHAR},'%') 
       </if>
       <if test="areaId != null">
          and area_id = #{areaId,jdbcType=INTEGER}

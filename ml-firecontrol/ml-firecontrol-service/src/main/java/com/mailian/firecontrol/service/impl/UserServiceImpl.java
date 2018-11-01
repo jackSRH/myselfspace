@@ -71,7 +71,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
             queryMap.put("userName",userQueryReq.getUserName());
         }
         if(StringUtils.isNotEmpty(userQueryReq.getFullName())) {
-            queryMap.put("fullName",userQueryReq.getFullName());
+            queryMap.put("fullNameLike",userQueryReq.getFullName());
         }
         if(StringUtils.isNotEmpty(userQueryReq.getPhone())){
             queryMap.put("phone",userQueryReq.getPhone());

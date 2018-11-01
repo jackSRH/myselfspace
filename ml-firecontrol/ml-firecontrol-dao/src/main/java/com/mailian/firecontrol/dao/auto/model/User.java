@@ -2,7 +2,7 @@
 *
 * User.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-31
+* @date 2018-11-01
 */
 package com.mailian.firecontrol.dao.auto.model;
 

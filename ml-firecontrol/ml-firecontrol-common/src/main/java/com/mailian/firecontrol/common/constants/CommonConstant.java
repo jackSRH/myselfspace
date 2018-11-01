@@ -14,6 +14,8 @@ public class CommonConstant {
     public static final String SYS_CONFIG_KEY = "mlfirecontrol:sysconfigs";
     public static final String SYS_MENU_KEY = "mlfirecontrol:sysmenus";
     public static final String SYS_ROLE_KEY = "mlfirecontrol:sysroles";
+    public static final String SYS_AREA_KEY = "mlfirecontrol:sysareas";
+    public static final String SYS_DICT_DATA_KEY = "mlfirecontrol:dicttypedatas";
 
     public static final String DEVICE_CODE_TO_DEVICE="mlfirecontrol:codeToDevice";
     public static final String DEVICE_CODE_COMMUMICATION_STATUS="mlfirecontrol:deviceStatus";
