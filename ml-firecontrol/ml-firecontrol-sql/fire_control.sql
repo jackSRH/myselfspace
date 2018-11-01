@@ -365,6 +365,8 @@ create table `t_unit` (
   `contact_phone`   varchar(16)     DEFAULT NULL               	comment '联系电话',
   `join_time` 		datetime 		DEFAULT NULL 				COMMENT '接入时间',
   `items`   		varchar(512)    DEFAULT NULL               	comment '物品存储',
+  `lng` 			decimal(10,6) 	DEFAULT NULL 				COMMENT '经度',
+  `lat` 			decimal(10,6) 	DEFAULT NULL 				COMMENT '纬度',
   `unit_pic`   		varchar(512)    DEFAULT NULL               	comment '单位图片',
   `iot_status` 		int(2) 			DEFAULT NULL 				COMMENT '物联状态（0在线 1离线）',
   `status` 			int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',

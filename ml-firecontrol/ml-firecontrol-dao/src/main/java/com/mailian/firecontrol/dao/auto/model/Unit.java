@@ -8,6 +8,7 @@ package com.mailian.firecontrol.dao.auto.model;
 
 import com.mailian.core.base.model.BaseDomain;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Unit extends BaseDomain implements Serializable {
@@ -95,6 +96,16 @@ public class Unit extends BaseDomain implements Serializable {
      * 物品存储
      */
     private String items;
+
+    /**
+     * 经度
+     */
+    private BigDecimal lng;
+
+    /**
+     * 纬度
+     */
+    private BigDecimal lat;
 
     /**
      * 单位图片
@@ -250,6 +261,22 @@ public class Unit extends BaseDomain implements Serializable {
 
     public void setItems(String items) {
         this.items = items == null ? null : items.trim();
+    }
+
+    public BigDecimal getLng() {
+        return lng;
+    }
+
+    public void setLng(BigDecimal lng) {
+        this.lng = lng;
+    }
+
+    public BigDecimal getLat() {
+        return lat;
+    }
+
+    public void setLat(BigDecimal lat) {
+        this.lat = lat;
     }
 
     public String getUnitPic() {
