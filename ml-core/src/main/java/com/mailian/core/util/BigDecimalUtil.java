@@ -199,14 +199,14 @@ public class BigDecimalUtil {
 
 
     /**
-     * 保留两位小数
+     * 保留指定小数
      *
      * @param f
      * @return
      */
-    public static float keepTwoDecimals(float f){
+    public static float keepTwoDecimals(float f,int scale){
         BigDecimal bg = new BigDecimal(f);
-        double d = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        double d = bg.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
         return (float)d;
     }
 }
