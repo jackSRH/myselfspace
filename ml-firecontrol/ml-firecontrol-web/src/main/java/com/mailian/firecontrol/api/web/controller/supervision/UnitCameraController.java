@@ -54,7 +54,7 @@ public class UnitCameraController extends BaseController {
     @Log(title = "单位监控",action = "查找摄像头列表")
     @ApiOperation(value = "查找摄像头列表", httpMethod = "GET")
     @RequestMapping(value="/getCameraList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<UnitCameraListResp>> getCameraList(@CurUser ShiroUser shiroUser, @RequestBody SearchReq searchReq){
+    public ResponseResult<PageBean<UnitCameraListResp>> getCameraList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         DataScope dataScope = null;
