@@ -70,10 +70,24 @@ public class SelectListElementGenerator extends AbstractXmlElementGenerator {
         while(var6.hasNext()) {
             IntrospectedColumn introspectedColumn = (IntrospectedColumn)var6.next();
             String mybatisColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+            XmlElement isNotNullElement = new XmlElement("if");
+            sb.setLength(0);
+            sb.append(introspectedColumn.getJavaProperty());
+            sb.append(" != null");
+            isNotNullElement.addAttribute(new Attribute("test", sb.toString()));
+            dynamicElement.addElement(isNotNullElement);
+            sb.setLength(0);
+            sb.append(" and ");
+            sb.append(mybatisColumnName);
+            sb.append(" = ");
+            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn));
+            isNotNullElement.addElement(new TextElement(sb.toString()));
+
             if(likeNameList.contains(mybatisColumnName)){
                 XmlElement likeElement = new XmlElement("if");
                 sb.setLength(0);
                 sb.append(introspectedColumn.getJavaProperty());
+                sb.append("Like");
                 sb.append(" != null");
                 likeElement.addAttribute(new Attribute("test", sb.toString()));
                 dynamicElement.addElement(likeElement);
@@ -82,26 +96,29 @@ public class SelectListElementGenerator extends AbstractXmlElementGenerator {
                 sb.append(mybatisColumnName);
                 //and site_name like concat('%', #{siteName,jdbcType=VARCHAR}, '%')
                 sb.append(" like concat('%',");
-                sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn));
+                sb.append(getParameterClause(introspectedColumn,null,"Like"));
                 sb.append(",'%') ");
                 likeElement.addElement(new TextElement(sb.toString()));
-            }else{
-                XmlElement isNotNullElement = new XmlElement("if");
-                sb.setLength(0);
-                sb.append(introspectedColumn.getJavaProperty());
-                sb.append(" != null");
-                isNotNullElement.addAttribute(new Attribute("test", sb.toString()));
-                dynamicElement.addElement(isNotNullElement);
-                sb.setLength(0);
-                sb.append(" and ");
-                sb.append(mybatisColumnName);
-                sb.append(" = ");
-                sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn));
-                isNotNullElement.addElement(new TextElement(sb.toString()));
             }
         }
         if (this.context.getPlugins().sqlMapSelectByExampleWithBLOBsElementGenerated(answer, this.introspectedTable)) {
             parentElement.addElement(answer);
         }
+    }
+
+    private String getParameterClause(IntrospectedColumn introspectedColumn, String prefix,String suffix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("#{");
+        sb.append(introspectedColumn.getJavaProperty(prefix));
+        sb.append(suffix);
+        sb.append(",jdbcType=");
+        sb.append(introspectedColumn.getJdbcTypeName());
+        if (StringUtility.stringHasValue(introspectedColumn.getTypeHandler())) {
+            sb.append(",typeHandler=");
+            sb.append(introspectedColumn.getTypeHandler());
+        }
+
+        sb.append('}');
+        return sb.toString();
     }
 }
