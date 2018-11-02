@@ -38,6 +38,7 @@ public class DiagramItemServiceImpl extends BaseServiceImpl<DiagramItem, Diagram
             diagramItem = new DiagramItem();
             BeanUtils.copyProperties(diagramItemReq,diagramItem);
             diagramItem.setDsId(dsId);
+            super.setUserNameAndTime(diagramItem,false);
             diagramItems.add(diagramItem);
         }
         return super.insertBatch(diagramItems) > 0;
