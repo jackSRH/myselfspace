@@ -15,7 +15,7 @@ public class UnitPatrolResp {
     private Integer precinctId;
     @ApiModelProperty(value = "巡查人")
     private Integer uid;
-    @ApiModelProperty(value = "巡查结果")
+    @ApiModelProperty(value = "巡查结果 0正常 1异常")
     private Integer patrolResult;
     @ApiModelProperty(value = "发起时间")
     private Date startTime;
@@ -25,6 +25,26 @@ public class UnitPatrolResp {
     private String precinctName;
     @ApiModelProperty(value = "视频截图")
     private String patrolPic;
+    @ApiModelProperty(value = "巡查名称")
+    private String uname;
+    @ApiModelProperty(value = "单位名称")
+    private String unitName;
+
+    public String getUname() {
+        return uname;
+    }
+
+    public void setUname(String uname) {
+        this.uname = uname;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
 
     public Integer getId() {
         return id;

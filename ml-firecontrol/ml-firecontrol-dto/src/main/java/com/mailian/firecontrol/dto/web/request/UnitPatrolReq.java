@@ -13,7 +13,7 @@ public class UnitPatrolReq {
     private Date startTime;
     @ApiModelProperty(value = "结束时间")
     private Date endTime;
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态 0:正常,1:异常")
     private Integer status;
     @ApiModelProperty(value = "摄像头id")
     private Integer cameraId;

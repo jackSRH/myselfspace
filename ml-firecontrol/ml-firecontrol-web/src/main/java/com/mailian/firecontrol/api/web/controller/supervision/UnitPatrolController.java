@@ -12,13 +12,17 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.common.util.FileNameUtils;
+import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.auto.model.UnitPatrol;
+import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.request.UnitPatrolReq;
 import com.mailian.firecontrol.dto.web.response.UnitPatrolListResp;
 import com.mailian.firecontrol.dto.web.response.UnitPatrolResp;
 import com.mailian.firecontrol.service.UnitPatrolService;
+import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.UserService;
 import com.mailian.firecontrol.service.component.UploadComponent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/supervision/unitpatrol")
@@ -43,7 +48,10 @@ public class UnitPatrolController extends BaseController {
     private UnitPatrolService unitPatrolService;
     @Resource
     private UploadComponent uploadComponent;
-
+    @Resource
+    private UserService userService;
+    @Resource
+    private UnitService unitService;
 
     @Log(title = "单位监控",action = "新增巡查记录")
     @ApiOperation(value = "新增巡查记录", httpMethod = "POST")
@@ -74,7 +82,11 @@ public class UnitPatrolController extends BaseController {
     public ResponseResult<PageBean<UnitPatrolListResp>> getUnitPatrolList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
         }
         return ResponseResult.buildOkResult(unitPatrolService.getUnitPatrolList(dataScope,searchReq));
     }
@@ -82,7 +94,7 @@ public class UnitPatrolController extends BaseController {
     @Log(title = "单位监控",action = "查找巡查记录详情")
     @ApiOperation(value = "查找巡查记录详情", httpMethod = "GET")
     @RequestMapping(value="/getUnitPatrolInfoById/{patrolId}",method = RequestMethod.GET)
-    public ResponseResult getUnitPatrolInfoById(@ApiParam(value = "巡查记录id") @PathVariable("patrolId") Integer patrolId){
+    public ResponseResult<UnitPatrolResp> getUnitPatrolInfoById(@ApiParam(value = "巡查记录id") @PathVariable("patrolId") Integer patrolId){
         if(StringUtils.isEmpty(patrolId)){
             return error("巡查记录id不能为空");
         }
@@ -92,6 +104,21 @@ public class UnitPatrolController extends BaseController {
         }
         UnitPatrolResp unitPatrolResp = new UnitPatrolResp();
         BeanUtils.copyProperties(unitPatrol,unitPatrolResp);
+        Integer uid = unitPatrol.getUid();
+        if(StringUtils.isNotEmpty(uid)){
+            User user = userService.selectByPrimaryKey(uid);
+            if(StringUtils.isNotNull(user)){
+                unitPatrolResp.setUname(user.getFullName());
+            }
+        }
+
+        Integer unitId = unitPatrol.getUnitId();
+        if(StringUtils.isNotEmpty(unitId)){
+            Unit unit = unitService.selectByPrimaryKey(unitId);
+            if(StringUtils.isNotNull(unit)){
+                unitPatrolResp.setUnitName(unit.getUnitName());
+            }
+        }
         return ResponseResult.buildOkResult(unitPatrolResp);
     }
 

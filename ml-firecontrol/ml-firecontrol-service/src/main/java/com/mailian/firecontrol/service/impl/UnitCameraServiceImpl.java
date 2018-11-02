@@ -46,15 +46,26 @@ public class UnitCameraServiceImpl extends BaseServiceImpl<UnitCamera, UnitCamer
 
     @Override
     public List<CameraListResp> getCameraList(DataScope dataScope, SearchReq searchReq){
+        List<CameraListResp> cameraListResps = new ArrayList<>();
         String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
         if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitName",unitName);
+            queryMap.put("unitNameLike",unitName);
+            List<Unit> units = unitService.selectByMap(queryMap);
+            if(StringUtils.isEmpty(units)) {
+                return cameraListResps;
+            }
+            List<Integer> unitIds = new ArrayList<>();
+            for(Unit unit : units){
+                unitIds.add(unit.getId());
+            }
+            queryMap.clear();
+            queryMap.put("unitScope",new DataScope("unit_id", unitIds));
         }
         List<UnitCamera> unitCameras = super.selectByMap(queryMap);
         if(StringUtils.isEmpty(unitCameras)){
-            return new ArrayList<>();
+            return cameraListResps;
         }
 
         //查找单位信息
@@ -68,7 +79,6 @@ public class UnitCameraServiceImpl extends BaseServiceImpl<UnitCamera, UnitCamer
             unitId2Name.put(unit.getId(),unit.getUnitName());
         }
 
-        List<CameraListResp> cameraListResps = new ArrayList<>();
         CameraListResp cameraListResp;
         for(UnitCamera unitCamera : unitCameras){
             cameraListResp = new CameraListResp();

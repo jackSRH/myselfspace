@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/supervision/facilitiesalarm")
@@ -42,7 +43,11 @@ public class FacilitiesAlarmController extends BaseController {
     public ResponseResult<PageBean<FacilitiesAlarmListResp>> getFacilitiesAlarmList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
         }
         PageBean<FacilitiesAlarmListResp> res =  facilitiesAlarmService.getFacilitiesAlarmList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
@@ -71,7 +76,11 @@ public class FacilitiesAlarmController extends BaseController {
     public ResponseResult<PageBean<FireAlarmListResp>> getFireAlarmList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
         }
         PageBean<FireAlarmListResp> res = facilitiesAlarmService.getFireAlarmList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);

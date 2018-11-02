@@ -43,7 +43,7 @@ public class DiagramStructServiceImpl extends BaseServiceImpl<DiagramStruct, Dia
     @Resource
     private UnitService unitService;
 
-    @Transactional(rollbackFor = Exception.class,value = "transactionManager")
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean insert(DiagramStructReq diagramStructReq,String picPath){
         DiagramStruct diagramStruct = new DiagramStruct();
@@ -138,14 +138,14 @@ public class DiagramStructServiceImpl extends BaseServiceImpl<DiagramStruct, Dia
         return diagramStructResps;
     }
 
-    @Transactional(rollbackFor = Exception.class,value = "transactionManager")
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean delete(Integer dsId){
         diagramItemService.deleteByDsId(dsId);
         return super.deleteByPrimaryKey(dsId) > 0;
     }
 
-    @Transactional(rollbackFor = Exception.class,value = "transactionManager")
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean update(DiagramStructReq diagramStructReq,String picPath){
         Boolean deleteRes = delete(diagramStructReq.getId());

@@ -48,7 +48,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         //查找单位id列表
         List<Integer> unitIds = new ArrayList<>();
         if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitName",unitName);
+            queryMap.put("unitNameLike",unitName);
         }else{
             queryMap.put("precinctScope", dataScope);
         }
@@ -91,7 +91,12 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     @Override
     public PageBean<FireAlarmListResp> getFireAlarmList(DataScope dataScope, SearchReq searchReq){
         Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("precinctScope", dataScope);
+        String unitName = searchReq.getUnitName();
+        if(StringUtils.isNotEmpty(unitName)){
+            queryMap.put("unitNameLike",unitName);
+        }else{
+            queryMap.put("precinctScope", dataScope);
+        }
         List<Integer> unitIds = new ArrayList<>();
         List<Unit> units = unitService.selectByMap(queryMap);
         if(StringUtils.isEmpty(units)){
