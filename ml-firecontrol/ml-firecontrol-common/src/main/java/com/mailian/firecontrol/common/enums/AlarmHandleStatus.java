@@ -6,7 +6,7 @@ package com.mailian.firecontrol.common.enums;
  * @Description:告警处理状态
  */
 public enum AlarmHandleStatus {
-    NODEAL(0,"未处理"),RESPONDED(1,"已响应"),DEALING(2,"处理中"),DEALED(3,"已处理");
+    UNTREATED(0,"未处理"),RESPONSE(1,"已响应"),UNDER_WAY(2,"处理中"),COMPLETED(3,"已处理");
 
 
     public Integer id;
