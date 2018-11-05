@@ -1,9 +1,8 @@
 package com.mailian.firecontrol.api.web.controller.system;
 
-import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.bean.ResponseResult;
-import com.mailian.firecontrol.dao.auto.model.Area;
+import com.mailian.firecontrol.dto.web.response.AreaResp;
 import com.mailian.firecontrol.service.AreaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,11 +26,11 @@ public class AreaController {
     @Autowired
     private AreaService areaService;
 
-    @Log(title = "系统",action = "获取省份城市区域列表")
     @ApiOperation(value = "获取省份城市区域列表", httpMethod = "GET")
     @GetMapping(value = "getList")
-    public ResponseResult<List<Area>> getList(){
+    public ResponseResult<List<AreaResp>> getList(){
         return ResponseResult.buildOkResult(areaService.selectAll());
     }
+
 
 }

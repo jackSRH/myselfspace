@@ -7,6 +7,7 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.Status;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.AreaRank;
 import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
 import com.mailian.firecontrol.common.enums.UnitType;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
@@ -20,6 +21,8 @@ import com.mailian.firecontrol.dto.push.Device;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
+import com.mailian.firecontrol.dto.web.response.PieData;
+import com.mailian.firecontrol.dto.web.response.PieResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.UnitDeviceService;
@@ -240,6 +243,48 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
         return deviceRespList;
+    }
+
+    @Override
+    public PieResp getUnitSpreadByAreaAndScope(Integer areaId,DataScope dataScope) {
+        Map<String,Object> queryMap = new HashMap<>();
+        if(StringUtils.isNotEmpty(areaId)){
+            Area area = areaService.getAreaById(areaId);
+            Integer areaRank = area.getAreaRank();
+            if(AreaRank.PROVINCE.id.equals(areaRank)){
+                queryMap.put("provinceId",areaId);
+            }else if(AreaRank.CITY.id.equals(areaRank)){
+                queryMap.put("cityId",areaId);
+            }else{
+                queryMap.put("areaId",areaId);
+            }
+        }
+
+        queryMap.put("precinctScope",dataScope);
+        List<Unit> unitList = selectByMap(queryMap);
+
+        List<PieData> pieDataList = new ArrayList<>();
+        Map<Integer,PieData> pieDataMap = new HashMap<>();
+        for (UnitType unitType : UnitType.values()) {
+            PieData pieData = new PieData();
+            pieData.setName(unitType.value);
+            pieData.setValue(0);
+            pieDataMap.put(unitType.id,pieData);
+            pieDataList.add(pieData);
+        }
+
+        for (Unit unit : unitList) {
+            Integer unitType = unit.getUnitType();
+            if(pieDataMap.containsKey(unitType)){
+                PieData pieData = pieDataMap.get(unitType);
+                pieData.setValue(pieData.getValue()+1);
+            }
+        }
+
+        PieResp pieResp = new PieResp();
+        pieResp.setPieDataList(pieDataList);
+        pieResp.setTotal(unitList.size());
+        return pieResp;
     }
 
 }

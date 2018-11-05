@@ -7,6 +7,7 @@ import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
+import com.mailian.firecontrol.dto.web.response.PieResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 
 import java.util.List;
@@ -33,4 +34,11 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     List<DeviceResp> getUnallotDevice();
+
+    /**
+     * 获取单位分布
+     * @param areaId
+     * @return
+     */
+    PieResp getUnitSpreadByAreaAndScope(Integer areaId,DataScope dataScope);
 }
