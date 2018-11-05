@@ -6,7 +6,7 @@ package com.mailian.firecontrol.common.enums;
  * @Description:
  */
 public enum  AlarmType {
-    ALARM(1,"报警"),EARLY_WARNING(2,"预警");
+    ALARM(1,"烟感报警"),EARLY_WARNING(2,"漏电预警");
 
     public Integer id;
     public String desc;

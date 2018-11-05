@@ -1,7 +1,10 @@
 package com.mailian.firecontrol.dto.web.response;
 
+import com.mailian.core.bean.TreeEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
 
 /**
  * @Auther: wangqiaoqing
@@ -9,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Description:
  */
 @ApiModel(value = "区域信息")
-public class AreaResp {
+public class AreaResp implements TreeEntity<AreaResp> {
     @ApiModelProperty(value = "id")
     private Integer id;
     @ApiModelProperty(value = "区域名")
@@ -60,5 +63,45 @@ public class AreaResp {
 
     public void setAreaRank(Integer areaRank) {
         this.areaRank = areaRank;
+    }
+
+    @Override
+    public String getIdStr() {
+        return null;
+    }
+
+    @Override
+    public String getParentIdStr() {
+        return null;
+    }
+
+    @Override
+    public Integer getSortNo() {
+        return null;
+    }
+
+    @Override
+    public String getNameStr() {
+        return null;
+    }
+
+    @Override
+    public void setChildList(List<AreaResp> childList) {
+
+    }
+
+    @Override
+    public boolean filterByParam(Object... params) {
+        return false;
+    }
+
+    @Override
+    public void setChildBizCount(Integer bizCount) {
+
+    }
+
+    @Override
+    public Integer getBizCount() {
+        return null;
     }
 }

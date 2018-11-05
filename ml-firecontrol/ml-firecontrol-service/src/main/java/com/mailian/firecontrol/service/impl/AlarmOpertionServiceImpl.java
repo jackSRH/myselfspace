@@ -299,6 +299,9 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
     public void completionEquipmentAlarm() {
         /*获取关联的网关*/
         List<String> deviceList = unitDeviceCache.getDevices();
+        if(StringUtils.isEmpty(deviceList)){
+            return;
+        }
 
         //设置开始结束时间
         Date now = new Date();

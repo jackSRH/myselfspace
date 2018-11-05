@@ -7,6 +7,7 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
+import com.mailian.firecontrol.common.enums.AlarmType;
 import com.mailian.firecontrol.common.enums.FaMisreportType;
 import com.mailian.firecontrol.common.enums.ItemBtype;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
@@ -237,7 +238,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             fireAutoAlarmListResp.setCurStatus(AlarmHandleStatus.getValue(facilitiesAlarm.getHandleStatus()));
             fireAutoAlarmListResp.setMisreport(FaMisreportType.getValue(facilitiesAlarm.getMisreport()));
             fireAutoAlarmListResp.setFacilitiesName(faId2Name.get(facilitiesAlarm.getFacilitiesId()));
-            fireAutoAlarmListResp.setAlarmType("烟感报警");
+            fireAutoAlarmListResp.setAlarmType(AlarmType.ALARM.desc);
             fireAutoAlarmListResps.add(fireAutoAlarmListResp);
         }
         PageBean<FireAutoAlarmListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),fireAutoAlarmListResps);

@@ -154,6 +154,7 @@ create table `t_sys_area` (
   `area_code` 		varchar(8) 		DEFAULT NULL 				comment '区域编码',
   `parent_id`     	int(11)        	DEFAULT NULL               	comment '父级id',
   `area_rank`     	int(2)        	DEFAULT NULL               	comment '级别 0:省,1:市,2:区域',
+  `order_num` 		int(4) 			default null 			   	comment '显示顺序',
   `status` 			int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
   `create_time` 	datetime 		DEFAULT NULL 				COMMENT '创建时间',
   `update_time` 	datetime 		DEFAULT NULL 				COMMENT '更新时间',

@@ -2,7 +2,7 @@
 *
 * Area.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-26
+* @date 2018-11-05
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -34,6 +34,11 @@ public class Area extends BaseDomain implements Serializable {
      * 级别 0:省,1:市,2:区域
      */
     private Integer areaRank;
+
+    /**
+     * 显示顺序
+     */
+    private Integer orderNum;
 
     /**
      * 状态（0正常 1停用）
@@ -83,6 +88,14 @@ public class Area extends BaseDomain implements Serializable {
 
     public void setAreaRank(Integer areaRank) {
         this.areaRank = areaRank;
+    }
+
+    public Integer getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(Integer orderNum) {
+        this.orderNum = orderNum;
     }
 
     public Integer getStatus() {
