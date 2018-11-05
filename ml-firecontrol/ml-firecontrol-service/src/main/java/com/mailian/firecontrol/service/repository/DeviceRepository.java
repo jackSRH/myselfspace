@@ -38,7 +38,7 @@ public class DeviceRepository {
         }
 
         String res = HttpClientUtil.get(pushConfig.getUrl(pushConfig.GET_DEVICE_URI), params);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,Device.class);
     }
 
     /**

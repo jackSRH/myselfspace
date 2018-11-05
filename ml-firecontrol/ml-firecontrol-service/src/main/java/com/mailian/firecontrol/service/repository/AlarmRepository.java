@@ -90,7 +90,7 @@ public class AlarmRepository {
         params.put("tflag",tflag);
         String param = JSON.toJSONString(params);
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ALARM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,Alarm.class);
     }
 
     public List<Alarm> getAlarmInfoByItemsAndType(String itemids,String stime,String etime,Integer pinding){
@@ -102,6 +102,6 @@ public class AlarmRepository {
         params.put("pending", pinding);
         String param = JSON.toJSONString(params);
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ALARM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,Alarm.class);
     }
 }

@@ -21,14 +21,14 @@ public class PushResponseUtil {
      * @param <T>
      * @return
      */
-    public static <T> List<T> processResponseListData(String respContent)  {
+    public static <T> List<T> processResponseListData(String respContent, Class<T> clazz)  {
         if(StringUtils.isEmpty(respContent)){
             return null;
         }
 
         JSONObject jsonObject = JSONObject.parseObject(respContent);
         if(jsonObject.containsKey("data")){
-            return JsonUtils.getObjectFromJsonString(jsonObject.getString("data"),new TypeReference<List<T>>(){});
+            return JsonUtils.getObjectFromJsonString(jsonObject.getString("data"),new TypeReference<List<T>>(clazz){});
         }
         return null;
     }
@@ -36,7 +36,6 @@ public class PushResponseUtil {
     /**
      * 处理响应结果 返回map
      * @param respContent
-     * @param <T>
      * @return
      */
     public static Map processResponseMapData(String respContent)  {

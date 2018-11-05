@@ -38,7 +38,7 @@ public class DeviceSubRepository {
         params.put("gwids", CollectionUtil.join(codes,","));
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_SUB_URI), params, null,false);
 
-        List<DeviceSub> subList = PushResponseUtil.processResponseListData(res);
+        List<DeviceSub> subList = PushResponseUtil.processResponseListData(res,DeviceSub.class);
         return subList;
     }
 
@@ -67,7 +67,7 @@ public class DeviceSubRepository {
         params.put("appid", pushConfig.SYSTEM_ID);
         params.put("rtuidcbs", CollectionUtil.join(rtuIds,","));
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_SUB_URI), params, null,false);
-        List<DeviceSub> subList = PushResponseUtil.processResponseListData(res);
+        List<DeviceSub> subList = PushResponseUtil.processResponseListData(res,DeviceSub.class);
         return subList;
     }
 }

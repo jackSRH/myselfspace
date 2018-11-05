@@ -52,7 +52,7 @@ public class DeviceItemRepository {
         String param = JSON.toJSONString(params);
         //请求后台接口获取数据
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ITEM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,DeviceItem.class);
     }
 
     /**
@@ -70,7 +70,7 @@ public class DeviceItemRepository {
         params.put("itemids", itemIds);
         String param = JSON.toJSONString(params);
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ITEM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,DeviceItem.class);
     }
 
 
@@ -93,7 +93,7 @@ public class DeviceItemRepository {
         params.put("cycle",type);
         String param = JSON.toJSONString(params);
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_SIGNAL_URI), param, null,false);
-        List<DeviceItemHistoryData> historyDatas = PushResponseUtil.processResponseListData(res);
+        List<DeviceItemHistoryData> historyDatas = PushResponseUtil.processResponseListData(res,DeviceItemHistoryData.class);
 
         if(DeviceItemCycle.HOURE.id.equals(type)) {
             for(DeviceItemHistoryData historyData : historyDatas) {
@@ -285,7 +285,7 @@ public class DeviceItemRepository {
 
         String param = JSON.toJSONString(params);
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ITEM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res);
+        return PushResponseUtil.processResponseListData(res,DeviceItem.class);
     }
 
     public Float getTotalEnergyByItems(String itemIds) {
@@ -314,7 +314,7 @@ public class DeviceItemRepository {
         String param = JSON.toJSONString(params);
 
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_APPTOTALJFPG_URI), param, null,false);
-        List<AppTotalJFPG> jfpg = PushResponseUtil.processResponseListData(res);
+        List<AppTotalJFPG> jfpg = PushResponseUtil.processResponseListData(res,AppTotalJFPG.class);
         return jfpg;
     }
 
