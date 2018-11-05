@@ -3,7 +3,9 @@ package com.mailian.firecontrol.service.cache;
 import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
+import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
+import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.UnitManualMapper;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,8 @@ public class UnitDeviceCache {
     private UnitManualMapper unitManualMapper;
     @Resource
     private UnitMapper unitMapper;
+    @Resource
+    private PrecinctMapper precinctMapper;
 
     /**
      * 根据网关id 获取单位信息
@@ -44,8 +49,17 @@ public class UnitDeviceCache {
         if(StringUtils.isEmpty(unitDeviceMap)){
             List<UnitRedisInfo> unitDeviceList = unitManualMapper.selectUnitDeviceByDeviceIds(deviceIds);
 
+            List<Precinct> precincts = precinctMapper.selectByMap(null);
+            Map<Integer,String> phoneMap = new HashMap<>();
+            for (Precinct precinct : precincts) {
+                if(StringUtils.isNotEmpty(precinct.getDutyPhone())) {
+                    phoneMap.put(precinct.getId(),precinct.getDutyPhone());
+                }
+            }
+
             unitDeviceMap = new HashMap<>();
             for (UnitRedisInfo unitRedisInfo : unitDeviceList) {
+                unitRedisInfo.setContactPhone(phoneMap.get(unitRedisInfo.getPrecinctId()));
                 unitDeviceMap.put(unitRedisInfo.getDeviceId(),unitRedisInfo);
             }
             redisUtils.addAllHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,unitDeviceMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
@@ -102,6 +116,21 @@ public class UnitDeviceCache {
             return;
         }
         redisUtils.deleteHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,deviceIds);
+    }
+
+    /**
+     * 获取缓存中的网关
+     * @return
+     */
+    public List<String> getDevices(){
+        List<String> deviceList = new ArrayList<>();
+        Map<String,UnitRedisInfo> unitDeviceMap = redisUtils.entries(CommonConstant.SYS_DEVICE_UNIT_KEY);
+        if(StringUtils.isNotEmpty(unitDeviceMap)) {
+            for (String device : unitDeviceMap.keySet()) {
+                deviceList.add(device);
+            }
+        }
+        return deviceList;
     }
 
 }

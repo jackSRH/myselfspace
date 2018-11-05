@@ -31,4 +31,19 @@ public enum ItemBtype {
         }
         return "";
     }
+
+    /**
+     * 获取对应属性值
+     * @param id
+     * @return
+     */
+    public static ItemBtype getItemBtype(Integer id){
+        ItemBtype[] itemBtypes = ItemBtype.values();
+        for (ItemBtype itemBtype : itemBtypes) {
+            if(id.intValue() == itemBtype.id.intValue()){
+                return itemBtype;
+            }
+        }
+        return null;
+    }
 }

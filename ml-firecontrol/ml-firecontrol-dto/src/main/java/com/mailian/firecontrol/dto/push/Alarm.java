@@ -61,4 +61,22 @@ public class Alarm extends BaseDomain {
 	public void setAlarmid(Integer alarmid) {
 		this.alarmid = alarmid;
 	}
+
+	public Integer getHashCode() {
+		StringBuffer sbf = new StringBuffer();
+		sbf.append(id);
+		sbf.append("&");
+		sbf.append(gwid);
+		sbf.append("&");
+		sbf.append(val);
+		sbf.append("&");
+		sbf.append(stime);
+		sbf.append("&");
+		sbf.append(etime);
+		sbf.append("&");
+		sbf.append(level);
+		sbf.append("&");
+		sbf.append(alarmid);
+		return sbf.toString().hashCode();
+	}
 }

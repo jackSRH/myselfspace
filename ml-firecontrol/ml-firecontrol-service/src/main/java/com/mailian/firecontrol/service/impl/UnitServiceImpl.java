@@ -207,6 +207,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitDevice = new UnitDevice();
             unitDevice.setUnitId(unitId);
             unitDevice.setDeviceId(deviceId);
+            setUserNameAndTime(unitDevice,true);
             unitDeviceList.add(unitDevice);
         }
         unitDeviceService.insertBatch(unitDeviceList);

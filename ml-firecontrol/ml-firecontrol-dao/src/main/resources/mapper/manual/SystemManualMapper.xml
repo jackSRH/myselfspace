@@ -83,4 +83,8 @@
     <select id="countPrecinctByNameAndAreaId" resultType="java.lang.Integer">
         select count(1) from t_precinct where precinct_name=#{precinctName,jdbcType=VARCHAR} and area_id=#{areaId,jdbcType=INTEGER}
     </select>
+
+    <select id="selectUidsByPrecinctId" resultType="java.lang.Integer">
+        select distinct uid from t_user_precinct where precinct_id=#{precinctId,jdbcType=INTEGER}
+    </select>
 </mapper>

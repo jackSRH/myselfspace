@@ -19,6 +19,16 @@ public class UnitRedisInfo {
      */
     private String unitName;
 
+    /**
+     * 管辖区id
+     */
+    private Integer precinctId;
+
+    /**
+     * 联系电话(管辖区)
+     */
+    private String contactPhone;
+
     public Integer getId() {
         return id;
     }
@@ -41,5 +51,21 @@ public class UnitRedisInfo {
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;
+    }
+
+    public Integer getPrecinctId() {
+        return precinctId;
+    }
+
+    public void setPrecinctId(Integer precinctId) {
+        this.precinctId = precinctId;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
     }
 }

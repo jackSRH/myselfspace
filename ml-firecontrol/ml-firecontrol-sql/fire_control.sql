@@ -170,7 +170,7 @@ create table t_sys_config (
 	id 		   		   int(11) 	     not null auto_increment    comment '参数主键',
 	config_name        varchar(64)   default null               comment '参数名称',
 	config_key         varchar(32)   default null               comment '参数键名',
-	config_value       varchar(32)   default null               comment '参数键值',
+	config_value       varchar(512)  default null               comment '参数键值',
 	config_type        int(1)    	 default 0                	comment '系统内置（0否 1是）',
     create_by          varchar(64)   default null               comment '创建者',
     create_time 	   datetime                                 comment '创建时间',
@@ -184,6 +184,7 @@ create table t_sys_config (
 -- ----------------------------
 -- 初始化- 系统参数数据
 -- ----------------------------
+insert into t_sys_config values(1, '告警信息模板', 'sys.alarminfo', '${unitName}${facilitiesName}告警！赶紧去看看吧！',  1, 'system', now(), 'system', now(), null );
 
 
 -- ----------------------------
@@ -206,6 +207,12 @@ create table t_sys_job (
   primary key (id),
   unique(job_name, job_group,method_name)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '定时任务调度表';
+
+
+-- ----------------------------
+-- 初始化- 定时任务调度表
+-- ----------------------------
+insert into t_sys_job values(1, 'alarmJob', 'alarm', 'completionEquipmentAlarm',  '',   '0 0/10 * * * ? *', 0,'system', now(), 'system', now(), '每10分钟补全报警信息');
 
 
 -- ----------------------------
@@ -578,6 +585,7 @@ create table `t_facilities_alarm` (
   core_confirm_time		datetime 		DEFAULT NULL 				COMMENT '消防通信指挥中心反馈确认时间',
   core_handle_uname		varchar(32) 	DEFAULT NULL 				COMMENT '消防通信指挥中心受理人姓名',
   core_handle_result	varchar(512) 	DEFAULT NULL 				COMMENT '消防通信指挥中心接管处理情况',
+  hash_code				int(11)			DEFAULT NULL 				COMMENT '告警哈希值,判断警情是否变化',
   `status` 				int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
   `create_time` 		datetime 		DEFAULT NULL 				COMMENT '创建时间',
   `update_time` 		datetime 		DEFAULT NULL 				COMMENT '更新时间',

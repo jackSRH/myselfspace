@@ -35,17 +35,21 @@ public class ThreadLocalDateUtil {
         return timeFormat;
     }
 
-    public static String formatDate(Date date) throws ParseException {
+    public static String formatDate(Date date){
         return getDateTimeFormat().format(date);
     }
 
-    public static Date parse(String strDate) throws ParseException {
-        if ("".equals(strDate) || strDate == null) {
+    public static Date parse(String strDate) {
+        try {
+            if ("".equals(strDate) || strDate == null) {
+                return null;
+            }
+            if (strDate.contains(":")) {
+                return getDateTimeFormat().parse(strDate);
+            }
+            return getDateFormat().parse(strDate);
+        }catch (ParseException e){
             return null;
         }
-        if(strDate.contains(":")){
-            return getDateTimeFormat().parse(strDate);
-        }
-        return getDateFormat().parse(strDate);
     }
 }

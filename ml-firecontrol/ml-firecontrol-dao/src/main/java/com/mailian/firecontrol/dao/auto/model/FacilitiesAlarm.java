@@ -2,7 +2,7 @@
 *
 * FacilitiesAlarm.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-26
+* @date 2018-11-01
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -155,6 +155,11 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
      * 消防通信指挥中心接管处理情况
      */
     private String coreHandleResult;
+
+    /**
+     * 告警哈希值,判断警情是否变化
+     */
+    private Integer hashCode;
 
     /**
      * 状态（0正常 1停用）
@@ -396,6 +401,14 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
 
     public void setCoreHandleResult(String coreHandleResult) {
         this.coreHandleResult = coreHandleResult == null ? null : coreHandleResult.trim();
+    }
+
+    public Integer getHashCode() {
+        return hashCode;
+    }
+
+    public void setHashCode(Integer hashCode) {
+        this.hashCode = hashCode;
     }
 
     public Integer getStatus() {

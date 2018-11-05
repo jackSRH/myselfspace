@@ -1,5 +1,7 @@
 package com.mailian.firecontrol.common.constants;
 
+import java.util.regex.Pattern;
+
 /**
  * @Auther: wangqiaoqing
  * @Date: 2018/10/29
@@ -27,6 +29,9 @@ public class CommonConstant {
     public static final String DEVICE_ITEM_REAL_TIME_DATA="mlfirecontrol:itemRealDatas";
     /* 运算库 */
     public static final String DEVICE_CODE_CALC_ITEM="mlfirecontrol:codeCalcItems";
+    /** 通知模块键值 */
+    public static final String ALARM_NOTICE = "mlfirecontrol:alarmNotice";
+
 
     /* 推送redis默认失效时间(永不失效) */
     public static final long PUSH_REDIS_DEFAULT_EXPIRE = -1;
@@ -40,4 +45,13 @@ public class CommonConstant {
 
     /* 默认用户密码 */
     public final static String DEFAULT_PASSWORD = "123456";
+
+    /* 电话号码匹配 */
+    public static Pattern phonePattern = Pattern
+            .compile("^(13[0-9]|15[012356789]|18[012356789]|14[012356789]|17[012356789])[0-9]{8}$");
+
+    public final static String ALARM_INFO = "alarmInfoTemplate";
+
+    /** 用户唯一键(友盟推送) */
+    public static final String USRE_KEY = "%s&&%s";
 }

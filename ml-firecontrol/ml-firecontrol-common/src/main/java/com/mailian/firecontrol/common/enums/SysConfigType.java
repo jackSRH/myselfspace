@@ -9,7 +9,7 @@ import com.mailian.core.util.StringUtils;
  * @Description:
  */
 public enum SysConfigType {
-    SYS_OPERATION_AUTODISPATCHALARM(0,"sys.operation.autoDispatchAlarm","系统自动派发告警单");
+    ALARM_INFO(0,"sys.alarminfo","告警信息模板");
 
     public Integer type;
     public String key;

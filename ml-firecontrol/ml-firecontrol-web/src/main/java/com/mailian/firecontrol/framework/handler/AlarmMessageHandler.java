@@ -2,10 +2,12 @@ package com.mailian.firecontrol.framework.handler;
 
 import com.alibaba.fastjson.TypeReference;
 import com.mailian.core.adapter.MqttMessageHandlerAdapter;
+import com.mailian.core.bean.SpringContext;
 import com.mailian.core.util.JsonUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.PushMessageTopic;
 import com.mailian.firecontrol.dto.push.Alarm;
+import com.mailian.firecontrol.service.AlarmOpertionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +34,8 @@ public class AlarmMessageHandler implements MqttMessageHandlerAdapter {
             List<Alarm> alarmList = JsonUtils.getObjectFromJsonString(message,new TypeReference<List<Alarm>>(){});
 
             if(StringUtils.isNotEmpty(alarmList)){
-                /*AlarmOpertionService alarmOpertionService = (AlarmOpertionService) SpringContext.getBean("alarmOpertionServiceImpl");
-                alarmOpertionService.dealRealTimeAlarm(alarmList);*/
+                AlarmOpertionService alarmOpertionService = (AlarmOpertionService) SpringContext.getBean("alarmOpertionServiceImpl");
+                alarmOpertionService.dealRealTimeAlarm(alarmList);
             }
             result = 1;
         } catch (Exception e) {

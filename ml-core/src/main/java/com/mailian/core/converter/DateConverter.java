@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 
-import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -18,11 +17,6 @@ public class DateConverter implements Converter<String,Date> {
 
     @Override
     public Date convert(String s) {
-        try {
-            return ThreadLocalDateUtil.parse(s);
-        } catch (ParseException e) {
-            log.error("日期:{} 转换异常!",s);
-        }
-        return null;
+        return ThreadLocalDateUtil.parse(s);
     }
 }

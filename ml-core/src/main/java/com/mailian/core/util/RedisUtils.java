@@ -126,10 +126,25 @@ public class RedisUtils {
         return (T)listOperations.leftPop(key);
     }
 
+    public <T> Long leftPush(String key,T t) {
+        return listOperations.leftPush(key,t);
+    }
+
+    public void deleteListValue(String key,long var,Object obj){
+        listOperations.remove(key,var,obj);
+    }
+
     public long size(String key){
         return listOperations.size(key);
     }
 
+    public <T> List<T> listRange(String key,long sindex,long eindex){
+        return listOperations.range(key,sindex,eindex);
+    }
+
+    public <T> void listSet(String key,long index,T t){
+        listOperations.set(key,index,t);
+    }
 
     /**
      * 设置过期时间

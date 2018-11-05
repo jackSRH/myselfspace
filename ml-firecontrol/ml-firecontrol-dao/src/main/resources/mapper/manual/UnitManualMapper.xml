@@ -6,6 +6,7 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
         <result column="unit_name" jdbcType="VARCHAR" property="unitName" />
+        <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
     </resultMap>
 
     <delete id="deleteDeviceByUnitId">

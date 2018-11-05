@@ -86,4 +86,50 @@ public class FreeMarkerUtil {
         datas.put("number",seed);
         return genStrByStrTemplate(templateName,templateContent,datas);
     }
+
+
+    /**
+     * 获取模板
+     * @param templateName
+     * @param templateContent
+     * @return
+     */
+    public static Template getStrTemplate(String templateName,String templateContent){
+        Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        try {
+            StringTemplateLoader strTemplateLoader = new StringTemplateLoader();
+            strTemplateLoader.putTemplate(templateName, templateContent);
+            cfg.setTemplateLoader(strTemplateLoader);
+            Template template = cfg.getTemplate(templateName, "utf-8");
+            return template;
+        }catch (IOException e) {
+            log.error("模板读取异常",e);
+        }
+        return null;
+    }
+
+    /**
+     * 根据字符串模板生成字符串
+     * @param template
+     * @param datas
+     * @return
+     */
+    public static String genStrByTemplate(Template template,Map<String, Object> datas){
+        if(StringUtils.isNull(template)){
+            return "";
+        }
+        try {
+            StringWriter out = new StringWriter();
+            template.process(datas,out);
+
+            out.flush();
+            out.close();
+            return out.getBuffer().toString();
+        } catch (IOException e) {
+            log.error("模板读取异常",e);
+        } catch (TemplateException e) {
+            log.error("模板处理异常",e);
+        }
+        return "";
+    }
 }
