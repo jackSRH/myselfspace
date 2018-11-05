@@ -59,8 +59,8 @@ public class FacilitiesController extends BaseController {
         return ResponseResult.buildOkResult(res);
     }
 
-    @Log(title = "配置管理",action = "获取单位详情")
-    @ApiOperation(value = "获取单位详情", httpMethod = "GET")
+    @Log(title = "配置管理",action = "获取设施详情")
+    @ApiOperation(value = "获取设施详情", httpMethod = "GET")
     @RequestMapping(value="/getFacilitiesInfoById/{faId}",method = RequestMethod.GET)
     public ResponseResult<FacilitiesInfo> getUnitInfoById(@ApiParam(value = "设施id") @PathVariable("faId") Integer faId){
         if(StringUtils.isEmpty(faId)){

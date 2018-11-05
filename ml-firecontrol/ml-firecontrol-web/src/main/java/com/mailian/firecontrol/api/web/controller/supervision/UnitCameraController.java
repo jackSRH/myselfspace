@@ -9,12 +9,15 @@ import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.manager.SystemManager;
+import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.CameraInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.CameraListResp;
+import com.mailian.firecontrol.dto.web.response.CameraNavigationResp;
 import com.mailian.firecontrol.dto.web.response.UnitCameraListResp;
 import com.mailian.firecontrol.service.UnitCameraService;
+import com.mailian.firecontrol.service.UnitService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,8 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/supervision/unitcamera")
@@ -38,7 +43,8 @@ public class UnitCameraController extends BaseController {
 
     @Resource
     private UnitCameraService unitCameraService;
-
+    @Resource
+    private UnitService unitService;
 
     @Log(title = "单位监控",action = "新增更新摄像头")
     @ApiOperation(value = "新增更新摄像头", httpMethod = "POST")
@@ -98,4 +104,45 @@ public class UnitCameraController extends BaseController {
         return deleteRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
+    @Log(title = "单位监控",action = "摄像头列表导航")
+    @ApiOperation(value = "摄像头列表导航", httpMethod = "GET")
+    @RequestMapping(value="/getCameraNavigation",method = RequestMethod.GET)
+    public ResponseResult<List<CameraNavigationResp>> getCameraNavigation(@CurUser ShiroUser shiroUser, SearchReq searchReq){
+        List<CameraNavigationResp> cameraNavigationResps = new ArrayList<>();
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
+        }
+        List<CameraListResp> cameraListResps =unitCameraService.getCameraList(dataScope,searchReq);
+        if(StringUtils.isEmpty(cameraListResps)){
+            return ResponseResult.buildOkResult(cameraNavigationResps);
+        }
+
+        Map<Integer,List<CameraListResp>> unitId2CameraList = new HashMap<>();
+        List<CameraListResp> cameraList;
+        Set<Integer> unitIds = new HashSet<>();
+        for(CameraListResp cameraListResp : cameraListResps){
+            Integer unitId = cameraListResp.getUnitId();
+            cameraList = unitId2CameraList.containsKey(unitId)?unitId2CameraList.get(unitId):new ArrayList<>();
+            cameraList.add(cameraListResp);
+            unitId2CameraList.put(unitId,cameraList);
+            unitIds.add(unitId);
+        }
+
+        List<Unit> units = unitService.selectBatchIds(unitIds);
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(units)){
+            for(Unit unit : units){
+                unitId2Name.put(unit.getId(),unit.getUnitName());
+            }
+        }
+        CameraNavigationResp cameraNavigationResp;
+        for(Map.Entry<Integer,List<CameraListResp>> entry : unitId2CameraList.entrySet()){
+            cameraNavigationResp = new CameraNavigationResp();
+            cameraNavigationResp.setUnitName(unitId2Name.get(entry.getKey()));
+            cameraNavigationResp.setCameraLists(entry.getValue());
+            cameraNavigationResps.add(cameraNavigationResp);
+        }
+        return ResponseResult.buildOkResult(cameraNavigationResps);
+    }
 }

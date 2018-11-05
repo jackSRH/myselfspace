@@ -100,7 +100,11 @@ public class UnitController extends BaseController {
     public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,SearchReq searchReq){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            dataScope = new DataScope("precinct_id", shiroUser.getPrecinctIds());
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
         }
         PageBean<UnitListResp> res = unitService.getUnitList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
@@ -127,11 +131,11 @@ public class UnitController extends BaseController {
     @RequestMapping(value="/getYcStructs",method = RequestMethod.GET)
     public ResponseResult<PageBean<DiagramStructResp>> getYcStructs(SearchReq searchReq){
         Integer unitId = searchReq.getUnitId();
-        Integer currentPage = searchReq.getCurrentPage();
-        Integer pageSize = searchReq.getPageSize();
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
+        Integer currentPage = searchReq.getCurrentPage();
+        Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("unitId",unitId);
