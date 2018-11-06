@@ -9,13 +9,11 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
 import com.mailian.firecontrol.common.enums.AlarmType;
 import com.mailian.firecontrol.common.enums.FaMisreportType;
-import com.mailian.firecontrol.common.enums.ItemBtype;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
-import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
@@ -30,7 +28,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm, FacilitiesAlarmMapper> implements FacilitiesAlarmService {
@@ -118,6 +122,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         queryMap.put("startDate",startDate);
         queryMap.put("endDate",endDate);
         queryMap.put("misreport", FaMisreportType.EFFECTIVE.id);
+        queryMap.put("alarmType",AlarmType.ALARM.id);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -127,28 +132,9 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             return new PageBean<>();
         }
 
-
-        Set<String> itemIds =new HashSet<>();
-        for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
-            itemIds.add(facilitiesAlarm.getAlarmItemId());
-        }
-        Map<String, DeviceItem> itemId2Item = deviceItemRepository.getDeviceItemInfosByItemIds(new ArrayList<>(itemIds));
-        Set<String> fireItemIds = new HashSet<>();
-        if(StringUtils.isNotNull(itemId2Item)){
-            for(Map.Entry<String,DeviceItem> entry :itemId2Item.entrySet()){
-                if(ItemBtype.SMOKE.id.intValue() == entry.getValue().getBtype().intValue()){
-                    fireItemIds.add(entry.getKey());
-                }
-            }
-        }
-
         List<FireAlarmListResp> fireAlarmListResps = new ArrayList<>();
         FireAlarmListResp fireAlarmListResp;
         for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
-            //不是烟感告警的排除掉
-            if(!fireItemIds.contains(facilitiesAlarm.getAlarmItemId())){
-                continue;
-            }
             fireAlarmListResp = new FireAlarmListResp();
             BeanUtils.copyProperties(facilitiesAlarm,fireAlarmListResp);
             fireAlarmListResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
@@ -181,6 +167,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
         queryMap.clear();
         queryMap.put("unitIds",unitIds);
+        queryMap.put("alarmType",AlarmType.ALARM.id);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -190,23 +177,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             return new PageBean<>();
         }
 
-
-        Set<String> itemIds =new HashSet<>();
         Set<Integer> facilitiesIds = new HashSet<>();
         for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
-            itemIds.add(facilitiesAlarm.getAlarmItemId());
             Integer faId = facilitiesAlarm.getFacilitiesId();
             if(StringUtils.isNotEmpty(faId)){
                 facilitiesIds.add(faId);
-            }
-        }
-        Map<String, DeviceItem> itemId2Item = deviceItemRepository.getDeviceItemInfosByItemIds(new ArrayList<>(itemIds));
-        Set<String> fireItemIds = new HashSet<>();
-        if(StringUtils.isNotEmpty(itemId2Item)){
-            for(Map.Entry<String,DeviceItem> entry :itemId2Item.entrySet()){
-                if(ItemBtype.SMOKE.id.intValue() == entry.getValue().getBtype().intValue()){
-                    fireItemIds.add(entry.getKey());
-                }
             }
         }
 
@@ -224,10 +199,6 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         List<FireAutoAlarmListResp> fireAutoAlarmListResps = new ArrayList<>();
         FireAutoAlarmListResp fireAutoAlarmListResp;
         for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
-            //不是烟感告警的排除掉
-            if(!fireItemIds.contains(facilitiesAlarm.getAlarmItemId())){
-                continue;
-            }
             fireAutoAlarmListResp = new FireAutoAlarmListResp();
             BeanUtils.copyProperties(facilitiesAlarm,fireAutoAlarmListResp);
             fireAutoAlarmListResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
