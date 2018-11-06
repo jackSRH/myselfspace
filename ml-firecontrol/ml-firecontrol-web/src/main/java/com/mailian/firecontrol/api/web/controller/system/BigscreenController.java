@@ -2,6 +2,7 @@ package com.mailian.firecontrol.api.web.controller.system;
 
 import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.WebAPI;
+import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
@@ -48,6 +49,9 @@ public class BigscreenController {
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult();
+            }
             dataScope = new DataScope(precinctIds);
         }
         return ResponseResult.buildOkResult(areaService.selectAreaAndPrecinctList(areaName,dataScope));
@@ -73,6 +77,10 @@ public class BigscreenController {
                 if (!precinctIds.contains(precinctId)) {
                     return ResponseResult.buildOkResult();
                 }
+            }
+
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
             }
             dataScope = new DataScope("precinct_id", precinctIds);
         }

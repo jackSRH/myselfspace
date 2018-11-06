@@ -281,7 +281,8 @@ create table t_sys_dict_type
 -- ----------------------------
 -- 初始化-数据字典类型表数据
 -- ----------------------------
-
+insert into t_sys_dict_type values(1,'智慧用电监测系统','power_monitor',0,'admin',now(),'admin',now(),'');
+insert into t_sys_dict_type values(2,'火灾自动报警系统','fire_conrol',0,'admin',now(),'admin',now(),'');
 
 
 -- ----------------------------
