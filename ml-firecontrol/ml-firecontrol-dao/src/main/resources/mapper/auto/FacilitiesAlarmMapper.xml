@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="precinct_id" jdbcType="INTEGER" property="precinctId" />
     <result column="struct_address" jdbcType="VARCHAR" property="structAddress" />
     <result column="facilities_id" jdbcType="INTEGER" property="facilitiesId" />
     <result column="alarm_id" jdbcType="INTEGER" property="alarmId" />
@@ -39,12 +40,12 @@
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, unit_id, struct_address, facilities_id, alarm_id, alarm_item_id, alarm_content, 
-    alarm_level, alarm_status, alarm_type, alarm_time, alarm_end_time, alarm_way, handle_time, 
-    handle_end_time, handle_status, handle_result, handle_uid, misreport, alarm_reason, 
-    alarm_area, die_num, injured, property_loss, emedial_measures, up_core_time, core_confirm_time, 
-    core_handle_uname, core_handle_result, hash_code, status, create_time, update_time, 
-    create_by, update_by
+    id, unit_id, precinct_id, struct_address, facilities_id, alarm_id, alarm_item_id, 
+    alarm_content, alarm_level, alarm_status, alarm_type, alarm_time, alarm_end_time, 
+    alarm_way, handle_time, handle_end_time, handle_status, handle_result, handle_uid, 
+    misreport, alarm_reason, alarm_area, die_num, injured, property_loss, emedial_measures, 
+    up_core_time, core_confirm_time, core_handle_uname, core_handle_result, hash_code, 
+    status, create_time, update_time, create_by, update_by
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -60,30 +61,30 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into t_facilities_alarm (unit_id, struct_address, facilities_id, 
-      alarm_id, alarm_item_id, alarm_content, 
-      alarm_level, alarm_status, alarm_type, 
-      alarm_time, alarm_end_time, alarm_way, 
-      handle_time, handle_end_time, handle_status, 
-      handle_result, handle_uid, misreport, 
-      alarm_reason, alarm_area, die_num, 
-      injured, property_loss, emedial_measures, 
-      up_core_time, core_confirm_time, core_handle_uname, 
-      core_handle_result, hash_code, status, 
-      create_time, update_time, create_by, 
-      update_by)
-    values (#{unitId,jdbcType=INTEGER}, #{structAddress,jdbcType=VARCHAR}, #{facilitiesId,jdbcType=INTEGER}, 
-      #{alarmId,jdbcType=INTEGER}, #{alarmItemId,jdbcType=VARCHAR}, #{alarmContent,jdbcType=VARCHAR}, 
-      #{alarmLevel,jdbcType=INTEGER}, #{alarmStatus,jdbcType=INTEGER}, #{alarmType,jdbcType=INTEGER}, 
-      #{alarmTime,jdbcType=TIMESTAMP}, #{alarmEndTime,jdbcType=TIMESTAMP}, #{alarmWay,jdbcType=INTEGER}, 
-      #{handleTime,jdbcType=TIMESTAMP}, #{handleEndTime,jdbcType=TIMESTAMP}, #{handleStatus,jdbcType=INTEGER}, 
-      #{handleResult,jdbcType=VARCHAR}, #{handleUid,jdbcType=INTEGER}, #{misreport,jdbcType=INTEGER}, 
-      #{alarmReason,jdbcType=VARCHAR}, #{alarmArea,jdbcType=VARCHAR}, #{dieNum,jdbcType=VARCHAR}, 
-      #{injured,jdbcType=VARCHAR}, #{propertyLoss,jdbcType=VARCHAR}, #{emedialMeasures,jdbcType=VARCHAR}, 
-      #{upCoreTime,jdbcType=TIMESTAMP}, #{coreConfirmTime,jdbcType=TIMESTAMP}, #{coreHandleUname,jdbcType=VARCHAR}, 
-      #{coreHandleResult,jdbcType=VARCHAR}, #{hashCode,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
-      #{updateBy,jdbcType=VARCHAR})
+    insert into t_facilities_alarm (unit_id, precinct_id, struct_address, 
+      facilities_id, alarm_id, alarm_item_id, 
+      alarm_content, alarm_level, alarm_status, 
+      alarm_type, alarm_time, alarm_end_time, 
+      alarm_way, handle_time, handle_end_time, 
+      handle_status, handle_result, handle_uid, 
+      misreport, alarm_reason, alarm_area, 
+      die_num, injured, property_loss, 
+      emedial_measures, up_core_time, core_confirm_time, 
+      core_handle_uname, core_handle_result, hash_code, 
+      status, create_time, update_time, 
+      create_by, update_by)
+    values (#{unitId,jdbcType=INTEGER}, #{precinctId,jdbcType=INTEGER}, #{structAddress,jdbcType=VARCHAR}, 
+      #{facilitiesId,jdbcType=INTEGER}, #{alarmId,jdbcType=INTEGER}, #{alarmItemId,jdbcType=VARCHAR}, 
+      #{alarmContent,jdbcType=VARCHAR}, #{alarmLevel,jdbcType=INTEGER}, #{alarmStatus,jdbcType=INTEGER}, 
+      #{alarmType,jdbcType=INTEGER}, #{alarmTime,jdbcType=TIMESTAMP}, #{alarmEndTime,jdbcType=TIMESTAMP}, 
+      #{alarmWay,jdbcType=INTEGER}, #{handleTime,jdbcType=TIMESTAMP}, #{handleEndTime,jdbcType=TIMESTAMP}, 
+      #{handleStatus,jdbcType=INTEGER}, #{handleResult,jdbcType=VARCHAR}, #{handleUid,jdbcType=INTEGER}, 
+      #{misreport,jdbcType=INTEGER}, #{alarmReason,jdbcType=VARCHAR}, #{alarmArea,jdbcType=VARCHAR}, 
+      #{dieNum,jdbcType=VARCHAR}, #{injured,jdbcType=VARCHAR}, #{propertyLoss,jdbcType=VARCHAR}, 
+      #{emedialMeasures,jdbcType=VARCHAR}, #{upCoreTime,jdbcType=TIMESTAMP}, #{coreConfirmTime,jdbcType=TIMESTAMP}, 
+      #{coreHandleUname,jdbcType=VARCHAR}, #{coreHandleResult,jdbcType=VARCHAR}, #{hashCode,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -93,6 +94,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="unitId != null">
         unit_id,
+      </if>
+      <if test="precinctId != null">
+        precinct_id,
       </if>
       <if test="structAddress != null">
         struct_address,
@@ -197,6 +201,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="unitId != null">
         #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="precinctId != null">
+        #{precinctId,jdbcType=INTEGER},
       </if>
       <if test="structAddress != null">
         #{structAddress,jdbcType=VARCHAR},
@@ -305,6 +312,9 @@
       <if test="unitId != null">
         unit_id = #{unitId,jdbcType=INTEGER},
       </if>
+      <if test="precinctId != null">
+        precinct_id = #{precinctId,jdbcType=INTEGER},
+      </if>
       <if test="structAddress != null">
         struct_address = #{structAddress,jdbcType=VARCHAR},
       </if>
@@ -410,6 +420,7 @@
   <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm">
     update t_facilities_alarm
     set unit_id = #{unitId,jdbcType=INTEGER},
+      precinct_id = #{precinctId,jdbcType=INTEGER},
       struct_address = #{structAddress,jdbcType=VARCHAR},
       facilities_id = #{facilitiesId,jdbcType=INTEGER},
       alarm_id = #{alarmId,jdbcType=INTEGER},
@@ -452,6 +463,9 @@
     <where>
       <if test="unitId != null">
          and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="precinctId != null">
+         and precinct_id = #{precinctId,jdbcType=INTEGER}
       </if>
       <if test="structAddress != null">
          and struct_address = #{structAddress,jdbcType=VARCHAR}
@@ -571,10 +585,10 @@
     </foreach>
   </select>
   <insert id="insertBatch" parameterType="java.util.List">
-    insert into t_facilities_alarm (unit_id, struct_address, facilities_id, 
-      alarm_id, alarm_item_id, alarm_content, 
-      alarm_level, alarm_status, alarm_type, 
-      alarm_time, alarm_end_time, 
+    insert into t_facilities_alarm (unit_id, precinct_id, struct_address, 
+      facilities_id, alarm_id, alarm_item_id, 
+      alarm_content, alarm_level, alarm_status, 
+      alarm_type, alarm_time, alarm_end_time, 
       alarm_way, handle_time, handle_end_time, 
       handle_status, handle_result, handle_uid, 
       misreport, alarm_reason, alarm_area, 
@@ -585,10 +599,10 @@
       create_time, update_time, create_by, 
       update_by) values 
     <foreach collection="objs" index="index" item="item" separator=",">
-       (#{item.unitId,jdbcType=INTEGER}, #{item.structAddress,jdbcType=VARCHAR}, #{item.facilitiesId,jdbcType=INTEGER}, 
-        #{item.alarmId,jdbcType=INTEGER}, #{item.alarmItemId,jdbcType=VARCHAR}, #{item.alarmContent,jdbcType=VARCHAR}, 
-        #{item.alarmLevel,jdbcType=INTEGER}, #{item.alarmStatus,jdbcType=INTEGER}, #{item.alarmType,jdbcType=INTEGER}, 
-        #{item.alarmTime,jdbcType=TIMESTAMP}, #{item.alarmEndTime,jdbcType=TIMESTAMP}, 
+       (#{item.unitId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, #{item.structAddress,jdbcType=VARCHAR}, 
+        #{item.facilitiesId,jdbcType=INTEGER}, #{item.alarmId,jdbcType=INTEGER}, #{item.alarmItemId,jdbcType=VARCHAR}, 
+        #{item.alarmContent,jdbcType=VARCHAR}, #{item.alarmLevel,jdbcType=INTEGER}, #{item.alarmStatus,jdbcType=INTEGER}, 
+        #{item.alarmType,jdbcType=INTEGER}, #{item.alarmTime,jdbcType=TIMESTAMP}, #{item.alarmEndTime,jdbcType=TIMESTAMP}, 
         #{item.alarmWay,jdbcType=INTEGER}, #{item.handleTime,jdbcType=TIMESTAMP}, #{item.handleEndTime,jdbcType=TIMESTAMP}, 
         #{item.handleStatus,jdbcType=INTEGER}, #{item.handleResult,jdbcType=VARCHAR}, #{item.handleUid,jdbcType=INTEGER}, 
         #{item.misreport,jdbcType=INTEGER}, #{item.alarmReason,jdbcType=VARCHAR}, #{item.alarmArea,jdbcType=VARCHAR}, 

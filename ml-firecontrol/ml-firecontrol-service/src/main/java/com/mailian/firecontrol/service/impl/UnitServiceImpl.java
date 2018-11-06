@@ -5,11 +5,14 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
+import com.mailian.core.enums.BooleanEnum;
 import com.mailian.core.enums.Status;
+import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.enums.AreaRank;
+import com.mailian.firecontrol.common.enums.AlarmType;
 import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
 import com.mailian.firecontrol.common.enums.UnitType;
+import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
@@ -17,19 +20,19 @@ import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
+import com.mailian.firecontrol.dao.auto.model.*;
+import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dto.push.Device;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.DeviceResp;
-import com.mailian.firecontrol.dto.web.response.PieData;
-import com.mailian.firecontrol.dto.web.response.PieResp;
-import com.mailian.firecontrol.dto.web.response.UnitListResp;
+import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
 import com.mailian.firecontrol.service.cache.UnitDeviceCache;
 import com.mailian.firecontrol.service.repository.DeviceRepository;
+import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +57,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private UnitDeviceService unitDeviceService;
     @Autowired
     private UnitDeviceCache unitDeviceCache;
+    @Resource
+    private FacilitiesAlarmMapper facilitiesAlarmMapper;
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
@@ -74,15 +79,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         //查找管辖区名称
         Set<Integer> precinctIds = new HashSet<>();
-        for(Unit unit : units){
-            precinctIds.add(unit.getPrecinctId());
-        }
-        List<Precinct> precincts = precinctMapper.selectBatchIds(precinctIds);
-        Map<Integer,String> precinetId2Name = new HashMap<>();
-        for(Precinct precinct : precincts){
-            precinetId2Name.put(precinct.getId(),precinct.getPrecinctName());
-        }
-
         //查找地址信息
         Set<Integer> areaIds = new HashSet<>();
         for(Unit unit:units){
@@ -98,6 +94,12 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             if(StringUtils.isNotEmpty(cityId)){
                 areaIds.add(cityId);
             }
+            precinctIds.add(unit.getPrecinctId());
+        }
+        List<Precinct> precincts = precinctMapper.selectBatchIds(precinctIds);
+        Map<Integer,String> precinetId2Name = new HashMap<>();
+        for(Precinct precinct : precincts){
+            precinetId2Name.put(precinct.getId(),precinct.getPrecinctName());
         }
         List<Area> areas = areaService.selectBatchIds(areaIds);
         Map<Integer,String> areaId2Name = new HashMap<>();
@@ -130,6 +132,11 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitListResp.setAreaInfo(areaInfo.toString());
             unitListResp.setUnitTypeDesc(UnitType.getValue(unit.getUnitType()));
             unitListResp.setSuperviseLevelDesc(UnitSuperviseLevel.getValue(unit.getSuperviseLevel()));
+
+            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+                unitListResp.setOnlineStatus(BooleanEnum.YES.id);
+            }
             unitListResps.add(unitListResp);
         }
 
@@ -248,30 +255,13 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     @Override
     public PieResp getUnitSpreadByAreaAndScope(Integer areaId,DataScope dataScope) {
         Map<String,Object> queryMap = new HashMap<>();
-        if(StringUtils.isNotEmpty(areaId)){
-            Area area = areaService.getAreaById(areaId);
-            Integer areaRank = area.getAreaRank();
-            if(AreaRank.PROVINCE.id.equals(areaRank)){
-                queryMap.put("provinceId",areaId);
-            }else if(AreaRank.CITY.id.equals(areaRank)){
-                queryMap.put("cityId",areaId);
-            }else{
-                queryMap.put("areaId",areaId);
-            }
-        }
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
 
         queryMap.put("precinctScope",dataScope);
         List<Unit> unitList = selectByMap(queryMap);
 
-        List<PieData> pieDataList = new ArrayList<>();
         Map<Integer,PieData> pieDataMap = new HashMap<>();
-        for (UnitType unitType : UnitType.values()) {
-            PieData pieData = new PieData();
-            pieData.setName(unitType.value);
-            pieData.setValue(0);
-            pieDataMap.put(unitType.id,pieData);
-            pieDataList.add(pieData);
-        }
+        PieResp pieResp = BuildDefaultResultUtil.buildDefaultPieResp(pieDataMap);
 
         for (Unit unit : unitList) {
             Integer unitType = unit.getUnitType();
@@ -281,10 +271,61 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
 
-        PieResp pieResp = new PieResp();
-        pieResp.setPieDataList(pieDataList);
         pieResp.setTotal(unitList.size());
         return pieResp;
+    }
+
+    @Override
+    public AreaUnitMapResp getUnitMapDataByAreaAndScope(Integer areaId, Integer unitType, DataScope dataScope) {
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+
+        queryMap.put("unitType",unitType);
+        queryMap.put("precinctScope",dataScope);
+        List<Unit> unitList = selectByMap(queryMap);
+
+        AreaUnitMapResp areaUnitMapResp = new AreaUnitMapResp();
+        AreaUnitMapResp.CountDataInfo countDataInfo = areaUnitMapResp.getCountDataInfo();
+        List<UnitInfo> unitInfos = new ArrayList<>();
+        List<Integer> unitIdList = new ArrayList<>();
+        Integer onlineCount = 0;
+        for (Unit unit : unitList) {
+            UnitInfo unitInfo = new UnitInfo();
+            BeanUtils.copyProperties(unit,unitInfo);
+            unitInfos.add(unitInfo);
+            unitIdList.add(unit.getId());
+
+            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+                onlineCount++;
+            }
+        }
+        areaUnitMapResp.setUnitInfos(unitInfos);
+
+        queryMap.clear();
+        queryMap.put("unitScope",new DataScope("unit_id",unitIdList));
+        List<FacilitiesAlarm> facilitiesAlarmList = facilitiesAlarmMapper.selectByMap(queryMap);
+        Integer alarmCount = 0;
+        Integer earlyWarningCount = 0;
+        for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
+            Integer alarmType = facilitiesAlarm.getAlarmType();
+            if(StringUtils.isNotNull(alarmType) && AlarmType.ALARM.id.equals(alarmType)){
+                alarmCount++;
+            }
+            if(StringUtils.isNotNull(alarmType) && AlarmType.EARLY_WARNING.id.equals(alarmType)){
+                earlyWarningCount++;
+            }
+        }
+
+        int unitCount = unitList.size();
+        countDataInfo.setAlarmCount(alarmCount);
+        countDataInfo.setEarlyWarningCount(earlyWarningCount);
+        countDataInfo.setOnlineRate(0);
+        if(unitCount != 0) {
+            countDataInfo.setOnlineRate((int) BigDecimalUtil.mul(BigDecimalUtil.div(onlineCount, unitCount,2),100));
+        }
+        countDataInfo.setUnitCount(unitCount);
+        return areaUnitMapResp;
     }
 
 }

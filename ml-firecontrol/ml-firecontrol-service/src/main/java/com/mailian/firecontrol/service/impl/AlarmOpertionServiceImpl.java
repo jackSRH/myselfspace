@@ -193,6 +193,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
 
                 FacilitiesAlarm facilitiesAlarm = new FacilitiesAlarm();
                 facilitiesAlarm.setUnitId(unitRedisInfo.getId());
+                facilitiesAlarm.setPrecinctId(unitRedisInfo.getPrecinctId());
                 facilitiesAlarm.setStructAddress(diagramStruct.getStructAddress());
                 facilitiesAlarm.setFacilitiesId(diagramStruct.getFacilitiesId());
                 facilitiesAlarm.setAlarmId(alarm.getAlarmid());

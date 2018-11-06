@@ -2,7 +2,7 @@
 *
 * FacilitiesAlarm.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-11-01
+* @date 2018-11-06
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -20,6 +20,11 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
      * 单位id
      */
     private Integer unitId;
+
+    /**
+     * 管辖区id
+     */
+    private Integer precinctId;
 
     /**
      * 地址(编号)
@@ -185,6 +190,14 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
 
     public void setUnitId(Integer unitId) {
         this.unitId = unitId;
+    }
+
+    public Integer getPrecinctId() {
+        return precinctId;
+    }
+
+    public void setPrecinctId(Integer precinctId) {
+        this.precinctId = precinctId;
     }
 
     public String getStructAddress() {

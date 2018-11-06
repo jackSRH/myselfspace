@@ -9,6 +9,7 @@ import com.mailian.firecontrol.common.enums.PushMessageTopic;
 import com.mailian.firecontrol.dto.push.DeviceCommunicationStatus;
 import com.mailian.firecontrol.framework.util.MqttTopicUtil;
 import com.mailian.firecontrol.service.cache.DeviceCache;
+import com.mailian.firecontrol.service.cache.UnitDeviceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,9 @@ public class GwstateMessageHandler implements MqttMessageHandlerAdapter {
 
             if(StringUtils.isNotNull(deviceCommunicationStatus)){
                 DeviceCache deviceCache = (DeviceCache) SpringContext.getBean("deviceCache");
+                UnitDeviceCache unitDeviceCache = (UnitDeviceCache) SpringContext.getBean("unitDeviceCache");
                 deviceCache.updateStatus(deviceCommunicationStatus);
+                unitDeviceCache.upUnitOnlineStatus(deviceCommunicationStatus);
 
                 if(Status.NORMAL.id.intValue() == deviceCommunicationStatus.getStatus().intValue()){
                     MqttTopicUtil.addTopic(deviceCommunicationStatus.getGwid());

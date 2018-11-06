@@ -5,6 +5,7 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
@@ -39,6 +40,13 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      */
     PageBean<FireAutoAlarmListResp> getFireAutoAlarmList(DataScope dataScope, SearchReq searchReq);
 
+    /**
+     * 警情信息统计
+     * @param areaId
+     * @param dataScope
+     * @return
+     */
+    AlarmNumResp getAlarmNumByAreaAndScope(Integer areaId, DataScope dataScope);
     /**
      * 查找告警列表
      * @param queryMap
