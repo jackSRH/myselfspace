@@ -21,6 +21,8 @@ public class UnitListResp {
     private Integer superviseLevel;
     @ApiModelProperty(value = "监管等级描述")
     private String superviseLevelDesc;
+    @ApiModelProperty(value = "在线状态 0:离线 1:在线")
+    private Integer onlineStatus=0;
 
     public Integer getId() {
         return id;
@@ -84,5 +86,13 @@ public class UnitListResp {
 
     public void setSuperviseLevelDesc(String superviseLevelDesc) {
         this.superviseLevelDesc = superviseLevelDesc;
+    }
+
+    public Integer getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public void setOnlineStatus(Integer onlineStatus) {
+        this.onlineStatus = onlineStatus;
     }
 }

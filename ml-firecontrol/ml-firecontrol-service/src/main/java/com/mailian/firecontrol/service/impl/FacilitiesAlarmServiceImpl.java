@@ -17,6 +17,7 @@ import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.ManageManualMapper;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
@@ -24,17 +25,12 @@ import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
+import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm, FacilitiesAlarmMapper> implements FacilitiesAlarmService {
@@ -243,6 +239,43 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         }
         PageBean<FireAutoAlarmListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),fireAutoAlarmListResps);
         return pageBean;
+    }
+
+    @Override
+    public AlarmNumResp getAlarmNumByAreaAndScope(Integer areaId, DataScope dataScope) {
+        AlarmNumResp alarmNumResp = new AlarmNumResp();
+
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        queryMap.put("precinctScope",dataScope);
+        List<FacilitiesAlarm> facilitiesAlarmList = selectByMap(queryMap);
+
+        AlarmNumResp.AlarmNum alarmNum = alarmNumResp.getAlarmNum();
+        AlarmNumResp.AlarmNum earlyWarningNum = alarmNumResp.getEarlyWarningNum();
+        for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
+            Integer alarmType = facilitiesAlarm.getAlarmType();
+            Integer alarmHandleStatus = facilitiesAlarm.getHandleStatus();
+            if(AlarmHandleStatus.UNTREATED.id.equals(alarmHandleStatus)){
+                if(AlarmType.ALARM.id.equals(alarmType)){
+                    alarmNum.setUntreated(alarmNum.getUntreated()+1);
+                }else{
+                    earlyWarningNum.setUntreated(earlyWarningNum.getUntreated()+1);
+                }
+            }else if(AlarmHandleStatus.COMPLETED.id.equals(alarmHandleStatus)){
+                if(AlarmType.ALARM.id.equals(alarmType)){
+                    alarmNum.setCompleted(alarmNum.getCompleted()+1);
+                }else{
+                    earlyWarningNum.setCompleted(earlyWarningNum.getCompleted()+1);
+                }
+            }else{
+                if(AlarmType.ALARM.id.equals(alarmType)){
+                    alarmNum.setUnderWay(alarmNum.getUnderWay()+1);
+                }else{
+                    earlyWarningNum.setUnderWay(earlyWarningNum.getUnderWay()+1);
+                }
+            }
+        }
+        return alarmNumResp;
     }
 
 }

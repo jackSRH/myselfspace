@@ -6,6 +6,7 @@ import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.PieResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
@@ -41,4 +42,13 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     PieResp getUnitSpreadByAreaAndScope(Integer areaId,DataScope dataScope);
+
+    /**
+     * 获取单位地图统计信息
+     * @param areaId
+     * @param unitType
+     * @param dataScope
+     * @return
+     */
+    AreaUnitMapResp getUnitMapDataByAreaAndScope(Integer areaId, Integer unitType, DataScope dataScope);
 }

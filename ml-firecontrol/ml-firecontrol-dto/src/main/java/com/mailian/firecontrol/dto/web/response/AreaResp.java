@@ -7,6 +7,7 @@ import com.mailian.core.util.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +16,8 @@ import java.util.List;
  * @Description:
  */
 @ApiModel(value = "区域信息")
-public class AreaResp implements TreeEntity<AreaResp> {
+public class AreaResp implements TreeEntity<AreaResp>,Serializable {
+    private static final long serialVersionUID = 6569603250328911390L;
     @ApiModelProperty(value = "id")
     private Integer id;
     @ApiModelProperty(value = "区域名")

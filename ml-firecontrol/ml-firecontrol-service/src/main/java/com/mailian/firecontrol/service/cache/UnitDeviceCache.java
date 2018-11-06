@@ -1,15 +1,18 @@
 package com.mailian.firecontrol.service.cache;
 
+import com.mailian.core.enums.Status;
 import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
+import com.mailian.firecontrol.dao.auto.mapper.UnitDeviceMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.UnitManualMapper;
 import com.mailian.firecontrol.dto.UnitRedisInfo;
+import com.mailian.firecontrol.dto.push.DeviceCommunicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +37,10 @@ public class UnitDeviceCache {
     private UnitMapper unitMapper;
     @Resource
     private PrecinctMapper precinctMapper;
+    @Resource
+    private UnitDeviceMapper unitDeviceMapper;
+    @Autowired
+    private DeviceCache deviceCache;
 
     /**
      * 根据网关id 获取单位信息
@@ -131,6 +138,55 @@ public class UnitDeviceCache {
             }
         }
         return deviceList;
+    }
+
+    /**
+     * 更新单位状态
+     * @param deviceCommunicationStatus
+     */
+    public void upUnitOnlineStatus(DeviceCommunicationStatus deviceCommunicationStatus){
+        Integer status = deviceCommunicationStatus.getStatus();
+        String deviceCode = deviceCommunicationStatus.getGwid();
+        UnitRedisInfo unitRedisInfo = redisUtils.getHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,deviceCode);
+        if(StringUtils.isNull(unitRedisInfo)){
+            return;
+        }
+
+        String unitIdStr = unitRedisInfo.getId().toString();
+        if(Status.NORMAL.id.equals(status)){//上线
+            Integer unitStatus = redisUtils.getHashValue(CommonConstant.SYS_UNIT_STATUS_KEY,unitIdStr);
+            if(StringUtils.isNull(unitStatus) || Status.DISABLE.id.equals(unitStatus)){ /*单位离线状态*/
+                Map<String,Object> queryMap = new HashMap<>();
+                queryMap.put("unitId",unitRedisInfo.getId());
+                List<UnitDevice> unitDeviceList = unitDeviceMapper.selectByMap(queryMap);
+
+                int count = 0;
+                for (UnitDevice unitDevice : unitDeviceList) {
+                    DeviceCommunicationStatus deviceStatus = deviceCache.getStatusByCode(unitDevice.getDeviceId());
+                    if(StringUtils.isNotNull(deviceStatus.getStatus())
+                            && Status.NORMAL.id.equals(deviceStatus.getStatus())
+                            && !deviceCode.equals(unitDevice.getDeviceId())) {//保证其余网关都上线
+                        count++;
+                    }
+                }
+                if(count >= unitDeviceList.size()-1){
+                    redisUtils.addHashValue(CommonConstant.SYS_UNIT_STATUS_KEY,unitIdStr,Status.NORMAL.id,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+                }
+            }
+        }else{
+            /*直接设置单位状态为离线*/
+            redisUtils.addHashValue(CommonConstant.SYS_UNIT_STATUS_KEY,unitIdStr,Status.DISABLE.id,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+        }
+
+    }
+
+    /**
+     * 获取单位在线状态
+     * @param unitIdStr
+     * @return
+     */
+    public Integer getUnitOnlineStatus(String unitIdStr){
+        return redisUtils.getHashValue(CommonConstant.SYS_UNIT_STATUS_KEY,unitIdStr);
     }
 
 }
