@@ -15,4 +15,20 @@ public enum  AlarmType {
         this.id = id;
         this.desc = desc;
     }
+
+    /**
+     * 获取对应属性值
+     * @param id
+     * @return
+     */
+    public static String getDesc(Integer id){
+        AlarmType[] alarmTypes = AlarmType.values();
+        for (AlarmType alarmType : alarmTypes) {
+            if(id.intValue() == alarmType.id.intValue()){
+                return alarmType.desc;
+            }
+        }
+        return "";
+    }
+
 }

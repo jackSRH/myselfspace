@@ -94,7 +94,7 @@ public class UnitPatrolController extends BaseController {
     @Log(title = "单位监控",action = "查找巡查记录详情")
     @ApiOperation(value = "查找巡查记录详情", httpMethod = "GET")
     @RequestMapping(value="/getUnitPatrolInfoById/{patrolId}",method = RequestMethod.GET)
-    public ResponseResult<UnitPatrolResp> getUnitPatrolInfoById(@ApiParam(value = "巡查记录id") @PathVariable("patrolId") Integer patrolId){
+    public ResponseResult<UnitPatrolResp> getUnitPatrolInfoById(@ApiParam(value = "巡查记录id",required = true) @PathVariable("patrolId") Integer patrolId){
         if(StringUtils.isEmpty(patrolId)){
             return error("巡查记录id不能为空");
         }

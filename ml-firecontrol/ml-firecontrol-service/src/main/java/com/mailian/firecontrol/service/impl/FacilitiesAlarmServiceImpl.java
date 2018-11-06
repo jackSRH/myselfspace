@@ -14,7 +14,7 @@ import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Unit;
-import com.mailian.firecontrol.dao.manual.ManageManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
@@ -244,5 +244,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         PageBean<FireAutoAlarmListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),fireAutoAlarmListResps);
         return pageBean;
     }
+
+    @Override
+    public List<FacilitiesAlarm> selectFacilitiesAlarmByMap(Map<String,Object> queryMap){
+        return  manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
+    }
+
 
 }

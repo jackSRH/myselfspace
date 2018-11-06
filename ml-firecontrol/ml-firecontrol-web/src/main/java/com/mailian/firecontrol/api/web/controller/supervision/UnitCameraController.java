@@ -96,7 +96,7 @@ public class UnitCameraController extends BaseController {
     @Log(title = "单位监控",action = "删除摄像头")
     @ApiOperation(value = "删除摄像头", httpMethod = "DELETE")
     @RequestMapping(value="/delete/{caremaId}",method = RequestMethod.DELETE)
-    public ResponseResult delete(@ApiParam(value = "摄像头") @PathVariable("caremaId") Integer caremaId){
+    public ResponseResult delete(@ApiParam(value = "摄像头",required = true) @PathVariable("caremaId") Integer caremaId){
         if(StringUtils.isEmpty(caremaId)){
             return error("摄像头id不能为空");
         }

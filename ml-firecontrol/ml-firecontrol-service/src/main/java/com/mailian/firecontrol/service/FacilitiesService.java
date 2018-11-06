@@ -3,9 +3,12 @@ package com.mailian.firecontrol.service;
 import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.PageBean;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
+import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
+
+import java.util.List;
 
 public interface FacilitiesService extends BaseService<Facilities> {
 
@@ -22,5 +25,12 @@ public interface FacilitiesService extends BaseService<Facilities> {
      * @return
      */
     Boolean insertOrUpdate(FacilitiesInfo facilitiesInfo);
+
+    /**
+     * 按照系统类型统计设施数量
+     * @param unitIds 单位id列表
+     * @return
+     */
+    List<FaNumGySystem> countFaNumGySystem(List<Integer> unitIds);
 
 }

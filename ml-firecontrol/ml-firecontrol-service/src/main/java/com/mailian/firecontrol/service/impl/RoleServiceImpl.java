@@ -14,7 +14,7 @@ import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.mapper.RoleMapper;
 import com.mailian.firecontrol.dao.auto.model.Role;
 import com.mailian.firecontrol.dao.auto.model.RoleMenu;
-import com.mailian.firecontrol.dao.manual.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.web.request.RoleReq;
 import com.mailian.firecontrol.dto.web.response.RoleResp;
 import com.mailian.firecontrol.service.RoleMenuService;

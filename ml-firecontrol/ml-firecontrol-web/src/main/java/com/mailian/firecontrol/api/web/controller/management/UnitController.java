@@ -113,7 +113,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位详情")
     @ApiOperation(value = "获取单位详情", httpMethod = "GET")
     @RequestMapping(value="/getUnitInfoById/{unitId}",method = RequestMethod.GET)
-    public ResponseResult<UnitInfo> getUnitInfoById(@ApiParam(value = "单位id") @PathVariable("unitId") Integer unitId){
+    public ResponseResult<UnitInfo> getUnitInfoById(@ApiParam(value = "单位id",required = true) @PathVariable("unitId") Integer unitId){
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
@@ -148,7 +148,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "删除单位遥控配置")
     @ApiOperation(value = "删除单位遥控配置", httpMethod = "DELETE")
     @RequestMapping(value="/deleteYcStructByDsId/{dsId}",method = RequestMethod.DELETE)
-    public ResponseResult deleteYcStructByDsId(@ApiParam(value = "模块id") @PathVariable("dsId") Integer dsId){
+    public ResponseResult deleteYcStructByDsId(@ApiParam(value = "模块id",required = true) @PathVariable("dsId") Integer dsId){
         if(StringUtils.isEmpty(dsId)){
             return error("id不能为空");
         }

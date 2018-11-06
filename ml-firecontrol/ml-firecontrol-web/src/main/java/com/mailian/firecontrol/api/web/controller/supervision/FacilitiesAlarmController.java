@@ -68,7 +68,7 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "设施告警详情")
     @ApiOperation(value = "设施告警详情", httpMethod = "GET")
     @RequestMapping(value="/getFacilitiesAlarmInfoByAlarmId/{alarmId}",method = RequestMethod.GET)
-    public ResponseResult<FacilitiesAlarmResp> getFacilitiesAlarmInfoByAlarmId(@ApiParam(value = "告警id") @PathVariable("alarmId") Integer alarmId){
+    public ResponseResult<FacilitiesAlarmResp> getFacilitiesAlarmInfoByAlarmId(@ApiParam(value = "告警id",required = true) @PathVariable("alarmId") Integer alarmId){
         if(StringUtils.isEmpty(alarmId)){
             return error("告警id不能为空");
         }
@@ -101,7 +101,7 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "火灾告警详情")
     @ApiOperation(value = "火灾告警详情", httpMethod = "GET")
     @RequestMapping(value="/getFireAlarmInfoByAlarmId/{alarmId}",method = RequestMethod.GET)
-    public ResponseResult<FireAlarmResp> getFireAlarmInfoByAlarmId(@ApiParam(value = "告警id") @PathVariable("alarmId") Integer alarmId){
+    public ResponseResult<FireAlarmResp> getFireAlarmInfoByAlarmId(@ApiParam(value = "告警id",required = true) @PathVariable("alarmId") Integer alarmId){
         if(StringUtils.isEmpty(alarmId)){
             return error("告警id不能为空");
         }
@@ -134,7 +134,7 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "火灾自动报警详情")
     @ApiOperation(value = "火灾自动报警详情", httpMethod = "GET")
     @RequestMapping(value="/getFireAutoAlarmInfoByAlarmId/{alarmId}",method = RequestMethod.GET)
-    public ResponseResult<FireAutoAlarmResp> getFireAutoAlarmInfoByAlarmId(@ApiParam(value = "告警id") @PathVariable("alarmId") Integer alarmId){
+    public ResponseResult<FireAutoAlarmResp> getFireAutoAlarmInfoByAlarmId(@ApiParam(value = "告警id",required = true) @PathVariable("alarmId") Integer alarmId){
         if(StringUtils.isEmpty(alarmId)){
             return error("告警id不能为空");
         }
