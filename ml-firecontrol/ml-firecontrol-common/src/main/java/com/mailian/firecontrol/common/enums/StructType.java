@@ -1,7 +1,7 @@
 package com.mailian.firecontrol.common.enums;
 
 public enum StructType {
-    REMOTE(1,"遥控设置"),FACILITY(2,"设施监测");
+    REMOTE(1,"遥控设置"),FACILITY(3,"设施监测");
 
     public Integer id;
     public String desc;
