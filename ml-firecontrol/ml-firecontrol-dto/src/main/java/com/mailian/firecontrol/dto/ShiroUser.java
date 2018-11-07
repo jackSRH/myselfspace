@@ -15,6 +15,8 @@ public class ShiroUser extends BaseUserInfo implements Serializable {
 
     /*管辖区id*/
     private List<Integer> precinctIds;
+    /*所属单位*/
+    private Integer unitId;
 
     public List<Integer> getPrecinctIds() {
         return precinctIds;
@@ -22,5 +24,13 @@ public class ShiroUser extends BaseUserInfo implements Serializable {
 
     public void setPrecinctIds(List<Integer> precinctIds) {
         this.precinctIds = precinctIds;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 }
