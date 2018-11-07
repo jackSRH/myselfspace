@@ -441,7 +441,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         /*设置开关状态*/
         //找到对应遥控数据项
-        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.REMOTE.id);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        queryMap.put("type",StructType.REMOTE.id);
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
         Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
         for (DiagramItemDto diagramItem : diagramItems) {
             if(dsIdItemMap.containsKey(diagramItem.getDsId())){
@@ -475,7 +478,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
 
         /*设置电压电流等数据项*/
-        diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.FACILITY.id);
+        queryMap.clear();
+        queryMap.put("unitId",unitId);
+        queryMap.put("type",StructType.FACILITY.id);
+        diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
         List<String> itemIds = new ArrayList<>();
         for (DiagramItemDto diagramItem : diagramItems) {
             if(DiaItemType.DATA_ITEM.id.equals(diagramItem.getItemType())){
