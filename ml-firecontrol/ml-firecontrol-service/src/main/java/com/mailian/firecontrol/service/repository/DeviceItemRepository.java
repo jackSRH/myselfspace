@@ -670,6 +670,9 @@ public class DeviceItemRepository {
      * @param items
      */
     private void setItemsVal(List<DeviceItem> items){
+        if(StringUtils.isEmpty(items)){
+            return;
+        }
         List<String> itemIdList = new ArrayList<>();
         for (DeviceItem item : items) {
             itemIdList.add(item.getId());
@@ -735,7 +738,9 @@ public class DeviceItemRepository {
 
         Map<String,DeviceItemRealTimeData> rtDataMap = new HashMap<>();
         for (DeviceItemRealTimeData deviceItemRealTimeData : rtDataList) {
-            rtDataMap.put(deviceItemRealTimeData.getId(),deviceItemRealTimeData);
+            if(StringUtils.isNotNull(deviceItemRealTimeData)){
+                rtDataMap.put(deviceItemRealTimeData.getId(),deviceItemRealTimeData);
+            }
         }
         return rtDataMap;
     }

@@ -54,8 +54,8 @@ public class DeviceCache {
         List<String> needFindCodes = new ArrayList<String>();
         List<Device> devices = redisUtils.getHashMultiValue(CommonConstant.DEVICE_CODE_TO_DEVICE,deviceCodes);
         List<String> newDeviceCodes = new ArrayList<>(deviceCodes);
-        if(StringUtils.isNotEmpty(devices)) {
-            for (Device device : devices) {
+        for (Device device : devices) {
+            if(StringUtils.isNotNull(device)) {
                 newDeviceCodes.remove(device.getCode());
             }
         }
@@ -114,9 +114,9 @@ public class DeviceCache {
     public Map<String,DeviceCommunicationStatus> getStatussByCodes(List<String> codes){
         List<DeviceCommunicationStatus> statusList = redisUtils.getHashMultiValue(CommonConstant.DEVICE_CODE_COMMUMICATION_STATUS,codes);
         Map<String,DeviceCommunicationStatus> resultMap = new HashMap<>();
-        if(StringUtils.isNotEmpty(codes)){
-            for (DeviceCommunicationStatus deviceCommunicationStatus : statusList) {
-                resultMap.put(deviceCommunicationStatus.getGwid(),deviceCommunicationStatus);
+        for (DeviceCommunicationStatus deviceCommunicationStatus : statusList) {
+            if(StringUtils.isNotNull(deviceCommunicationStatus)) {
+                resultMap.put(deviceCommunicationStatus.getGwid(), deviceCommunicationStatus);
             }
         }
         return resultMap;

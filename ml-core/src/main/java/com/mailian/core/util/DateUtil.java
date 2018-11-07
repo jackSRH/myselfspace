@@ -19,9 +19,10 @@ public class DateUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(DateUtil.class);
 
+	public static final String DATE_FORMAT_FOR_YM = "yyyy-MM";
 	public static final String DATE_FORMAT_FOR_YMD = "yyyy-MM-dd";
-	public static final String DATE_FORMAT_FOR_YMDHM = "yyyy-MM-dd hh:mm";
-	
+	public static final String DATE_FORMAT_FOR_YMDH = "yyyy-MM-dd HH";
+	public static final String DATE_FORMAT_FOR_YMDHM = "yyyy-MM-dd HH:mm";
 	public static final int WEEKS = 7;
 
 	public final  static String DATE_PATTERN = "yyyy-MM-dd";
@@ -895,6 +896,56 @@ public class DateUtil {
 
 	public static String toString(Date date) {
 		return toString(date, TIME_PATTERN_24);
+	}
+
+	/**
+	 * 获取某个时间段内所有的小时
+	 * @param dBegin
+	 * @param dEnd
+	 * @return
+	 *
+	 */
+	public static List<String> getHoursBetween(Date dBegin, Date dEnd){
+		List<String> lDate = new ArrayList<>();
+		SimpleDateFormat sd = new SimpleDateFormat(DATE_FORMAT_FOR_YMDH);
+		Calendar calBegin = Calendar.getInstance();
+		calBegin.setTime(dBegin);
+		Calendar calEnd = Calendar.getInstance();
+		calEnd.setTime(dEnd);
+
+		// 测试此日期是否在指定日期之后
+		while (dEnd.after(calBegin.getTime())){
+			// 根据日历的规则，为给定的日历字段添加或减去指定的时间量
+			lDate.add(sd.format(calBegin.getTime()));
+			calBegin.add(Calendar.HOUR_OF_DAY, 1);
+		}
+		return lDate;
+	}
+
+	/**
+	 * 获取某个时间段内所有的月
+	 * @param dBegin
+	 * @param dEnd
+	 * @return
+	 *
+	 */
+	public static List<String> getMonthsBetween(Date dBegin, Date dEnd){
+		List<String> lDate = new ArrayList<>();
+		SimpleDateFormat sd = new SimpleDateFormat(DATE_FORMAT_FOR_YM);
+		Calendar calBegin = Calendar.getInstance();
+		// 使用给定的 Date 设置此 Calendar 的时间
+		calBegin.setTime(dBegin);
+		Calendar calEnd = Calendar.getInstance();
+		// 使用给定的 Date 设置此 Calendar 的时间
+		calEnd.setTime(dEnd);
+
+		// 测试此日期是否在指定日期之后
+		while (dEnd.after(calBegin.getTime())){
+			// 根据日历的规则，为给定的日历字段添加或减去指定的时间量
+			lDate.add(sd.format(calBegin.getTime()));
+			calBegin.add(Calendar.MONTH, 1);
+		}
+		return lDate;
 	}
 
 

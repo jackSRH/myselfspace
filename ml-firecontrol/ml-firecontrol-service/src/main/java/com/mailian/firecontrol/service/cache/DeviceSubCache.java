@@ -87,9 +87,9 @@ public class DeviceSubCache {
         List<String> needFindSubIds = new ArrayList<String>();
         List<String> newSubIds = new ArrayList<>(subIds);
         List<DeviceSub> deviceSubList = redisUtils.getHashMultiValue(CommonConstant.SUB_ID_TO_DEVICE_SUB,subIds);
-        if(StringUtils.isNotEmpty(deviceSubList)) {
-            for (DeviceSub deviceSub : deviceSubList) {
-                subId2Sub.put(deviceSub.getRtuidcb(),deviceSub);
+        for (DeviceSub deviceSub : deviceSubList) {
+            if(StringUtils.isNotNull(deviceSub)) {
+                subId2Sub.put(deviceSub.getRtuidcb(), deviceSub);
 
                 newSubIds.remove(deviceSub.getRtuidcb());
             }
