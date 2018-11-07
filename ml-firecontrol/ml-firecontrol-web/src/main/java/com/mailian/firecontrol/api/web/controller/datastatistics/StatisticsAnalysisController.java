@@ -170,7 +170,7 @@ public class StatisticsAnalysisController extends BaseController {
         for(Unit unit : units){
             unitFaNumStatistics = new UnitFaNumStatistics();
             unitFaNumStatistics.setUnitName(unit.getUnitName());
-            unitFaNumStatistics.setPrecinctName(precinetId2Name.get(unit.getId()));
+            unitFaNumStatistics.setPrecinctName(precinetId2Name.get(unit.getPrecinctId()));
             unitFaNumStatistics.setFaNum(unitId2FaNum.get(unit.getId()));
             unitFaNumStatisticsList.add(unitFaNumStatistics);
         }
