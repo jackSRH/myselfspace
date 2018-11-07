@@ -40,6 +40,9 @@
 		from t_diagram_item t right join t_diagram_struct p
 		on t.ds_id = p.id where t.item_id = #{itemId,jdbcType=VARCHAR} and p.unit_id=#{unitId,jdbcType=INTEGER} limit 1
     </select>
+    <select id="countUnfinishAlarmNumByType" resultType="java.lang.Integer">
+        select count(1) from t_facilities_alarm where alarm_type = #{alaramType,jdbcType=INTEGER} and handle_status != 3
+    </select>
 
     <update id="updateFaAlarmBatch" parameterType="java.util.List">
         <foreach collection="alarmList" item="item" index="index" open="" close="" separator=";">
@@ -85,7 +88,17 @@
         GROUP BY fa_system_id;
     </select>
 
+    <resultMap id = "DiagramItemResultMap" type="com.mailian.firecontrol.dto.DiagramItemDto">
+        <result column="item_id" jdbcType="VARCHAR" property="itemId" />
+        <result column="item_type" jdbcType="INTEGER" property="itemType" />
+        <result column="struct_type" jdbcType="VARCHAR" property="structType" />
+        <result column="struct_name" jdbcType="VARCHAR" property="structName" />
+        <result column="ds_id" jdbcType="INTEGER" property="dsId" />
+    </resultMap>
 
+    <select id="selectDiagramItemByUnitIdAndType" resultMap="DiagramItemResultMap">
+        select i.item_id,i.item_type,s.struct_type,s.struct_name,i.ds_id from t_diagram_item i,t_diagram_struct s where i.ds_id=s.id and s.unit_id=#{unitId,jdbcType=INTEGER} and s.struct_type=#{type,jdbcType=INTEGER}
+    </select>
 
 
 </mapper>

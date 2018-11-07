@@ -235,19 +235,22 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             if(AlarmHandleStatus.UNTREATED.id.equals(alarmHandleStatus)){
                 if(AlarmType.ALARM.id.equals(alarmType)){
                     alarmNum.setUntreated(alarmNum.getUntreated()+1);
-                }else{
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alarmType)){
                     earlyWarningNum.setUntreated(earlyWarningNum.getUntreated()+1);
                 }
             }else if(AlarmHandleStatus.COMPLETED.id.equals(alarmHandleStatus)){
                 if(AlarmType.ALARM.id.equals(alarmType)){
                     alarmNum.setCompleted(alarmNum.getCompleted()+1);
-                }else{
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alarmType)){
                     earlyWarningNum.setCompleted(earlyWarningNum.getCompleted()+1);
                 }
             }else{
                 if(AlarmType.ALARM.id.equals(alarmType)){
                     alarmNum.setUnderWay(alarmNum.getUnderWay()+1);
-                }else{
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alarmType)){
                     earlyWarningNum.setUnderWay(earlyWarningNum.getUnderWay()+1);
                 }
             }

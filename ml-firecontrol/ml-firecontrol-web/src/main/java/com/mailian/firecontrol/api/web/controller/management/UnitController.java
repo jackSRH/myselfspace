@@ -184,7 +184,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取未分配网关")
     @ApiOperation(value = "获取未分配网关", httpMethod = "GET")
     @GetMapping(value = "getUnallotDevice")
-    public ResponseResult<List<DeviceResp>> getUnallotDevice(){
-        return ResponseResult.buildOkResult(unitService.getUnallotDevice());
+    public ResponseResult<List<DeviceResp>> getUnallotDevice(@ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        return ResponseResult.buildOkResult(unitService.getUnallotDevice(unitId));
     }
 }

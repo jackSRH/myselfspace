@@ -55,4 +55,7 @@ public class CommonConstant {
 
     /** 用户唯一键(友盟推送) */
     public static final String USRE_KEY = "%s&&%s";
+
+    /** 分隔符 */
+    public static final String SPLIT_STR = ";";
 }
