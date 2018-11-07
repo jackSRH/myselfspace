@@ -123,8 +123,12 @@ public class RedisConfig {
     public RedisTemplate redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
         RedisTemplate template = new RedisTemplate();
         template.setConnectionFactory(jedisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(jsonRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(jsonRedisSerializer);
         template.afterPropertiesSet();
         return template;
     }
