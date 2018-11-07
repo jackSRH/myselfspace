@@ -6,7 +6,8 @@ package com.mailian.firecontrol.common.enums;
  * @Description:数据项业务类型
  */
 public enum ItemBtype {
-    NOATTRIBUTE(0,"无"),SMOKE(8,"烟感"),LEAKAGE(31,"漏电");
+    NOATTRIBUTE(0,"无"),VOLTAGE(4,"电压"),ELECTRICCURRENT(5,"电流"),SMOKE(8,"烟感"),
+    LEAKAGE(31,"漏电"),CABLE_TEMPERATURE(32,"线缆温度");
 
 
     public Integer id;
