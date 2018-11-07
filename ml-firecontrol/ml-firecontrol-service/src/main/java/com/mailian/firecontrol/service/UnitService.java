@@ -5,6 +5,7 @@ import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dto.CountDataInfo;
 import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
 import com.mailian.firecontrol.dto.app.response.AppUnitResp;
 import com.mailian.firecontrol.dto.web.UnitInfo;
@@ -70,6 +71,13 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     AppUnitDetailResp getAppUnitDetailById(Integer unitId);
+
+    /**
+     * 统计单位数据
+     * @param dataScope
+     * @return
+     */
+    CountDataInfo getUnitTotalByScope(DataScope dataScope);
 
     /**
      * 获取单位开关列表

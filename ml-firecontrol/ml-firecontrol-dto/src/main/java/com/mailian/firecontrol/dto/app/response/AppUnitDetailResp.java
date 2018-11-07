@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.dto.app.response;
 
+import com.mailian.firecontrol.dto.web.response.CameraListResp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -20,6 +21,8 @@ public class AppUnitDetailResp implements Serializable {
     private Integer unitId;
     @ApiModelProperty(value = "单位名称")
     private String unitName;
+    @ApiModelProperty(value = "单位类型 1:餐饮、2:购物、3:住宿、4:公共娱乐、5:医疗、6:教学、7:休闲健身、8:生产加工、9:易燃易爆危险品")
+    private Integer unitType;
     @ApiModelProperty(value = "经营人")
     private String transactor;
     @ApiModelProperty(value = "联系电话")
@@ -55,6 +58,9 @@ public class AppUnitDetailResp implements Serializable {
     private List<ItemDataResp> cableTemperatures;
     @ApiModelProperty(value = "漏电电流")
     private List<ItemDataResp> leakages;
+
+    @ApiModelProperty(value = "摄像头参数")
+    private List<CameraListResp> cameraListResps;
 
     public Integer getUnitId() {
         return unitId;
@@ -200,38 +206,19 @@ public class AppUnitDetailResp implements Serializable {
         this.switchResps = switchResps;
     }
 
-    @ApiModel(description = "数据项信息")
-    public class ItemDataResp implements Serializable{
-        private static final long serialVersionUID = 1753263244881964561L;
-        @ApiModelProperty(value = "英文简称")
-        private String displayname;      //简称
-        @ApiModelProperty(value = "数据值")
-        private Float val;				 //实时数据
-        @ApiModelProperty(value = "单位")
-        private String unit;             //单位
+    public Integer getUnitType() {
+        return unitType;
+    }
 
-        public String getDisplayname() {
-            return displayname;
-        }
+    public void setUnitType(Integer unitType) {
+        this.unitType = unitType;
+    }
 
-        public void setDisplayname(String displayname) {
-            this.displayname = displayname;
-        }
+    public List<CameraListResp> getCameraListResps() {
+        return cameraListResps;
+    }
 
-        public Float getVal() {
-            return val;
-        }
-
-        public void setVal(Float val) {
-            this.val = val;
-        }
-
-        public String getUnit() {
-            return unit;
-        }
-
-        public void setUnit(String unit) {
-            this.unit = unit;
-        }
+    public void setCameraListResps(List<CameraListResp> cameraListResps) {
+        this.cameraListResps = cameraListResps;
     }
 }

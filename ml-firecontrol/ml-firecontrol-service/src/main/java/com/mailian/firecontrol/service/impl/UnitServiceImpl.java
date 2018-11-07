@@ -11,6 +11,7 @@ import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.enums.Status;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.BigDecimalUtil;
+import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
@@ -19,12 +20,15 @@ import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
+import com.mailian.firecontrol.dto.CountDataInfo;
 import com.mailian.firecontrol.dto.DiagramItemDto;
 import com.mailian.firecontrol.dto.SelectDto;
 import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
 import com.mailian.firecontrol.dto.app.response.AppUnitResp;
+import com.mailian.firecontrol.dto.app.response.ItemDataResp;
 import com.mailian.firecontrol.dto.app.response.SwitchResp;
 import com.mailian.firecontrol.dto.push.Device;
+import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
@@ -34,6 +38,7 @@ import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
 import com.mailian.firecontrol.service.cache.UnitDeviceCache;
+import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.repository.DeviceRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
@@ -66,6 +71,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private ManageManualMapper manageManualMapper;
     @Autowired
     private DeviceItemOpertionService deviceItemOpertionService;
+    @Autowired
+    private DeviceItemRepository deviceItemRepository;
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
@@ -313,7 +320,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         List<Unit> unitList = selectByMap(queryMap);
 
         AreaUnitMapResp areaUnitMapResp = new AreaUnitMapResp();
-        AreaUnitMapResp.CountDataInfo countDataInfo = areaUnitMapResp.getCountDataInfo();
         List<UnitInfo> unitInfos = new ArrayList<>();
         List<Integer> unitIdList = new ArrayList<>();
         Integer onlineCount = 0;
@@ -330,8 +336,25 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
         areaUnitMapResp.setUnitInfos(unitInfos);
 
-        queryMap.clear();
-        queryMap.put("unitScope",new DataScope("unit_id",unitIdList));
+        CountDataInfo countDataInfo = getCountDataInfo(unitIdList, onlineCount);
+        areaUnitMapResp.setCountDataInfo(countDataInfo);
+        return areaUnitMapResp;
+    }
+
+    /**
+     * 获取管辖区单位统计数据
+     * @param unitIdList
+     * @param onlineCount
+     * @return
+     */
+    private CountDataInfo getCountDataInfo(List<Integer> unitIdList, Integer onlineCount) {
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("unitIds",unitIdList);
+        Date now = new Date();
+        Date startTime = DateUtil.getStartDate(now);
+        Date endTime = DateUtil.getEndDate(now);
+        queryMap.put("startDate",startTime);
+        queryMap.put("endDate",endTime);
         List<FacilitiesAlarm> facilitiesAlarmList = facilitiesAlarmMapper.selectByMap(queryMap);
         Integer alarmCount = 0;
         Integer earlyWarningCount = 0;
@@ -345,7 +368,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
 
-        int unitCount = unitList.size();
+        int unitCount = unitIdList.size();
+        CountDataInfo countDataInfo = new CountDataInfo();
         countDataInfo.setAlarmCount(alarmCount);
         countDataInfo.setEarlyWarningCount(earlyWarningCount);
         countDataInfo.setOnlineRate(0);
@@ -353,7 +377,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             countDataInfo.setOnlineRate((int) BigDecimalUtil.mul(BigDecimalUtil.div(onlineCount, unitCount,2),100));
         }
         countDataInfo.setUnitCount(unitCount);
-        return areaUnitMapResp;
+        return countDataInfo;
     }
 
     @Override
@@ -417,10 +441,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         /*设置开关状态*/
         //找到对应遥控数据项
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitId",unitId);
-        queryMap.put("type",StructType.REMOTE.id);
-        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.REMOTE.id);
         Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
         for (DiagramItemDto diagramItem : diagramItems) {
             if(dsIdItemMap.containsKey(diagramItem.getDsId())){
@@ -453,8 +474,51 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             appUnitDetailResp.setSwitchResps(switchResps);
         }
 
-
         /*设置电压电流等数据项*/
+        diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.FACILITY.id);
+        List<String> itemIds = new ArrayList<>();
+        for (DiagramItemDto diagramItem : diagramItems) {
+            if(DiaItemType.DATA_ITEM.id.equals(diagramItem.getItemType())){
+                itemIds.add(diagramItem.getItemId());
+            }
+        }
+
+        if(StringUtils.isNotNull(itemIds)){
+            Map<String, DeviceItem> deviceItemMap = deviceItemRepository.getDeviceItemInfosByItemIds(itemIds);
+
+            if(StringUtils.isNotEmpty(deviceItemMap)){
+                List<ItemDataResp> voltages = new ArrayList<>();
+                List<ItemDataResp> electriccurrents = new ArrayList<>();
+                List<ItemDataResp> cableTemperatures = new ArrayList<>();
+                List<ItemDataResp> leakages = new ArrayList<>();
+
+                for (DeviceItem deviceItem : deviceItemMap.values()) {
+                    ItemDataResp itemDataResp = new ItemDataResp();
+                    itemDataResp.setDisplayname(deviceItem.getDisplayname());
+                    itemDataResp.setUnit(deviceItem.getUnit());
+                    itemDataResp.setVal(deviceItem.getVal());
+
+                    if(ItemBtype.VOLTAGE.id.equals(deviceItem.getBtype())){
+                        voltages.add(itemDataResp);
+                    }
+                    if(ItemBtype.ELECTRICCURRENT.id.equals(deviceItem.getBtype())){
+                        electriccurrents.add(itemDataResp);
+                    }
+                    if(ItemBtype.CABLE_TEMPERATURE.id.equals(deviceItem.getBtype())){
+                        cableTemperatures.add(itemDataResp);
+                    }
+                    if(ItemBtype.LEAKAGE.id.equals(deviceItem.getBtype())){
+                        leakages.add(itemDataResp);
+                    }
+                }
+
+                appUnitDetailResp.setVoltages(voltages);
+                appUnitDetailResp.setElectriccurrents(electriccurrents);
+                appUnitDetailResp.setCableTemperatures(cableTemperatures);
+                appUnitDetailResp.setLeakages(leakages);
+            }
+        }
+
         return appUnitDetailResp;
     }
 
@@ -534,5 +598,23 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         return pageBean;
     }
 
+
+    @Override
+    public CountDataInfo getUnitTotalByScope(DataScope dataScope) {
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("precinctScope",dataScope);
+        List<Unit> unitList = selectByMap(queryMap);
+
+        List<Integer> unitIdList = new ArrayList<>();
+        Integer onlineCount = 0;
+        for (Unit unit : unitList) {
+            unitIdList.add(unit.getId());
+            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+                onlineCount++;
+            }
+        }
+        return getCountDataInfo(unitIdList,onlineCount);
+    }
 
 }

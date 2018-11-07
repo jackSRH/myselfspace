@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
+import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
 import com.mailian.firecontrol.common.enums.AlarmType;
@@ -224,8 +225,14 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+
+        Date now = new Date();
+        Date startTime = DateUtil.getStartDate(now);
+        Date endTime = DateUtil.getEndDate(now);
         queryMap.put("precinctScope",dataScope);
-        List<FacilitiesAlarm> facilitiesAlarmList = selectByMap(queryMap);
+        queryMap.put("startDate",startTime);
+        queryMap.put("endDate",endTime);
+        List<FacilitiesAlarm> facilitiesAlarmList = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
 
         AlarmNumResp.AlarmNum alarmNum = alarmNumResp.getAlarmNum();
         AlarmNumResp.AlarmNum earlyWarningNum = alarmNumResp.getEarlyWarningNum();
