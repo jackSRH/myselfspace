@@ -11,7 +11,7 @@ import com.mailian.firecontrol.common.util.SmsUtils;
 import com.mailian.firecontrol.dao.auto.model.DiagramStruct;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.SysConfig;
-import com.mailian.firecontrol.dao.manual.ManageManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.UnitRedisInfo;
 import com.mailian.firecontrol.dto.app.NoticeInfo;
 import com.mailian.firecontrol.dto.push.Alarm;

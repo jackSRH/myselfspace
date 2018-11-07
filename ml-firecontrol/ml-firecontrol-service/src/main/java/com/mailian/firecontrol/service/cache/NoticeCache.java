@@ -10,7 +10,7 @@ import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.NoticeType;
-import com.mailian.firecontrol.dao.manual.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.app.NoticeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

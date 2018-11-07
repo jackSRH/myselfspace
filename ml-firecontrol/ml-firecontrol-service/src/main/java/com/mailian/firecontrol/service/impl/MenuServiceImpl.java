@@ -12,7 +12,7 @@ import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.MenuType;
 import com.mailian.firecontrol.dao.auto.mapper.MenuMapper;
 import com.mailian.firecontrol.dao.auto.model.Menu;
-import com.mailian.firecontrol.dao.manual.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.web.request.MenuReq;
 import com.mailian.firecontrol.dto.web.response.MenuResp;
 import com.mailian.firecontrol.service.MenuService;

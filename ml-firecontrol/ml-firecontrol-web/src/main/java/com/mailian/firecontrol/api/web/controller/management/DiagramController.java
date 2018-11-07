@@ -56,7 +56,7 @@ public class DiagramController extends BaseController {
     @Log(title = "配置管理",action = "删除系统图模块")
     @ApiOperation(value = "删除系统图模块", httpMethod = "DELETE")
     @RequestMapping(value="/delete/{dsId}",method = RequestMethod.DELETE)
-    public ResponseResult delete(@ApiParam(value = "模块id") @PathVariable("dsId") Integer dsId){
+    public ResponseResult delete(@ApiParam(value = "模块id",required = true) @PathVariable("dsId") Integer dsId){
         if(StringUtils.isEmpty(dsId)){
             return error("id不能为空");
         }

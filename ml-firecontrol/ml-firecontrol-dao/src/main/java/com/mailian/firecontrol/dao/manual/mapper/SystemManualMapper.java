@@ -1,4 +1,4 @@
-package com.mailian.firecontrol.dao.manual;
+package com.mailian.firecontrol.dao.manual.mapper;
 
 import com.mailian.firecontrol.dao.auto.model.Role;
 import org.apache.ibatis.annotations.Param;

@@ -62,7 +62,7 @@ public class FacilitiesController extends BaseController {
     @Log(title = "配置管理",action = "获取设施详情")
     @ApiOperation(value = "获取设施详情", httpMethod = "GET")
     @RequestMapping(value="/getFacilitiesInfoById/{faId}",method = RequestMethod.GET)
-    public ResponseResult<FacilitiesInfo> getUnitInfoById(@ApiParam(value = "设施id") @PathVariable("faId") Integer faId){
+    public ResponseResult<FacilitiesInfo> getUnitInfoById(@ApiParam(value = "设施id",required = true) @PathVariable("faId") Integer faId){
         if(StringUtils.isEmpty(faId)){
             return error("设施id不能为空");
         }

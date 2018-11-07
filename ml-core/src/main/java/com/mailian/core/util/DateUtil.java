@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import static java.util.Calendar.*;
 
@@ -21,7 +23,6 @@ public class DateUtil {
 	public static final String DATE_FORMAT_FOR_YMDHM = "yyyy-MM-dd hh:mm";
 	
 	public static final int WEEKS = 7;
-	
 
 	public final  static String DATE_PATTERN = "yyyy-MM-dd";
 	public final  static String TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
@@ -816,5 +817,85 @@ public class DateUtil {
 		int week = cal.get(Calendar.DAY_OF_WEEK) - 1;
 		return week;
 	}
+
+	/**
+	 * 几个月以后
+	 *
+	 * @param date
+	 * @param month
+	 * @return
+	 */
+	public static Date getDateAfterMonth(Date date, int month) {
+		if(null == date){
+			return date;
+		}
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date(date.getTime()));
+		c.add(Calendar.MONTH,month);
+		return c.getTime();
+	}
+
+	/**
+	 * 几个月以前
+	 *
+	 * @param date
+	 * @param month
+	 * @return
+	 */
+	public static Date getDateBeforeMonth(Date date, int month){
+		return getDateAfterMonth(date,-month);
+	}
+
+	/**
+	 * 获取在指定日期之前的指定天数的日期
+	 *
+	 * @param date
+	 * @param day
+	 * @return
+	 */
+	public static Date getDateBeforeDay(Date date, int day) {
+		return getDateAfterDay(date, -day);
+	}
+
+	/**
+	 * 获取某个时间段内所有的日
+	 * @param dBegin
+	 * @param dEnd
+	 * @return
+	 *
+	 */
+	public static List<String> getDaysBetween(Date dBegin, Date dEnd){
+		List<String> lDate = new ArrayList<>();
+		SimpleDateFormat sd = new SimpleDateFormat(DATE_FORMAT_FOR_YMD);
+		Calendar calBegin = Calendar.getInstance();
+		// 使用给定的 Date 设置此 Calendar 的时间
+		calBegin.setTime(dBegin);
+		Calendar calEnd = Calendar.getInstance();
+		// 使用给定的 Date 设置此 Calendar 的时间
+		calEnd.setTime(dEnd);
+
+		// 测试此日期是否在指定日期之后
+		while (dEnd.after(calBegin.getTime())){
+			// 根据日历的规则，为给定的日历字段添加或减去指定的时间量
+			lDate.add(sd.format(calBegin.getTime()));
+			calBegin.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		return lDate;
+	}
+
+	public static String toString(Date date, String pattern) {
+		if(date==null){
+			return null;
+		}
+		Assert.notNull(pattern);
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		return sdf.format(date);
+	}
+
+	public static String toString(Date date) {
+		return toString(date, TIME_PATTERN_24);
+	}
+
 
 }

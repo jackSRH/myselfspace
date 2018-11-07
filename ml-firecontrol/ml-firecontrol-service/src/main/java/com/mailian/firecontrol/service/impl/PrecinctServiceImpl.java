@@ -10,7 +10,7 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
-import com.mailian.firecontrol.dao.manual.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.web.request.PrecinctQueryReq;
 import com.mailian.firecontrol.dto.web.request.PrecinctReq;
 import com.mailian.firecontrol.dto.web.response.PrecinctResp;

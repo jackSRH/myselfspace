@@ -5,7 +5,7 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.mapper.DiagramItemMapper;
 import com.mailian.firecontrol.dao.auto.model.DiagramItem;
-import com.mailian.firecontrol.dao.manual.ManageManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.web.request.DiagramItemReq;
 import com.mailian.firecontrol.service.DiagramItemService;
 import org.springframework.beans.BeanUtils;

@@ -14,7 +14,7 @@ import com.mailian.firecontrol.dao.auto.mapper.UserMapper;
 import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dao.auto.model.UserPrecinct;
 import com.mailian.firecontrol.dao.auto.model.UserRole;
-import com.mailian.firecontrol.dao.manual.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
 import com.mailian.firecontrol.service.UserPrecinctService;

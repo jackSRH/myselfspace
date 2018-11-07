@@ -10,6 +10,9 @@ import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
 import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
 
+import java.util.List;
+import java.util.Map;
+
 public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
 
     /**
@@ -44,4 +47,11 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @return
      */
     AlarmNumResp getAlarmNumByAreaAndScope(Integer areaId, DataScope dataScope);
+    /**
+     * 查找告警列表
+     * @param queryMap
+     * @return
+     */
+    List<FacilitiesAlarm> selectFacilitiesAlarmByMap(Map<String,Object> queryMap);
+
 }

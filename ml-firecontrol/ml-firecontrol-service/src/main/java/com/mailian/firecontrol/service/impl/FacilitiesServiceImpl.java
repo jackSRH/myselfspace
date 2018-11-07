@@ -9,6 +9,8 @@ import com.mailian.firecontrol.common.enums.FacilitiesServiceStatus;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
+import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
@@ -30,7 +32,8 @@ import java.util.Set;
 public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, FacilitiesMapper> implements FacilitiesService {
     @Resource
     private UnitService unitService;
-
+    @Resource
+    private ManageManualMapper manageManualMapper;
 
     @Override
     public PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq){
@@ -91,6 +94,10 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
         }
     }
 
+    @Override
+    public List<FaNumGySystem> countFaNumGySystem(List<Integer> unitIds){
+       return manageManualMapper.countFaNumGySystem(unitIds);
+    }
 
 
 }
