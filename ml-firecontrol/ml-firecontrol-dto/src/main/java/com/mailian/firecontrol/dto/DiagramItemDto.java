@@ -32,6 +32,11 @@ public class DiagramItemDto implements Serializable {
      */
     private Integer dsId;
 
+    /**
+     * 单位id
+     */
+    private Integer unitId;
+
     public String getItemId() {
         return itemId;
     }
@@ -70,5 +75,13 @@ public class DiagramItemDto implements Serializable {
 
     public void setDsId(Integer dsId) {
         this.dsId = dsId;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 }

@@ -22,6 +22,7 @@ import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
+import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitService;
@@ -187,4 +188,22 @@ public class UnitController extends BaseController {
     public ResponseResult<List<DeviceResp>> getUnallotDevice(@ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
         return ResponseResult.buildOkResult(unitService.getUnallotDevice(unitId));
     }
+
+    @Log(title = "配置管理",action = "获取单位开关列表")
+    @ApiOperation(value = "获取单位开关列表", httpMethod = "GET")
+    @GetMapping(value = "/getUnitSwitchList")
+    public ResponseResult<PageBean<List<UnitSwitchResp>>> getUnitSwitchList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+
+        PageBean<List<UnitSwitchResp>> res = unitService.getUnitSwitchList(dataScope,searchReq);
+        return ResponseResult.buildOkResult(res);
+    }
+
 }

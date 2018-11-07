@@ -85,5 +85,4 @@ public class DiagramController extends BaseController {
         Boolean updateRes = diagramStructService.update(diagramStructReq,filePath);
         return updateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
-
 }

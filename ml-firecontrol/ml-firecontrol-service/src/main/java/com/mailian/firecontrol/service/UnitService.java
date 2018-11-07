@@ -13,6 +13,7 @@ import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.PieResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
+import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
 
 import java.util.List;
 
@@ -69,4 +70,13 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     AppUnitDetailResp getAppUnitDetailById(Integer unitId);
+
+    /**
+     * 获取单位开关列表
+     * @param dataScope 管辖区id列表
+     * @param searchReq
+     * @return
+     */
+    PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope,SearchReq searchReq);
+
 }

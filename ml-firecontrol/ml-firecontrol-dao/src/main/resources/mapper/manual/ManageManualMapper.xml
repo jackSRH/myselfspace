@@ -94,10 +94,25 @@
         <result column="struct_type" jdbcType="VARCHAR" property="structType" />
         <result column="struct_name" jdbcType="VARCHAR" property="structName" />
         <result column="ds_id" jdbcType="INTEGER" property="dsId" />
+        <result column="unit_id" jdbcType="INTEGER" property="unitId" />
     </resultMap>
 
-    <select id="selectDiagramItemByUnitIdAndType" resultMap="DiagramItemResultMap">
-        select i.item_id,i.item_type,s.struct_type,s.struct_name,i.ds_id from t_diagram_item i,t_diagram_struct s where i.ds_id=s.id and s.unit_id=#{unitId,jdbcType=INTEGER} and s.struct_type=#{type,jdbcType=INTEGER}
+    <select id="selectDiagramItemByMap" parameterType="java.util.Map" resultMap="DiagramItemResultMap">
+        select
+        i.item_id,i.item_type,s.struct_type,s.struct_name,i.ds_id,s.unit_id
+        from t_diagram_item i,t_diagram_struct s where i.ds_id=s.id
+        <if test="unitId != null">
+            and s.unit_id=#{unitId,jdbcType=INTEGER}
+        </if>
+        <if test="type != null">
+            and s.struct_type=#{type,jdbcType=INTEGER}
+        </if>
+        <if test="unitIds != null and unitIds.size() > 0">
+            and s.unit_id in
+            <foreach close=")" collection="unitIds" index="i" item="item" open="(" separator=",">
+                #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
     </select>
 
 

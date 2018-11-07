@@ -25,5 +25,5 @@ public interface ManageManualMapper {
     List<FaNumGySystem> countFaNumGySystem(@Param(value = "unitIds") List<Integer> unitIds);
 
 
-    List<DiagramItemDto> selectDiagramItemByUnitIdAndType(@Param(value = "unitId") Integer unitId,@Param(value = "type") Integer type);
+    List<DiagramItemDto> selectDiagramItemByMap(Map<String,Object> queryMap);
 }

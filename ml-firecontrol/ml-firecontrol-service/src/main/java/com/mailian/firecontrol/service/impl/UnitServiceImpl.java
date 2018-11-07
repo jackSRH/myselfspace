@@ -417,7 +417,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         /*设置开关状态*/
         //找到对应遥控数据项
-        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.REMOTE.id);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        queryMap.put("type",StructType.REMOTE.id);
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
         Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
         for (DiagramItemDto diagramItem : diagramItems) {
             if(dsIdItemMap.containsKey(diagramItem.getDsId())){
@@ -454,5 +457,82 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         /*设置电压电流等数据项*/
         return appUnitDetailResp;
     }
+
+    @Override
+    public PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope,SearchReq searchReq){
+        String unitName = searchReq.getUnitName();
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("precinctScope", dataScope);
+        if(StringUtils.isNotEmpty(unitName)){
+            queryMap.put("unitNameLike",unitName);
+        }
+        List<Unit> units = super.selectByMap(queryMap);
+        if(StringUtils.isEmpty(units)){
+            return new PageBean<>();
+        }
+
+        List<Integer> unitIds = new ArrayList<>();
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        for(Unit unit :units){
+            unitIds.add(unit.getId());
+            unitId2Name.put(unit.getId(),unit.getUnitName());
+        }
+        queryMap.clear();
+        queryMap.put("unitIds",unitIds);
+        queryMap.put("type",StructType.REMOTE.id);
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
+        if(StringUtils.isEmpty(diagramItems)){
+            return new PageBean<>();
+        }
+
+        Map<Integer,List<DiagramItemDto>> unitId2DiagramItems = new HashMap<>();
+        List<DiagramItemDto> tempDiagramItems;
+        Integer unitId;
+        for(DiagramItemDto diagramItem : diagramItems){
+            unitId = diagramItem.getUnitId();
+            tempDiagramItems = unitId2DiagramItems.containsKey(unitId)?unitId2DiagramItems.get(unitId):new ArrayList<>();
+            tempDiagramItems.add(diagramItem);
+            unitId2DiagramItems.put(unitId,tempDiagramItems);
+        }
+
+        List<List<UnitSwitchResp>> unitSwitchList = new ArrayList<>();
+        for(Map.Entry<Integer,List<DiagramItemDto>> entry : unitId2DiagramItems.entrySet()) {
+            Map<Integer, Map<Integer, DiagramItemDto>> dsIdItemMap = new HashMap<>();
+            for (DiagramItemDto diagramItem : diagramItems) {
+                if (dsIdItemMap.containsKey(diagramItem.getDsId())) {
+                    dsIdItemMap.get(diagramItem.getDsId()).put(diagramItem.getItemType(), diagramItem);
+                } else {
+                    Map<Integer, DiagramItemDto> typeItemMap = new HashMap<>();
+                    typeItemMap.put(diagramItem.getItemType(), diagramItem);
+                    dsIdItemMap.put(diagramItem.getDsId(), typeItemMap);
+                }
+            }
+
+            if (StringUtils.isNotEmpty(dsIdItemMap)) {
+                List<UnitSwitchResp> unitSwitchResps = new ArrayList<>();
+                UnitSwitchResp unitSwitchResp;
+                for (Map<Integer, DiagramItemDto> typeItemMap : dsIdItemMap.values()) {
+                    DiagramItemDto ykItem = typeItemMap.get(DiaItemType.TELECONTROL.id);
+                    DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
+
+                    if (StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
+                        String status = deviceItemOpertionService.getYaoceStatus(ykItem.getItemId(), switchItem.getItemId());
+                        List<SelectDto> selectDtos = deviceItemOpertionService.getYaokongEnumList(ykItem.getItemId());
+
+                        unitSwitchResp = new UnitSwitchResp();
+                        unitSwitchResp.setSelects(selectDtos);
+                        unitSwitchResp.setSwitchStatus(status);
+                        unitSwitchResp.setSwitchName(ykItem.getStructName());
+                        unitSwitchResp.setUnitName(unitId2Name.get(entry.getKey()));
+                        unitSwitchResps.add(unitSwitchResp);
+                    }
+                }
+                unitSwitchList.add(unitSwitchResps);
+            }
+        }
+        PageBean<List<UnitSwitchResp>> pageBean = new PageBean<>(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList.size(),unitSwitchList);
+        return pageBean;
+    }
+
 
 }
