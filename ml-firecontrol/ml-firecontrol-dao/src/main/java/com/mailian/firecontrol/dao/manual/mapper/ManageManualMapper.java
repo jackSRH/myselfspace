@@ -4,6 +4,7 @@ package com.mailian.firecontrol.dao.manual.mapper;
 import com.mailian.firecontrol.dao.auto.model.DiagramStruct;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
+import com.mailian.firecontrol.dto.DiagramItemDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,5 +20,10 @@ public interface ManageManualMapper {
 
     int updateFaAlarmBatch(@Param(value = "alarmList") List<FacilitiesAlarm> upFacilitiesAlarmList);
 
+    int countUnfinishAlarmNumByType(Integer alaramType);
+
     List<FaNumGySystem> countFaNumGySystem(@Param(value = "unitIds") List<Integer> unitIds);
+
+
+    List<DiagramItemDto> selectDiagramItemByUnitIdAndType(@Param(value = "unitId") Integer unitId,@Param(value = "type") Integer type);
 }

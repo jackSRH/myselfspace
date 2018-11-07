@@ -3,30 +3,33 @@ package com.mailian.firecontrol.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
+import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.BooleanEnum;
+import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.enums.Status;
+import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.enums.AlarmType;
-import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
-import com.mailian.firecontrol.common.enums.UnitType;
+import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
-import com.mailian.firecontrol.dao.auto.model.Area;
-import com.mailian.firecontrol.dao.auto.model.Precinct;
-import com.mailian.firecontrol.dao.auto.model.Unit;
-import com.mailian.firecontrol.dao.auto.model.UnitDevice;
-import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dao.auto.model.*;
+import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
+import com.mailian.firecontrol.dto.DiagramItemDto;
+import com.mailian.firecontrol.dto.SelectDto;
+import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
+import com.mailian.firecontrol.dto.app.response.AppUnitResp;
+import com.mailian.firecontrol.dto.app.response.SwitchResp;
 import com.mailian.firecontrol.dto.push.Device;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.AreaService;
+import com.mailian.firecontrol.service.DeviceItemOpertionService;
 import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
@@ -59,6 +62,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private UnitDeviceCache unitDeviceCache;
     @Resource
     private FacilitiesAlarmMapper facilitiesAlarmMapper;
+    @Resource
+    private ManageManualMapper manageManualMapper;
+    @Autowired
+    private DeviceItemOpertionService deviceItemOpertionService;
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
@@ -203,7 +210,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     }
 
     /**
-     * 添加用户管辖区关联
+     * 添加单位网关关系
      * @param unitId
      * @param deviceIds
      */
@@ -211,6 +218,21 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         if(StringUtils.isEmpty(deviceIds)){
             return;
         }
+        List<UnitDevice> unitDevicesDb = unitDeviceService.selectByDeviceIds(deviceIds);
+        List<UnitDevice> upList = new ArrayList<>();
+        for (UnitDevice unitDevice : unitDevicesDb) {
+            if(deviceIds.contains(unitDevice.getDeviceId())){
+                if(unitDevice.getUnitId().equals(unitId)) {
+                    UnitDevice upUnitDevice = new UnitDevice();
+                    upUnitDevice.setId(unitDevice.getId());
+                    upUnitDevice.setUnitId(unitId);
+                    setUserNameAndTime(upUnitDevice, false);
+                    upList.add(upUnitDevice);
+                }
+                deviceIds.remove(unitDevice.getDeviceId());
+            }
+        }
+
         UnitDevice unitDevice;
         List<UnitDevice> unitDeviceList = new ArrayList<>();
         for (String deviceId : deviceIds) {
@@ -221,12 +243,17 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitDeviceList.add(unitDevice);
         }
         unitDeviceService.insertBatch(unitDeviceList);
+        if(StringUtils.isNotEmpty(upList)){
+            unitDeviceService.updateByList(upList);
+        }
+
+        unitDeviceList.addAll(upList);
         unitDeviceCache.addOrUpdateUnitDevice(unitDeviceList);
     }
 
 
     @Override
-    public List<DeviceResp> getUnallotDevice() {
+    public List<DeviceResp> getUnallotDevice(Integer unitId) {
         List<DeviceResp> deviceRespList = new ArrayList<>();
         List<Device> devices = deviceRepository.getDevicesByCodes(null);
         if(StringUtils.isEmpty(devices)){
@@ -234,7 +261,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
 
         Map<String,Device> deviceMap = deviceCache.addDevices(devices);
-        List<String> deviceIds = unitManualMapper.selectDevices();
+        List<String> deviceIds = unitManualMapper.selectDevicesExcludeUnitId(unitId);
+
         if(StringUtils.isNotNull(deviceIds)) {
             for (String deviceId : deviceIds) {
                 deviceMap.remove(deviceId);
@@ -326,6 +354,105 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
         countDataInfo.setUnitCount(unitCount);
         return areaUnitMapResp;
+    }
+
+    @Override
+    public List<AppUnitResp> selectByNameAndPageScope(String name, BasePage basePage,DataScope dataScope) {
+        PageHelper.startPage(basePage.getCurrentPage(),basePage.getPageSize());
+
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitNameLike",name);
+        queryMap.put("precinctScope",dataScope);
+
+        List<Unit> unitList = selectByMap(queryMap);
+
+        List<AppUnitResp> unitRespList = new ArrayList<>();
+        for (Unit unit : unitList) {
+            AppUnitResp appUnitResp = new AppUnitResp();
+            appUnitResp.setUnitId(unit.getId());
+            appUnitResp.setUnitName(unit.getUnitName());
+            unitRespList.add(appUnitResp);
+        }
+        return unitRespList;
+    }
+
+    @Override
+    public AppUnitDetailResp getAppUnitDetailById(Integer unitId) {
+        Unit unit = selectByPrimaryKey(unitId);
+        if(StringUtils.isNull(unit)){
+            throw new RequestException(ResponseCode.FAIL.code,"单位不存在");
+        }
+
+        AppUnitDetailResp appUnitDetailResp = new AppUnitDetailResp();
+
+        appUnitDetailResp.setUnitId(unitId);
+        appUnitDetailResp.setUnitName(unit.getUnitName());
+        appUnitDetailResp.setTransactor(unit.getTransactor());
+        appUnitDetailResp.setContactPhone(unit.getContactPhone());
+        appUnitDetailResp.setAddress(unit.getAddress());
+        appUnitDetailResp.setBusinessScope(unit.getBusinessScope());
+        appUnitDetailResp.setItems(unit.getItems());
+        appUnitDetailResp.setJoinTime(unit.getJoinTime());
+
+        /*获取管辖区信息*/
+        Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
+        if(StringUtils.isNotNull(precinct)){
+            appUnitDetailResp.setPrecinctName(precinct.getPrecinctName());
+            appUnitDetailResp.setDutyName(precinct.getDutyName());
+            appUnitDetailResp.setDutyPhone(precinct.getDutyPhone());
+        }
+
+        /*获取当前烟感、漏电状态*/
+        int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
+        int leakageAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.EARLY_WARNING.id);
+        appUnitDetailResp.setSomkeStatus(Status.NORMAL.id);
+        if(somkeAlarmCount>0){
+            appUnitDetailResp.setSomkeStatus(Status.DISABLE.id);
+        }
+
+        appUnitDetailResp.setLeakageStatus(Status.NORMAL.id);
+        if(leakageAlarmCount>0){
+            appUnitDetailResp.setLeakageStatus(Status.DISABLE.id);
+        }
+
+        /*设置开关状态*/
+        //找到对应遥控数据项
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByUnitIdAndType(unitId,StructType.REMOTE.id);
+        Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
+        for (DiagramItemDto diagramItem : diagramItems) {
+            if(dsIdItemMap.containsKey(diagramItem.getDsId())){
+                dsIdItemMap.get(diagramItem.getDsId()).put(diagramItem.getItemType(),diagramItem);
+            }else{
+                Map<Integer,DiagramItemDto> typeItemMap = new HashMap<>();
+                typeItemMap.put(diagramItem.getItemType(),diagramItem);
+                dsIdItemMap.put(diagramItem.getDsId(),typeItemMap);
+            }
+        }
+
+        if(StringUtils.isNotEmpty(dsIdItemMap)){
+            List<SwitchResp> switchResps = new ArrayList<>();
+            for (Map<Integer, DiagramItemDto> typeItemMap : dsIdItemMap.values()) {
+                DiagramItemDto ykItem = typeItemMap.get(DiaItemType.TELECONTROL.id);
+                DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
+
+                if(StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
+                    String status = deviceItemOpertionService.getYaoceStatus(ykItem.getItemId(),switchItem.getItemId());
+                    List<SelectDto> selectDtos = deviceItemOpertionService.getYaokongEnumList(ykItem.getItemId());
+
+                    SwitchResp switchResp = new SwitchResp();
+                    switchResp.setSelects(selectDtos);
+                    switchResp.setStatus(status);
+                    switchResp.setSwitchName(ykItem.getStructName());
+                    switchResps.add(switchResp);
+                }
+            }
+
+            appUnitDetailResp.setSwitchResps(switchResps);
+        }
+
+
+        /*设置电压电流等数据项*/
+        return appUnitDetailResp;
     }
 
 }

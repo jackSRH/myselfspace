@@ -1,9 +1,12 @@
 package com.mailian.firecontrol.service;
 
 import com.mailian.core.base.service.BaseService;
+import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
+import com.mailian.firecontrol.dto.app.response.AppUnitResp;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
@@ -33,8 +36,9 @@ public interface UnitService extends BaseService<Unit> {
     /**
      * 获取未分配的设备列表
      * @return
+     * @param unitId
      */
-    List<DeviceResp> getUnallotDevice();
+    List<DeviceResp> getUnallotDevice(Integer unitId);
 
     /**
      * 获取单位分布
@@ -51,4 +55,18 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     AreaUnitMapResp getUnitMapDataByAreaAndScope(Integer areaId, Integer unitType, DataScope dataScope);
+
+    /**
+     * 根据名称筛选
+     * @param name
+     * @return
+     */
+    List<AppUnitResp> selectByNameAndPageScope(String name, BasePage basePage,DataScope dataScope);
+
+    /**
+     * 获取app单位详情
+     * @param unitId
+     * @return
+     */
+    AppUnitDetailResp getAppUnitDetailById(Integer unitId);
 }
