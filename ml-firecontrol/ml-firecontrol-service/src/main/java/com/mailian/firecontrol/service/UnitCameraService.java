@@ -26,4 +26,10 @@ public interface UnitCameraService extends BaseService<UnitCamera> {
      */
     List<CameraListResp> getCameraList(DataScope dataScope, SearchReq searchReq);
 
+    /**
+     * 根据单位获取摄像头信息
+     * @param unitId
+     * @return
+     */
+    List<CameraListResp> getListByUnitId(Integer unitId);
 }

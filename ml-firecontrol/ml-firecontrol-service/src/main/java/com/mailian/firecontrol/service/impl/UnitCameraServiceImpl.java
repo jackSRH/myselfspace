@@ -89,5 +89,19 @@ public class UnitCameraServiceImpl extends BaseServiceImpl<UnitCamera, UnitCamer
         return cameraListResps;
     }
 
+    @Override
+    public List<CameraListResp> getListByUnitId(Integer unitId) {
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        List<UnitCamera> unitCameras = selectByMap(queryMap);
+        List<CameraListResp> cameraListResps = new ArrayList<>();
+        for (UnitCamera unitCamera : unitCameras) {
+            CameraListResp cameraListResp = new CameraListResp();
+            BeanUtils.copyProperties(unitCamera,cameraListResp);
+            cameraListResps.add(cameraListResp);
+        }
+        return cameraListResps;
+    }
+
 
 }
