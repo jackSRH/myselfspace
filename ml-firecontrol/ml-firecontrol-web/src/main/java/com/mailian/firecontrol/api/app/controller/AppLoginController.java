@@ -2,10 +2,12 @@ package com.mailian.firecontrol.api.app.controller;
 
 import com.mailian.core.annotation.AppAPI;
 import com.mailian.core.annotation.Log;
+import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.config.SystemConfig;
 import com.mailian.core.shiro.JwtToken;
 import com.mailian.core.util.JwtUtils;
+import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dto.ShiroUser;
@@ -30,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/app/login")
 @Api(description = "app登录模块接口")
 @AppAPI
-public class AppLoginController {
+public class AppLoginController extends BaseController {
     @Autowired
     private JwtUtils jwtUtils;
     @Autowired
@@ -74,6 +76,11 @@ public class AppLoginController {
         subject.login(jwtToken);
 
         ShiroUser shiroUser = (ShiroUser) subject.getPrincipal();
+
+        if(StringUtils.isEmpty(shiroUser.getUnitId())){
+            return error("当前用户没有所属单位!");
+        }
+
         AppUser appUser = new AppUser();
         appUser.setToken(jwtToken.getPrincipal().toString());
         appUser.setId(shiroUser.getId());

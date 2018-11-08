@@ -8,7 +8,7 @@ public class BgUnitTrendResp {
     @ApiModelProperty(value = "日期")
     private String date;
     @ApiModelProperty(value = "数值")
-    private float num;
+    private Double num;
 
     public String getDate() {
         return date;
@@ -18,11 +18,11 @@ public class BgUnitTrendResp {
         this.date = date;
     }
 
-    public float getNum() {
+    public Double getNum() {
         return num;
     }
 
-    public void setNum(float num) {
+    public void setNum(Double num) {
         this.num = num;
     }
 }

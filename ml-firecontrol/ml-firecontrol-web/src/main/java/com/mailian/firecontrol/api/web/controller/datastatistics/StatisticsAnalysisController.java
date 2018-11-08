@@ -6,6 +6,7 @@ import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
+import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
@@ -116,9 +117,8 @@ public class StatisticsAnalysisController extends BaseController {
     @ApiOperation(value = "区域单位设施数量列表", httpMethod = "GET")
     @RequestMapping(value="/unitFaNumStatistics",method = RequestMethod.GET)
     public ResponseResult<PageBean<UnitFaNumStatistics>> faNumStatistics(@CurUser ShiroUser shiroUser,
-            @ApiParam(value = "监管等级") @RequestParam(value = "superviseLevel", required = false,defaultValue = "1") Integer superviseLevel,
-            @ApiParam(name = "页数") @RequestParam(required = false,defaultValue = "1") Integer currentPage,
-            @ApiParam(name = "每页条数") @RequestParam(required = false,defaultValue = "10") Integer pageSize) {
+                                                                         @ApiParam(value = "监管等级") @RequestParam(value = "superviseLevel", required = false,defaultValue = "1") Integer superviseLevel,
+                                                                         @ApiParam(value = "分页信息") BasePage basePage) {
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             List<Integer> precinctIds = shiroUser.getPrecinctIds();
@@ -128,6 +128,8 @@ public class StatisticsAnalysisController extends BaseController {
             dataScope = new DataScope("precinct_id", precinctIds);
         }
 
+        Integer currentPage = basePage.getCurrentPage();
+        Integer pageSize = basePage.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("create_time asc");
         Map<String,Object> queryMap = new HashMap<>();

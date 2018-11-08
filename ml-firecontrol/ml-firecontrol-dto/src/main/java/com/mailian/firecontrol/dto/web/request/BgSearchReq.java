@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.dto.web.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -9,11 +10,13 @@ import java.util.Date;
 public class BgSearchReq {
     @ApiModelProperty(value = "单位id")
     private Integer unitId;
-    @ApiModelProperty(value = "时间类型 1-日（按小时）、2-周月（按天）、3-年（按月）")
-    private Integer dateType;
-    @ApiModelProperty(value = "开始时间")
+    @ApiModelProperty(value = "时间类型 1-日、2-周、3-月 默认日")
+    private Integer dateType=1;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @ApiModelProperty(value = "开始时间 yyyy-MM-dd 格式")
     private Date startDate;
-    @ApiModelProperty(value = "结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @ApiModelProperty(value = "结束时间 yyyy-MM-dd 格式")
     private Date endDate;
 
     public Integer getUnitId() {

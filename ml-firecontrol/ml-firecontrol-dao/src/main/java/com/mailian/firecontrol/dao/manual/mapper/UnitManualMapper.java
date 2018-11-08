@@ -18,6 +18,8 @@ public interface UnitManualMapper {
 
     List<String> selectDevicesExcludeUnitId(@Param(value = "unitId") Integer unitId);
 
+    List<String> selectDevicesByUnitId(@Param(value = "unitId") Integer unitId);
+
     int deleteDeviceByUnitId(@Param(value = "unitId") Integer unitId);
 
     List<UnitDevice> selectUnitDeviceByMap(Map<String,Object> queryMap);

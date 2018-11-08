@@ -32,6 +32,7 @@ CREATE TABLE `t_user` (
   `password` 		varchar(32) 	DEFAULT NULL 				COMMENT '密码',
   `full_name` 		varchar(32) 	DEFAULT NULL 				COMMENT '名称',
   `phone` 			varchar(16) 	DEFAULT NULL 				COMMENT '电话',
+  `unit_id` 		int(11) 		DEFAULT NULL 				COMMENT '所属单位',
   `status` 			int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
   `create_time` 	datetime 		DEFAULT NULL 				COMMENT '创建时间',
   `update_time` 	datetime 		DEFAULT NULL 				COMMENT '更新时间',
@@ -43,7 +44,7 @@ CREATE TABLE `t_user` (
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into t_user values(1,'admin','21232f297a57a5a743894a0e4a801fc3','超级管理员','15999562568',0,now(),now(),'system','system');
+insert into t_user values(1,'admin','21232f297a57a5a743894a0e4a801fc3','超级管理员','15999562568',null,0,now(),now(),'system','system');
 
 
 -- ----------------------------

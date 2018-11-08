@@ -39,6 +39,15 @@
         </where>
     </select>
 
+    <select id="selectDevicesByUnitId" resultType="java.lang.String">
+        select distinct(device_id) from t_unit_device
+        <where>
+            <if test="unitId != null">
+                unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
     <select id="selectUnitDeviceByMap" resultMap="com.mailian.firecontrol.dao.auto.mapper.UnitDeviceMapper.BaseResultMap">
         select <include refid="com.mailian.firecontrol.dao.auto.mapper.UnitDeviceMapper.Base_Column_List"/> from t_unit_device
         <where>

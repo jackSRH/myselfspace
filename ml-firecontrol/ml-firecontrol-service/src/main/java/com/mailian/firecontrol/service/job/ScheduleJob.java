@@ -84,7 +84,7 @@ public class ScheduleJob extends QuartzJobBean {
             jobLog.setStatus(Status.DISABLE.id);
             jobLog.setExceptionInfo(e.getMessage());
         } finally {
-            jobLogService.insert(jobLog);
+            //jobLogService.insert(jobLog);
         }
     }
 }

@@ -7,6 +7,7 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="full_name" jdbcType="VARCHAR" property="fullName" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -14,8 +15,8 @@
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_name, password, full_name, phone, status, create_time, update_time, create_by, 
-    update_by
+    id, user_name, password, full_name, phone, unit_id, status, create_time, update_time, 
+    create_by, update_by
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -32,13 +33,13 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into t_user (user_name, password, full_name, 
-      phone, status, create_time, 
-      update_time, create_by, update_by
-      )
+      phone, unit_id, status, 
+      create_time, update_time, create_by, 
+      update_by)
     values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
-      )
+      #{phone,jdbcType=VARCHAR}, #{unitId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+      #{updateBy,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.User">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -57,6 +58,9 @@
       </if>
       <if test="phone != null">
         phone,
+      </if>
+      <if test="unitId != null">
+        unit_id,
       </if>
       <if test="status != null">
         status,
@@ -86,6 +90,9 @@
       </if>
       <if test="phone != null">
         #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
       </if>
       <if test="status != null">
         #{status,jdbcType=INTEGER},
@@ -119,6 +126,9 @@
       <if test="phone != null">
         phone = #{phone,jdbcType=VARCHAR},
       </if>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
@@ -143,6 +153,7 @@
       password = #{password,jdbcType=VARCHAR},
       full_name = #{fullName,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
+      unit_id = #{unitId,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -169,6 +180,9 @@
       </if>
       <if test="phone != null">
          and phone = #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
       </if>
       <if test="status != null">
          and status = #{status,jdbcType=INTEGER}
@@ -205,14 +219,14 @@
   </select>
   <insert id="insertBatch" parameterType="java.util.List">
     insert into t_user (user_name, password, full_name, 
-      phone, status, create_time, 
-      update_time, create_by, update_by
-      ) values 
+      phone, unit_id, status, 
+      create_time, update_time, create_by, 
+      update_by) values 
     <foreach collection="objs" index="index" item="item" separator=",">
        (#{item.userName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.fullName,jdbcType=VARCHAR}, 
-        #{item.phone,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
-        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
-        )
+        #{item.phone,jdbcType=VARCHAR}, #{item.unitId,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, 
+        #{item.updateBy,jdbcType=VARCHAR})
     </foreach>
   </insert>
 </mapper>

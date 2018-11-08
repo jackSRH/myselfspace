@@ -9,6 +9,7 @@ import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
+import com.mailian.firecontrol.common.enums.FaMisreportType;
 import com.mailian.firecontrol.common.enums.NoticeType;
 import com.mailian.firecontrol.common.enums.RealNoticeType;
 import com.mailian.firecontrol.common.manager.SystemManager;
@@ -67,7 +68,7 @@ public class AppUnitController extends BaseController {
     @GetMapping(value = "/list")
     public ResponseResult<List<AppUnitResp>> list(@CurUser ShiroUser shiroUser,
                                                   @ApiParam(value = "单位名称") @RequestParam(value = "name",required = false) String name,
-                                                  @ApiParam(value = "单位名称") BasePage basePage){
+                                                  @ApiParam(value = "分页信息") BasePage basePage){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             if(StringUtils.isEmpty(shiroUser.getPrecinctIds())){
@@ -81,10 +82,27 @@ public class AppUnitController extends BaseController {
     }
 
 
-    @Log(title = "app单位",action = "单位详情")
-    @ApiOperation(value = "单位详情", httpMethod = "GET")
+    @Log(title = "app单位",action = "单位详情(管理端)")
+    @ApiOperation(value = "单位详情(管理端)", httpMethod = "GET")
     @GetMapping(value = "/detail")
     public ResponseResult<AppUnitDetailResp> detail(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
+        AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
+        /*设置摄像头*/
+        List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
+        appUnitDetailResp.setCameraListResps(cameraListResps);
+        return ResponseResult.buildOkResult(appUnitDetailResp);
+    }
+
+
+    @Log(title = "app单位",action = "单位详情用户端")
+    @ApiOperation(value = "单位详情(用户端)", httpMethod = "GET")
+    @GetMapping(value = "/detailByUser")
+    public ResponseResult<AppUnitDetailResp> detailByUser(@CurUser ShiroUser shiroUser){
+        Integer unitId = shiroUser.getUnitId();
+        if(StringUtils.isEmpty(unitId)){
+            return error("当前用户没有所属单位!");
+        }
+
         AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
         /*设置摄像头*/
         List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
@@ -114,7 +132,7 @@ public class AppUnitController extends BaseController {
         return ResponseResult.buildOkResult(appRealtimeDataResp);
     }
 
-    @ApiOperation(value = "获取告警通知", httpMethod = "GET")
+    @ApiOperation(value = "获取告警通知(管理端)", httpMethod = "GET")
     @GetMapping(value="/getAlarmNotice")
     public ResponseResult<List<NoticeInfo>> getAlarmNotice(@CurUser ShiroUser shiroUser){
         List<Integer> precinctIds = null;
@@ -130,6 +148,25 @@ public class AppUnitController extends BaseController {
         List<NoticeInfo> noticeInfoList = new ArrayList<>();
         for (NoticeInfo noticeInfo : noticeInfos) {
             if(StringUtils.isNull(precinctIds) || precinctIds.contains(noticeInfo.getPrecinctId())){
+                noticeInfoList.add(noticeInfo);
+            }
+        }
+        return ResponseResult.buildOkResult(noticeInfoList);
+    }
+
+
+    @ApiOperation(value = "获取告警通知(用户端)", httpMethod = "GET")
+    @GetMapping(value="/getAlarmNoticeByUser")
+    public ResponseResult<List<NoticeInfo>> getAlarmNoticeByUser(@CurUser ShiroUser shiroUser){
+        Integer unitId = shiroUser.getUnitId();
+        if(StringUtils.isEmpty(unitId)){
+            return error("当前用户没有所属单位!");
+        }
+
+        List<NoticeInfo> noticeInfos = noticeCache.getNoticesByType(NoticeType.ALARM);
+        List<NoticeInfo> noticeInfoList = new ArrayList<>();
+        for (NoticeInfo noticeInfo : noticeInfos) {
+            if(noticeInfo.getUnitId().equals(unitId)) {
                 noticeInfoList.add(noticeInfo);
             }
         }
@@ -160,15 +197,6 @@ public class AppUnitController extends BaseController {
             }
         }
 
-        Integer handleStatus = facilitiesAlarm.getHandleStatus();
-        if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus)) {
-            FacilitiesAlarm upAlarm = new FacilitiesAlarm();
-            upAlarm.setId(facilitiesAlarm.getId());
-            upAlarm.setHandleStatus(AlarmHandleStatus.RESPONSE.id);
-            handleStatus = AlarmHandleStatus.RESPONSE.id;
-            facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
-        }
-
         Unit unit = unitService.selectByPrimaryKey(facilitiesAlarm.getUnitId());
         if(StringUtils.isNull(unit)){
             return error("单位不存在");
@@ -193,7 +221,7 @@ public class AppUnitController extends BaseController {
         alarmInfo.setPrecinctName(precinct.getPrecinctName());
         alarmInfo.setDutyName(precinct.getDutyName());
         alarmInfo.setDutyPhone(precinct.getDutyPhone());
-        alarmInfo.setHandleStatus(handleStatus);
+        alarmInfo.setHandleStatus(facilitiesAlarm.getHandleStatus());
 
         /*设置摄像头*/
         List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unit.getId());
@@ -209,4 +237,56 @@ public class AppUnitController extends BaseController {
         return ResponseResult.buildOkResult(alarmInfo);
     }
 
+
+    @ApiOperation(value = "确认报警是否误报", httpMethod = "GET")
+    @GetMapping(value="/dealAlarm")
+    public ResponseResult dealAlarm(@CurUser ShiroUser shiroUser,
+                                                  @ApiParam(value = "报警id 报警详细返回的id") @RequestParam(value = "alarmId") Integer alarmId,
+                                                  @ApiParam(value = "是否误报 1:误报 2:有效") @RequestParam(value = "misreport") Integer misreport){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+        if(StringUtils.isNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+
+        Integer handleStatus = facilitiesAlarm.getHandleStatus();
+        if(AlarmHandleStatus.RESPONSE.id.equals(handleStatus)) {
+            //误报
+            if(FaMisreportType.MISREPORT.id.equals(misreport)){
+                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+                upAlarm.setId(facilitiesAlarm.getId());
+                upAlarm.setMisreport(FaMisreportType.MISREPORT.id);
+                upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+            }
+            //有效
+            if(FaMisreportType.EFFECTIVE.id.equals(misreport)){
+                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+                upAlarm.setId(facilitiesAlarm.getId());
+                upAlarm.setMisreport(FaMisreportType.EFFECTIVE.id);
+                upAlarm.setHandleStatus(AlarmHandleStatus.UNDER_WAY.id);
+                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+            }
+        }
+        return ResponseResult.buildOkResult();
+    }
+
+
+    @ApiOperation(value = "确认已收到报警", httpMethod = "GET")
+    @GetMapping(value="/confirmAlarm")
+    public ResponseResult confirmAlarm(@CurUser ShiroUser shiroUser,
+                                    @ApiParam(value = "报警id 报警详细返回的id") @RequestParam(value = "alarmId") Integer alarmId){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+        if(StringUtils.isNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+
+        Integer handleStatus = facilitiesAlarm.getHandleStatus();
+        if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus)) {
+            FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+            upAlarm.setId(facilitiesAlarm.getId());
+            upAlarm.setHandleStatus(AlarmHandleStatus.RESPONSE.id);
+            facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+        }
+        return ResponseResult.buildOkResult();
+    }
 }

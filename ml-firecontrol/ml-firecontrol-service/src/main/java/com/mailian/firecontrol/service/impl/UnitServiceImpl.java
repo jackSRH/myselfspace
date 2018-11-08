@@ -604,6 +604,11 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         return pageBean;
     }
 
+    @Override
+    public List<String> getDevicesByUnitId(Integer unitId) {
+        return unitManualMapper.selectDevicesByUnitId(unitId);
+    }
+
 
     @Override
     public CountDataInfo getUnitTotalByScope(DataScope dataScope) {

@@ -190,6 +190,11 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 }
 
                 DiagramStruct diagramStruct = manageManualMapper.selectDiagramStructByAlarmItemId(itemId,unitRedisInfo.getId());
+                if(StringUtils.isNull(diagramStruct)){
+                    log.warn("告警itemid{}，未关联设施",itemId);
+                    continue;
+                }
+
 
                 FacilitiesAlarm facilitiesAlarm = new FacilitiesAlarm();
                 facilitiesAlarm.setUnitId(unitRedisInfo.getId());
@@ -221,6 +226,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 }
 
                 facilitiesAlarm.setStatus(Status.NORMAL.id);
+                facilitiesAlarm.setHashCode(alarm.getHashCode());
                 facilitiesAlarm.setCreateBy("system");
                 facilitiesAlarm.setCreateTime(new Date());
                 facilitiesAlarm.setUpdateBy("system");
@@ -245,6 +251,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                         upFacilitiesAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
                     }
                     upFacilitiesAlarm.setAlarmEndTime(ThreadLocalDateUtil.parse(etime));
+                    upFacilitiesAlarm.setHashCode(alarm.getHashCode());
                     upFacilitiesAlarm.setUpdateTime(new Date());
                     upFacilitiesAlarm.setUpdateBy("system");
                     upFacilitiesAlarmList.add(upFacilitiesAlarm);
