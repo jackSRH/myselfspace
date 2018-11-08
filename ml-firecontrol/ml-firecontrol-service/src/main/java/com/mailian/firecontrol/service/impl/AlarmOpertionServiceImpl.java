@@ -222,7 +222,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     //发送短信
                     dealSmsAndEmail(unitRedisInfo, alarm, alarmItemName, eqAlarmContent, sendSms, sendEmail);
                     //推送或者删除app消息
-                    pushAlarmInfoToApp(alarm.getAlarmid(), alarmSTime, eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId());
+                    pushAlarmInfoToApp(alarm.getAlarmid(), alarmSTime, eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId(),unitRedisInfo.getId());
                 }
 
                 facilitiesAlarm.setStatus(Status.NORMAL.id);
@@ -289,7 +289,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     dealSmsAndEmail(unitRedisInfo, alarm, alarmItemName, eqAlarmContent, sendSms, sendEmail);
 
                     //推送或者删除app消息
-                    pushAlarmInfoToApp(alarm.getAlarmid(), facilitiesAlarm.getAlarmTime(), eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId());
+                    pushAlarmInfoToApp(alarm.getAlarmid(), facilitiesAlarm.getAlarmTime(), eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId(),unitRedisInfo.getId());
                 }
             }
         }
@@ -403,7 +403,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
     }
 
     /*  推送至APP */
-    private void pushAlarmInfoToApp(Integer alarmId,Date alarmStime,String alarmInfo,String alarmEtime,Integer precinctId) {
+    private void pushAlarmInfoToApp(Integer alarmId,Date alarmStime,String alarmInfo,String alarmEtime,Integer precinctId,Integer unitId) {
         NoticeInfo noticeInfo = new NoticeInfo();
         noticeInfo.setId(alarmId);
         noticeInfo.setTime(alarmStime);
@@ -416,6 +416,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
         if(StringUtils.isEmpty(alarmEtime)){
             noticeInfo.setContent(alarmInfo);
             noticeInfo.setPrecinctId(precinctId);
+            noticeInfo.setUnitId(unitId);
             noticeInfo.setRead(BooleanEnum.NO.id);
             noticeCache.addNotice(noticeInfo);
         }else{
