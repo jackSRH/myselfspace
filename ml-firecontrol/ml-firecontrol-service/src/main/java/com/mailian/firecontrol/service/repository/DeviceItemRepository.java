@@ -1,13 +1,12 @@
 package com.mailian.firecontrol.service.repository;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mailian.core.util.HttpClientUtil;
 import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
-import com.mailian.firecontrol.common.enums.DeviceItemCycle;
 import com.mailian.firecontrol.common.enums.ItemStype;
 import com.mailian.firecontrol.common.util.PushResponseUtil;
 import com.mailian.firecontrol.dto.push.*;
@@ -17,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.*;
@@ -36,6 +36,9 @@ public class DeviceItemRepository {
     private RedisUtils redisUtils;
     @Autowired
     private PushConfig pushConfig;
+    @Autowired
+    private RestTemplate restTemplate;
+
 
     /**
      * 通过RTU列表获取数据项信息
@@ -83,24 +86,23 @@ public class DeviceItemRepository {
      * @return
      * @throws ParseException
      */
-    public List<DeviceItemHistoryData> getItemDataByItemIdAndTime(
-            String itemIds,String startTime,String endTime,Integer type) throws ParseException {
-        final Map<String,Object> params = new HashMap<String,Object>();
-        params.put("appid", pushConfig.SYSTEM_ID);
-        params.put("itemids", itemIds);
-        params.put("stime",startTime);
-        params.put("etime",endTime);
-        params.put("cycle",type);
-        String param = JSON.toJSONString(params);
-        String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_SIGNAL_URI), param, null,false);
+    public List<DeviceItemHistoryData> getItemDataByItemIdAndTime(String itemIds,String startTime,String endTime,Integer type)  {
+        final JSONObject postData = new JSONObject();
+        postData.put("appid", pushConfig.SYSTEM_ID);
+        postData.put("itemids", itemIds);
+        postData.put("stime",startTime);
+        postData.put("etime",endTime);
+        postData.put("cycle",type);
+
+        String res = restTemplate.postForEntity(pushConfig.getUrl(pushConfig.GET_SIGNAL_URI),postData, String.class).getBody();
         List<DeviceItemHistoryData> historyDatas = PushResponseUtil.processResponseListData(res,DeviceItemHistoryData.class);
 
-        if(DeviceItemCycle.HOURE.id.equals(type)) {
+        /*if(DeviceItemCycle.HOURE.id.equals(type)) {
             for(DeviceItemHistoryData historyData : historyDatas) {
                 Date tm = DateUtil.offsetHour(historyData.getTm(),1);
                 historyData.setTm(tm);
             }
-        }
+        }*/
         return historyDatas;
     }
 

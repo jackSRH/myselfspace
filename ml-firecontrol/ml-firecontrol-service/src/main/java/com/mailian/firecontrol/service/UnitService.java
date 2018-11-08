@@ -87,4 +87,10 @@ public interface UnitService extends BaseService<Unit> {
      */
     PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope,SearchReq searchReq);
 
+    /**
+     * 根据单位获取关联的网关id列表
+     * @param unitId
+     * @return
+     */
+    List<String> getDevicesByUnitId(Integer unitId);
 }

@@ -42,6 +42,8 @@ public class AlarmNumResp implements Serializable {
         private Integer underWay=0;
         @ApiModelProperty(value = "已处理")
         private Integer completed=0;
+        @ApiModelProperty(value = "已响应")
+        private Integer response=0;
 
         public Integer getUntreated() {
             return untreated;
@@ -65,6 +67,14 @@ public class AlarmNumResp implements Serializable {
 
         public void setCompleted(Integer completed) {
             this.completed = completed;
+        }
+
+        public Integer getResponse() {
+            return response;
+        }
+
+        public void setResponse(Integer response) {
+            this.response = response;
         }
     }
 }

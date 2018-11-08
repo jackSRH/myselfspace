@@ -8,16 +8,16 @@ import java.util.List;
 @ApiModel(description = "大屏单位走势列表")
 public class BgUnitTrendListResp {
     @ApiModelProperty(value = "类型")
-    private String btypeDesc;
+    private Integer btype;
     @ApiModelProperty(value = "数值")
     private List<BgUnitTrendResp> bgUnitTrends;
 
-    public String getBtypeDesc() {
-        return btypeDesc;
+    public Integer getBtype() {
+        return btype;
     }
 
-    public void setBtypeDesc(String btypeDesc) {
-        this.btypeDesc = btypeDesc;
+    public void setBtype(Integer btype) {
+        this.btype = btype;
     }
 
     public List<BgUnitTrendResp> getBgUnitTrends() {

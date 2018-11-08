@@ -9,6 +9,7 @@ import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
+import com.mailian.firecontrol.common.enums.FaMisreportType;
 import com.mailian.firecontrol.common.enums.NoticeType;
 import com.mailian.firecontrol.common.enums.RealNoticeType;
 import com.mailian.firecontrol.common.manager.SystemManager;
@@ -196,15 +197,6 @@ public class AppUnitController extends BaseController {
             }
         }
 
-        Integer handleStatus = facilitiesAlarm.getHandleStatus();
-        if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus)) {
-            FacilitiesAlarm upAlarm = new FacilitiesAlarm();
-            upAlarm.setId(facilitiesAlarm.getId());
-            upAlarm.setHandleStatus(AlarmHandleStatus.RESPONSE.id);
-            handleStatus = AlarmHandleStatus.RESPONSE.id;
-            facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
-        }
-
         Unit unit = unitService.selectByPrimaryKey(facilitiesAlarm.getUnitId());
         if(StringUtils.isNull(unit)){
             return error("单位不存在");
@@ -229,7 +221,7 @@ public class AppUnitController extends BaseController {
         alarmInfo.setPrecinctName(precinct.getPrecinctName());
         alarmInfo.setDutyName(precinct.getDutyName());
         alarmInfo.setDutyPhone(precinct.getDutyPhone());
-        alarmInfo.setHandleStatus(handleStatus);
+        alarmInfo.setHandleStatus(facilitiesAlarm.getHandleStatus());
 
         /*设置摄像头*/
         List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unit.getId());
@@ -245,4 +237,56 @@ public class AppUnitController extends BaseController {
         return ResponseResult.buildOkResult(alarmInfo);
     }
 
+
+    @ApiOperation(value = "确认报警是否误报", httpMethod = "GET")
+    @GetMapping(value="/dealAlarm")
+    public ResponseResult dealAlarm(@CurUser ShiroUser shiroUser,
+                                                  @ApiParam(value = "报警id 报警详细返回的id") @RequestParam(value = "alarmId") Integer alarmId,
+                                                  @ApiParam(value = "是否误报 1:误报 2:有效") @RequestParam(value = "misreport") Integer misreport){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+        if(StringUtils.isNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+
+        Integer handleStatus = facilitiesAlarm.getHandleStatus();
+        if(AlarmHandleStatus.RESPONSE.id.equals(handleStatus)) {
+            //误报
+            if(FaMisreportType.MISREPORT.id.equals(misreport)){
+                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+                upAlarm.setId(facilitiesAlarm.getId());
+                upAlarm.setMisreport(FaMisreportType.MISREPORT.id);
+                upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+            }
+            //有效
+            if(FaMisreportType.EFFECTIVE.id.equals(misreport)){
+                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+                upAlarm.setId(facilitiesAlarm.getId());
+                upAlarm.setMisreport(FaMisreportType.EFFECTIVE.id);
+                upAlarm.setHandleStatus(AlarmHandleStatus.UNDER_WAY.id);
+                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+            }
+        }
+        return ResponseResult.buildOkResult();
+    }
+
+
+    @ApiOperation(value = "确认已收到报警", httpMethod = "GET")
+    @GetMapping(value="/confirmAlarm")
+    public ResponseResult confirmAlarm(@CurUser ShiroUser shiroUser,
+                                    @ApiParam(value = "报警id 报警详细返回的id") @RequestParam(value = "alarmId") Integer alarmId){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+        if(StringUtils.isNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+
+        Integer handleStatus = facilitiesAlarm.getHandleStatus();
+        if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus)) {
+            FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+            upAlarm.setId(facilitiesAlarm.getId());
+            upAlarm.setHandleStatus(AlarmHandleStatus.RESPONSE.id);
+            facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+        }
+        return ResponseResult.buildOkResult();
+    }
 }

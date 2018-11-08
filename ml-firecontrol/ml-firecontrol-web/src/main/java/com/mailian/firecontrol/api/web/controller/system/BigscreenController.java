@@ -1,26 +1,24 @@
 package com.mailian.firecontrol.api.web.controller.system;
 
-import com.google.common.base.Joiner;
+import cn.hutool.core.collection.CollectionUtil;
 import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.WebAPI;
+import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.ItemBtype;
+import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
-import com.mailian.firecontrol.dao.auto.model.UnitDevice;
+import com.mailian.firecontrol.dto.DayTime;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemHistoryData;
 import com.mailian.firecontrol.dto.web.request.BgSearchReq;
-import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
-import com.mailian.firecontrol.dto.web.response.AreaResp;
-import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
-import com.mailian.firecontrol.dto.web.response.BgUnitTrendListResp;
-import com.mailian.firecontrol.dto.web.response.BgUnitTrendResp;
-import com.mailian.firecontrol.dto.web.response.PieResp;
+import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.framework.util.ConvertDateUtil;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.UnitDeviceService;
@@ -31,19 +29,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther: wangqiaoqing
@@ -54,7 +44,7 @@ import java.util.Map;
 @RequestMapping("/system/bigscreen")
 @Api(description = "大屏相关接口")
 @WebAPI
-public class BigscreenController {
+public class BigscreenController extends BaseController {
     private static final List<Integer> UNIT_TREND_TYPES = Arrays.asList(
             ItemBtype.VOLTAGE.id,ItemBtype.ELECTRICCURRENT.id,
             ItemBtype.LEAKAGE.id,ItemBtype.CABLE_TEMPERATURE.id);
@@ -188,71 +178,77 @@ public class BigscreenController {
         return ResponseResult.buildOkResult(unitService.getUnitMapDataByAreaAndScope(areaId,unitType,dataScope));
     }
 
-
     @ApiOperation(value = "获取单位走势(单位)", httpMethod = "GET")
     @RequestMapping(value="/getUnitTrendByUnitId",method = RequestMethod.GET)
-    public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(BgSearchReq bgSearchReq) throws ParseException {
+    public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(@CurUser ShiroUser shiroUser, BgSearchReq bgSearchReq) throws ParseException {
+        bgSearchReq.setUnitId(StringUtils.nvl(bgSearchReq.getUnitId(),shiroUser.getUnitId()));
+        if(StringUtils.isEmpty(bgSearchReq.getUnitId())){
+            return error("单位不存在");
+        }
         List<BgUnitTrendListResp> bgUnitTrendListResps = new ArrayList<>();
         Integer dateType = bgSearchReq.getDateType();
-        Date startDate = bgSearchReq.getStartDate();
-        Date endDate = bgSearchReq.getEndDate();
+        Integer itemCycle = null;
+        Date now = new Date();
+        Date startDate = DateUtil.getStartDate(StringUtils.nvl(bgSearchReq.getStartDate(),now));
+        Date endDate = DateUtil.getEndDate(StringUtils.nvl(bgSearchReq.getEndDate(),now));
 
         //获取时间点
-        List<String> dates = new ArrayList<>();
-        switch (dateType){
-            case 1:
-                dates = DateUtil.getHoursBetween(startDate,endDate);
-                break;
-            case 2:
-                dates = DateUtil.getDaysBetween(startDate,endDate);
-                break;
-            case 3:
-                dates = DateUtil.getMonthsBetween(startDate,endDate);
-                break;
+        List<DayTime> dates;
+        if(ReqDateType.DAY.id.equals(dateType)){
+            dates = ConvertDateUtil.getHoursBetween(startDate,endDate);
+            startDate = DateUtil.getDateAfterHour(startDate,new BigDecimal(1));
+            endDate = DateUtil.getDateAfterHour(endDate,new BigDecimal(1));
+            itemCycle = ReqDateType.DAY.itemCycle;
+        }else if(ReqDateType.WEEK.id.equals(dateType) || ReqDateType.MONTH.id.equals(dateType)){
+            dates = ConvertDateUtil.getDaysBetween(startDate,endDate);
+            itemCycle = ReqDateType.WEEK.itemCycle;
+        }else if(ReqDateType.YEAR.id.equals(dateType)){
+            dates = ConvertDateUtil.getMonthsBetween(startDate,endDate);
+            itemCycle = ReqDateType.YEAR.itemCycle;
+        }else{
+            return error("时间类型有误");
         }
 
+        String mapkey = "%s&%s";
         //初始化数据
         BgUnitTrendListResp bgUnitTrendListResp;
         List<BgUnitTrendResp> bgUnitTrendResps;
+        Map<String,BgUnitTrendResp> typeDayMap = new HashMap<>();
         for(Integer type : UNIT_TREND_TYPES){
             bgUnitTrendResps = new ArrayList<>();
             BgUnitTrendResp bgUnitTrendResp;
-            for(String date : dates){
+            for(DayTime dayTime : dates){
                 bgUnitTrendResp = new BgUnitTrendResp();
-                bgUnitTrendResp.setDate(date);
-                float val = 0f;
-                bgUnitTrendResp.setNum(BigDecimalUtil.keepTwoDecimals(val,2));
+                bgUnitTrendResp.setDate(dayTime.getShowTime());
+                bgUnitTrendResp.setNum(0D);
+
+                String keyStr = String.format(mapkey,type,dayTime.getRealTime());
+                typeDayMap.put(keyStr,bgUnitTrendResp);
                 bgUnitTrendResps.add(bgUnitTrendResp);
             }
             bgUnitTrendListResp = new BgUnitTrendListResp();
-            bgUnitTrendListResp.setBtypeDesc(ItemBtype.getValue(type));
+            bgUnitTrendListResp.setBtype(type);
             bgUnitTrendListResp.setBgUnitTrends(bgUnitTrendResps);
             bgUnitTrendListResps.add(bgUnitTrendListResp);
         }
 
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitId",bgSearchReq.getUnitId());
-        List<UnitDevice> unitDevices = unitDeviceService.selectByMap(queryMap);
-        if(StringUtils.isEmpty(unitDevices)){
+        List<String> deviceIds = unitService.getDevicesByUnitId(bgSearchReq.getUnitId());
+        if(StringUtils.isEmpty(deviceIds)){
             return ResponseResult.buildOkResult(bgUnitTrendListResps);
         }
 
         //获取单位下所有数据项
-        List<String> deviceIds = new ArrayList<>();
-        for(UnitDevice unitDevice : unitDevices){
-            deviceIds.add(unitDevice.getDeviceId());
-        }
         List<DeviceItem> items = new ArrayList<>();
-        Map<String,List<DeviceItem>> did2TranItems =  deviceItemRepository.getDeviceItemInfosByCodes(deviceIds);
-        if(StringUtils.isNotEmpty(did2TranItems)){
-            for(Map.Entry<String,List<DeviceItem>> entry : did2TranItems.entrySet()){
-                items.addAll(entry.getValue());
+        Map<String,List<DeviceItem>> deviceItemMap =  deviceItemRepository.getDeviceItemInfosByCodes(deviceIds);
+        if(StringUtils.isNotEmpty(deviceItemMap)){
+            for (List<DeviceItem> deviceItems : deviceItemMap.values()) {
+                items.addAll(deviceItems);
             }
         }
-        Map<String, List<DeviceItem>> did2CalcItems = deviceItemRepository.getCalcItemsByDeviceCodes(deviceIds);
-        if(StringUtils.isNotEmpty(did2CalcItems)){
-            for(Map.Entry<String,List<DeviceItem>> entry : did2CalcItems.entrySet()){
-                items.addAll(entry.getValue());
+        Map<String, List<DeviceItem>> deviceCalcItemMap = deviceItemRepository.getCalcItemsByDeviceCodes(deviceIds);
+        if(StringUtils.isNotEmpty(deviceCalcItemMap)){
+            for (List<DeviceItem> deviceItems : deviceCalcItemMap.values()) {
+                items.addAll(deviceItems);
             }
         }
         if(StringUtils.isEmpty(items)){
@@ -260,9 +256,8 @@ public class BigscreenController {
         }
 
         //查找类型和数据项的关系
-        Map<Integer,List<String>> btype2ItemIds = new HashMap<>();
+        Map<String,Integer> itemTypeMap = new HashMap<>();
         List<String> needFindItemIds = new ArrayList<>();
-        List<String> itemIds;
         Integer btype;
         String itemId;
         for(DeviceItem deviceItem : items){
@@ -272,62 +267,40 @@ public class BigscreenController {
             }
             itemId = deviceItem.getId();
             needFindItemIds.add(itemId);
-            itemIds = btype2ItemIds.containsKey(btype)?btype2ItemIds.get(btype):new ArrayList<>();
-            itemIds.add(itemId);
-            btype2ItemIds.put(btype,itemIds);
+            itemTypeMap.put(itemId,btype);
         }
 
         List<DeviceItemHistoryData> historyDatas = deviceItemRepository.getItemDataByItemIdAndTime(
-                Joiner.on(",").join(needFindItemIds),DateUtil.toString(startDate) ,DateUtil.toString(endDate),dateType);
+                CollectionUtil.join(needFindItemIds,","),DateUtil.toString(startDate) ,DateUtil.toString(endDate),itemCycle);
         if(StringUtils.isEmpty(historyDatas)){
             return ResponseResult.buildOkResult(bgUnitTrendListResps);
         }
-        Map<String,List<DeviceItemHistoryData>> itemId2HistoryDatas = new HashMap<>();
-        List<DeviceItemHistoryData> tempHistoryDatas ;
         for(DeviceItemHistoryData historyData :historyDatas){
             if(1 != historyData.getCtg()){
                 continue;
             }
             itemId = historyData.getId();
-            tempHistoryDatas = itemId2HistoryDatas.containsKey(itemId)?itemId2HistoryDatas.get(itemId):new ArrayList<>();
-            tempHistoryDatas.add(historyData);
-            itemId2HistoryDatas.put(itemId,tempHistoryDatas);
-        }
-
-        //数据项类型（btype） 找 数据项id(itemIds)
-        //数据项id 找 历史数据（historyDatas）
-        // 统计相同时间的数据
-        bgUnitTrendListResps = new ArrayList<>();
-        for(Integer type : UNIT_TREND_TYPES){
-            bgUnitTrendResps = new ArrayList<>();
-            BgUnitTrendResp bgUnitTrendResp;
-            for(String date : dates){
-                bgUnitTrendResp = new BgUnitTrendResp();
-                bgUnitTrendResp.setDate(date);
-                float val = 0f;
-                List<String> deviceItemIds = btype2ItemIds.get(type);
-                if(StringUtils.isNotEmpty(deviceItemIds)){
-                    for(String deviceItemId:deviceItemIds){
-                        List<DeviceItemHistoryData> deviceItemHistoryDatas =  itemId2HistoryDatas.get(deviceItemId);
-                        if(StringUtils.isNotEmpty(deviceItemHistoryDatas)){
-                            for(DeviceItemHistoryData deviceItemHistoryData : deviceItemHistoryDatas){
-                                if(DateUtil.toString(deviceItemHistoryData.getTm()).contains(date)){
-                                    val += deviceItemHistoryData.getVal();
-                                }
-                            }
-                        }
-                    }
-                }
-                bgUnitTrendResp.setNum(BigDecimalUtil.keepTwoDecimals(val,2));
-                bgUnitTrendResps.add(bgUnitTrendResp);
+            Integer type = itemTypeMap.get(itemId);
+            String dateStr = "";
+            if(ReqDateType.DAY.id.equals(dateType)){
+                dateStr = DateUtil.format(historyData.getTm(),DateUtil.DATE_FORMAT_FOR_YMDH);
+            }else if(ReqDateType.WEEK.id.equals(dateType) || ReqDateType.MONTH.id.equals(dateType)){
+                dateStr = DateUtil.format(historyData.getTm(),DateUtil.DATE_FORMAT_FOR_YMD);
+            }else if(ReqDateType.YEAR.id.equals(dateType)){
+                dateStr = DateUtil.format(historyData.getTm(),DateUtil.DATE_FORMAT_FOR_YM);
             }
-            bgUnitTrendListResp = new BgUnitTrendListResp();
-            bgUnitTrendListResp.setBtypeDesc(ItemBtype.getValue(type));
-            bgUnitTrendListResp.setBgUnitTrends(bgUnitTrendResps);
-            bgUnitTrendListResps.add(bgUnitTrendListResp);
+            String keyStr = String.format(mapkey,type,dateStr);
+            if(typeDayMap.containsKey(keyStr)){
+                BgUnitTrendResp bgUnitTrendResp = typeDayMap.get(keyStr);
+                Double result = BigDecimalUtil.add(bgUnitTrendResp.getNum(),StringUtils.nvl(historyData.getVal(),0f));
+                bgUnitTrendResp.setNum(BigDecimalUtil.round(result,2));
+            }
         }
         return ResponseResult.buildOkResult(bgUnitTrendListResps);
     }
+
+
+
 
 
 }
