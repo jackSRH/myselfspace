@@ -82,7 +82,7 @@ public class AppUnitController extends BaseController {
 
 
     @Log(title = "app单位",action = "单位详情(管理端)")
-    @ApiOperation(value = "单位详情", httpMethod = "GET")
+    @ApiOperation(value = "单位详情(管理端)", httpMethod = "GET")
     @GetMapping(value = "/detail")
     public ResponseResult<AppUnitDetailResp> detail(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
         AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
@@ -94,7 +94,7 @@ public class AppUnitController extends BaseController {
 
 
     @Log(title = "app单位",action = "单位详情用户端")
-    @ApiOperation(value = "单位详情", httpMethod = "GET")
+    @ApiOperation(value = "单位详情(用户端)", httpMethod = "GET")
     @GetMapping(value = "/detailByUser")
     public ResponseResult<AppUnitDetailResp> detailByUser(@CurUser ShiroUser shiroUser){
         Integer unitId = shiroUser.getUnitId();
