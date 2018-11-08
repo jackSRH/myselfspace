@@ -7,7 +7,7 @@ import java.util.Date;
 
 @ApiModel(description = "巡查记录请求参数")
 public class UnitPatrolReq {
-    @ApiModelProperty(value = "巡查结果")
+    @ApiModelProperty(value = "巡查结果 0:正常,1:异常")
     private Integer patrolResult;
     @ApiModelProperty(value = "发起时间")
     private Date startTime;
