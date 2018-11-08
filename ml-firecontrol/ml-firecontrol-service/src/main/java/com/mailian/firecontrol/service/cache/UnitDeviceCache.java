@@ -14,6 +14,7 @@ import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dto.UnitRedisInfo;
 import com.mailian.firecontrol.dto.push.DeviceCommunicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -78,16 +79,20 @@ public class UnitDeviceCache {
      * 添加或更新单位网关关联关系
      * @param unitDevice
      */
+    @Async
     public void addOrUpdateUnitDevice(UnitDevice unitDevice){
-        if(StringUtils.isNotNull(unitDevice)){
+        if(StringUtils.isNull(unitDevice)){
             return;
         }
         UnitRedisInfo unitRedisInfo = new UnitRedisInfo();
         Unit unit = unitMapper.selectByPrimaryKey(unitDevice.getUnitId());
+        Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
         String deviceId = unitDevice.getDeviceId();
         unitRedisInfo.setDeviceId(deviceId);
         unitRedisInfo.setId(unit.getId());
         unitRedisInfo.setUnitName(unit.getUnitName());
+        unitRedisInfo.setPrecinctId(unit.getPrecinctId());
+        unitRedisInfo.setContactPhone(precinct.getDutyPhone());
         redisUtils.addHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,deviceId,unitRedisInfo,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
     }
 
@@ -95,12 +100,14 @@ public class UnitDeviceCache {
      * 添加或更新单位网关关联关系
      * @param unitDeviceList
      */
+    @Async
     public void addOrUpdateUnitDevice(List<UnitDevice> unitDeviceList){
-        if(StringUtils.isNotEmpty(unitDeviceList)){
+        if(StringUtils.isEmpty(unitDeviceList)){
             return;
         }
         Integer unitId = unitDeviceList.get(0).getUnitId();
         Unit unit = unitMapper.selectByPrimaryKey(unitId);
+        Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
         UnitRedisInfo unitRedisInfo;
         Map<String,UnitRedisInfo> unitInfoMap = new HashMap<>();
         for (UnitDevice unitDevice : unitDeviceList) {
@@ -108,6 +115,8 @@ public class UnitDeviceCache {
             unitRedisInfo.setDeviceId(unitDevice.getDeviceId());
             unitRedisInfo.setId(unit.getId());
             unitRedisInfo.setUnitName(unit.getUnitName());
+            unitRedisInfo.setPrecinctId(unit.getPrecinctId());
+            unitRedisInfo.setContactPhone(precinct.getDutyPhone());
             unitInfoMap.put(unitDevice.getDeviceId(),unitRedisInfo);
         }
 
@@ -118,6 +127,7 @@ public class UnitDeviceCache {
      * 移除单位网关关联关系
      * @param deviceIds
      */
+    @Async
     public void removeUnitDevice(String... deviceIds){
         if(StringUtils.isEmpty(deviceIds)){
             return;
