@@ -67,7 +67,7 @@ public class AppUnitController extends BaseController {
     @GetMapping(value = "/list")
     public ResponseResult<List<AppUnitResp>> list(@CurUser ShiroUser shiroUser,
                                                   @ApiParam(value = "单位名称") @RequestParam(value = "name",required = false) String name,
-                                                  @ApiParam(value = "单位名称") BasePage basePage){
+                                                  @ApiParam(value = "分页信息") BasePage basePage){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())){
             if(StringUtils.isEmpty(shiroUser.getPrecinctIds())){
@@ -81,10 +81,27 @@ public class AppUnitController extends BaseController {
     }
 
 
-    @Log(title = "app单位",action = "单位详情")
+    @Log(title = "app单位",action = "单位详情(管理端)")
     @ApiOperation(value = "单位详情", httpMethod = "GET")
     @GetMapping(value = "/detail")
     public ResponseResult<AppUnitDetailResp> detail(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
+        AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
+        /*设置摄像头*/
+        List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
+        appUnitDetailResp.setCameraListResps(cameraListResps);
+        return ResponseResult.buildOkResult(appUnitDetailResp);
+    }
+
+
+    @Log(title = "app单位",action = "单位详情用户端")
+    @ApiOperation(value = "单位详情", httpMethod = "GET")
+    @GetMapping(value = "/detail")
+    public ResponseResult<AppUnitDetailResp> detail(@CurUser ShiroUser shiroUser){
+        Integer unitId = shiroUser.getUnitId();
+        if(StringUtils.isEmpty(unitId)){
+            return error("当前用户没有所属单位!");
+        }
+
         AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
         /*设置摄像头*/
         List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
@@ -114,7 +131,7 @@ public class AppUnitController extends BaseController {
         return ResponseResult.buildOkResult(appRealtimeDataResp);
     }
 
-    @ApiOperation(value = "获取告警通知", httpMethod = "GET")
+    @ApiOperation(value = "获取告警通知(管理端)", httpMethod = "GET")
     @GetMapping(value="/getAlarmNotice")
     public ResponseResult<List<NoticeInfo>> getAlarmNotice(@CurUser ShiroUser shiroUser){
         List<Integer> precinctIds = null;
@@ -130,6 +147,25 @@ public class AppUnitController extends BaseController {
         List<NoticeInfo> noticeInfoList = new ArrayList<>();
         for (NoticeInfo noticeInfo : noticeInfos) {
             if(StringUtils.isNull(precinctIds) || precinctIds.contains(noticeInfo.getPrecinctId())){
+                noticeInfoList.add(noticeInfo);
+            }
+        }
+        return ResponseResult.buildOkResult(noticeInfoList);
+    }
+
+
+    @ApiOperation(value = "获取告警通知(用户端)", httpMethod = "GET")
+    @GetMapping(value="/getAlarmNoticeByUnit")
+    public ResponseResult<List<NoticeInfo>> getAlarmNoticeByUnit(@CurUser ShiroUser shiroUser){
+        Integer unitId = shiroUser.getUnitId();
+        if(StringUtils.isEmpty(unitId)){
+            return error("当前用户没有所属单位!");
+        }
+
+        List<NoticeInfo> noticeInfos = noticeCache.getNoticesByType(NoticeType.ALARM);
+        List<NoticeInfo> noticeInfoList = new ArrayList<>();
+        for (NoticeInfo noticeInfo : noticeInfos) {
+            if(noticeInfo.getUnitId().equals(unitId)) {
                 noticeInfoList.add(noticeInfo);
             }
         }

@@ -32,6 +32,7 @@ CREATE TABLE `t_user` (
   `password` 		varchar(32) 	DEFAULT NULL 				COMMENT '密码',
   `full_name` 		varchar(32) 	DEFAULT NULL 				COMMENT '名称',
   `phone` 			varchar(16) 	DEFAULT NULL 				COMMENT '电话',
+  `unit_id` 		int(11) 		DEFAULT NULL 				COMMENT '所属单位',
   `status` 			int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
   `create_time` 	datetime 		DEFAULT NULL 				COMMENT '创建时间',
   `update_time` 	datetime 		DEFAULT NULL 				COMMENT '更新时间',

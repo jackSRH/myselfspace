@@ -32,6 +32,8 @@ public class NoticeInfo implements Serializable {
     private Integer uid;
     @ApiModelProperty(value = "管辖区id",hidden = true)
     private Integer precinctId;
+    @ApiModelProperty(value = "单位id",hidden = true)
+    private Integer unitId;
     @ApiModelProperty(value = "是否已读 0:未读 1:已读")
     private Integer read;
     @ApiModelProperty(value = "具体类型 0:告警通知(告警id)",hidden = true)
@@ -99,6 +101,14 @@ public class NoticeInfo implements Serializable {
 
     public void setPrecinctId(Integer precinctId) {
         this.precinctId = precinctId;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 
     public Integer getRead() {

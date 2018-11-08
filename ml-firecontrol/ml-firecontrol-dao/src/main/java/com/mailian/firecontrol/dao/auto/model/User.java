@@ -2,7 +2,7 @@
 *
 * User.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-11-01
+* @date 2018-11-08
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -34,6 +34,11 @@ public class User extends BaseDomain implements Serializable {
      * 电话
      */
     private String phone;
+
+    /**
+     * 所属单位
+     */
+    private Integer unitId;
 
     /**
      * 状态（0正常 1停用）
@@ -83,6 +88,14 @@ public class User extends BaseDomain implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 
     public Integer getStatus() {
