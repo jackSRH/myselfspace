@@ -44,7 +44,7 @@ CREATE TABLE `t_user` (
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into t_user values(1,'admin','21232f297a57a5a743894a0e4a801fc3','超级管理员','15999562568',0,now(),now(),'system','system');
+insert into t_user values(1,'admin','21232f297a57a5a743894a0e4a801fc3','超级管理员','15999562568',null,0,now(),now(),'system','system');
 
 
 -- ----------------------------
