@@ -95,8 +95,8 @@ public class AppUnitController extends BaseController {
 
     @Log(title = "app单位",action = "单位详情用户端")
     @ApiOperation(value = "单位详情", httpMethod = "GET")
-    @GetMapping(value = "/detail")
-    public ResponseResult<AppUnitDetailResp> detail(@CurUser ShiroUser shiroUser){
+    @GetMapping(value = "/detailByUser")
+    public ResponseResult<AppUnitDetailResp> detailByUser(@CurUser ShiroUser shiroUser){
         Integer unitId = shiroUser.getUnitId();
         if(StringUtils.isEmpty(unitId)){
             return error("当前用户没有所属单位!");
@@ -155,8 +155,8 @@ public class AppUnitController extends BaseController {
 
 
     @ApiOperation(value = "获取告警通知(用户端)", httpMethod = "GET")
-    @GetMapping(value="/getAlarmNoticeByUnit")
-    public ResponseResult<List<NoticeInfo>> getAlarmNoticeByUnit(@CurUser ShiroUser shiroUser){
+    @GetMapping(value="/getAlarmNoticeByUser")
+    public ResponseResult<List<NoticeInfo>> getAlarmNoticeByUser(@CurUser ShiroUser shiroUser){
         Integer unitId = shiroUser.getUnitId();
         if(StringUtils.isEmpty(unitId)){
             return error("当前用户没有所属单位!");
