@@ -53,26 +53,21 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     public PageBean<FacilitiesAlarmListResp> getFacilitiesAlarmList(DataScope dataScope, SearchReq searchReq){
         String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
-        //查找单位id列表
         queryMap.put("precinctScope", dataScope);
         if(StringUtils.isNotEmpty(unitName)){
             queryMap.put("unitNameLike",unitName);
-        }
-        List<Unit> units = unitService.selectByMap(queryMap);
-        if(StringUtils.isEmpty(units)){
-            return new PageBean<>();
-        }
-
-        //查找单位信息
-        List<Integer> unitIds = new ArrayList<>();
-        Map<Integer,String> unitId2Name = new HashMap<>();
-        for(Unit unit : units){
-            unitIds.add(unit.getId());
-            unitId2Name.put(unit.getId(),unit.getUnitName());
+            List<Unit> units = unitService.selectByMap(queryMap);
+            if(StringUtils.isEmpty(units)){
+                return new PageBean<>();
+            }
+            List<Integer> unitIds = new ArrayList<>();
+            for(Unit unit : units){
+                unitIds.add(unit.getId());
+            }
+            queryMap.clear();
+            queryMap.put("unitIds",unitIds);
         }
 
-        queryMap.clear();
-        queryMap.put("unitIds",unitIds);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -80,6 +75,24 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         if(StringUtils.isEmpty(facilitiesAlarms)){
             return new PageBean<>();
+        }
+
+        //获取单位名称
+        Set<Integer> unitIds = new HashSet<>();
+        Integer unitId;
+        for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
+            unitId = facilitiesAlarm.getUnitId();
+            if(StringUtils.isNotEmpty(unitId)){
+                unitIds.add(unitId);
+            }
+        }
+
+        List<Unit> units = unitService.selectBatchIds(unitIds);
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(units)){
+            for(Unit unit :units){
+                unitId2Name.put(unit.getId(),unit.getUnitName());
+            }
         }
 
         List<FacilitiesAlarmListResp> facilitiesAlarmListResps = new ArrayList<>();
@@ -97,29 +110,25 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
     @Override
     public PageBean<FireAlarmListResp> getFireAlarmList(DataScope dataScope, SearchReq searchReq){
-        Map<String,Object> queryMap = new HashMap<>();
         String unitName = searchReq.getUnitName();
+        Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
         if(StringUtils.isNotEmpty(unitName)){
             queryMap.put("unitNameLike",unitName);
-        }
-        List<Unit> units = unitService.selectByMap(queryMap);
-        if(StringUtils.isEmpty(units)){
-            return new PageBean<>();
-        }
-
-        //查找单位信息
-        List<Integer> unitIds = new ArrayList<>();
-        Map<Integer,String> unitId2Name = new HashMap<>();
-        for(Unit unit : units){
-            unitIds.add(unit.getId());
-            unitId2Name.put(unit.getId(),unit.getUnitName());
+            List<Unit> units = unitService.selectByMap(queryMap);
+            if(StringUtils.isEmpty(units)){
+                return new PageBean<>();
+            }
+            List<Integer> unitIds = new ArrayList<>();
+            for(Unit unit : units){
+                unitIds.add(unit.getId());
+            }
+            queryMap.clear();
+            queryMap.put("unitIds",unitIds);
         }
 
         Date startDate = searchReq.getStartDate();
         Date endDate = searchReq.getEndDate();
-        queryMap.clear();
-        queryMap.put("unitIds",unitIds);
         queryMap.put("startDate",startDate);
         queryMap.put("endDate",endDate);
         queryMap.put("misreport", FaMisreportType.EFFECTIVE.id);
@@ -131,6 +140,24 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         if(StringUtils.isEmpty(facilitiesAlarms)){
             return new PageBean<>();
+        }
+
+        //获取单位名称
+        Set<Integer> unitIds = new HashSet<>();
+        Integer unitId;
+        for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
+            unitId = facilitiesAlarm.getUnitId();
+            if(StringUtils.isNotEmpty(unitId)){
+                unitIds.add(unitId);
+            }
+        }
+
+        List<Unit> units = unitService.selectBatchIds(unitIds);
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(units)){
+            for(Unit unit :units){
+                unitId2Name.put(unit.getId(),unit.getUnitName());
+            }
         }
 
         List<FireAlarmListResp> fireAlarmListResps = new ArrayList<>();
@@ -147,27 +174,23 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
     @Override
     public PageBean<FireAutoAlarmListResp> getFireAutoAlarmList(DataScope dataScope, SearchReq searchReq){
-        Map<String,Object> queryMap = new HashMap<>();
         String unitName = searchReq.getUnitName();
+        Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
         if(StringUtils.isNotEmpty(unitName)){
             queryMap.put("unitNameLike",unitName);
-        }
-        List<Unit> units = unitService.selectByMap(queryMap);
-        if(StringUtils.isEmpty(units)){
-            return new PageBean<>();
-        }
-
-        //查找单位信息
-        List<Integer> unitIds = new ArrayList<>();
-        Map<Integer,String> unitId2Name = new HashMap<>();
-        for(Unit unit : units){
-            unitIds.add(unit.getId());
-            unitId2Name.put(unit.getId(),unit.getUnitName());
+            List<Unit> units = unitService.selectByMap(queryMap);
+            if(StringUtils.isEmpty(units)){
+                return new PageBean<>();
+            }
+            List<Integer> unitIds = new ArrayList<>();
+            for(Unit unit : units){
+                unitIds.add(unit.getId());
+            }
+            queryMap.clear();
+            queryMap.put("unitIds",unitIds);
         }
 
-        queryMap.clear();
-        queryMap.put("unitIds",unitIds);
         queryMap.put("alarmType",AlarmType.ALARM.id);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
@@ -178,15 +201,21 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             return new PageBean<>();
         }
 
+        Set<Integer> unitIds = new HashSet<>();
         Set<Integer> facilitiesIds = new HashSet<>();
+        Integer faId,unitId;
         for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
-            Integer faId = facilitiesAlarm.getFacilitiesId();
+            faId = facilitiesAlarm.getFacilitiesId();
             if(StringUtils.isNotEmpty(faId)){
                 facilitiesIds.add(faId);
             }
+            unitId = facilitiesAlarm.getUnitId();
+            if(StringUtils.isNotEmpty(unitId)){
+                unitIds.add(unitId);
+            }
         }
 
-        //查找设施
+        //查找设施名称
         Map<Integer,String> faId2Name = new HashMap<>();
         if(StringUtils.isNotEmpty(facilitiesIds)){
            List<Facilities> facilitiess = facilitiesService.selectBatchIds(facilitiesIds);
@@ -194,6 +223,15 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
                 for(Facilities facilities : facilitiess){
                     faId2Name.put(facilities.getId(),facilities.getFaName());
                 }
+            }
+        }
+
+        //查找设施名称
+        List<Unit> units = unitService.selectBatchIds(unitIds);
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(units)){
+            for(Unit unit :units){
+                unitId2Name.put(unit.getId(),unit.getUnitName());
             }
         }
 
