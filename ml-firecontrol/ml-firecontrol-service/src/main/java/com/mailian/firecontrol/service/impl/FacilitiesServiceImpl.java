@@ -82,6 +82,8 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
             Unit unit = unitService.selectByPrimaryKey(unitId);
             if(StringUtils.isNotNull(unit)){
                 facilities.setPrecinctId(unit.getPrecinctId());
+                facilities.setUnitName(unit.getUnitName());
+                facilities.setUnitPhone(unit.getContactPhone());
             }
         }
         if(StringUtils.isEmpty(facilities.getId())){
