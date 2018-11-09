@@ -117,7 +117,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     upAlarmList.add(alarm);
                     facilitiesAlarmMap.put(alarm.getAlarmid(),facilitiesAlarm);
                 }
-                alarmMap.remove(alarm);
+                alarmMap.remove(alarm.getAlarmid());
             }
         }
         facilitiesAlarmList.clear();
@@ -326,8 +326,10 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
         //查找后台告警信息
         List<Alarm> alarms = alarmRepository.getAlarmInfoByDiviceCodesAndType(
                 CollectionUtil.join(deviceList,","),stime,etime,0,2);
-        AlarmOpertionService alarmOpertionService = (AlarmOpertionService) AopContext.currentProxy();
-        alarmOpertionService.dealRealTimeAlarm(alarms);
+        if(StringUtils.isNotEmpty(alarms)){
+            AlarmOpertionService alarmOpertionService = (AlarmOpertionService) AopContext.currentProxy();
+            alarmOpertionService.dealRealTimeAlarm(alarms);
+        }
 
         lastSynTime = now;
     }
