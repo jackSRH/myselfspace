@@ -15,6 +15,8 @@ public class BaseUserInfo implements Serializable {
     private Integer id;
     /*用户名*/
     private String userName;
+    /*用户密码*/
+    private String password;
     /*用户真实姓名*/
     private String fullName;
     /*电话*/
@@ -60,5 +62,13 @@ public class BaseUserInfo implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

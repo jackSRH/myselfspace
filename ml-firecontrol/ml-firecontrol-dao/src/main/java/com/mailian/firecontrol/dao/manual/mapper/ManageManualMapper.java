@@ -26,4 +26,8 @@ public interface ManageManualMapper {
 
 
     List<DiagramItemDto> selectDiagramItemByMap(Map<String,Object> queryMap);
+
+    List<Map<String,Object>> countFaTypeNumByMap(Map<String,Object> queryMap);
+
+    List<Map<String,Object>> countFaRealNumByMap(Map<String,Object> queryMap);
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(scanBasePackages = {"com.mailian"})
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement//开启事务管理
 @EnableCaching//开启缓存
 @EnableAspectJAutoProxy(exposeProxy = true)
+@EnableAsync(proxyTargetClass = true)//开启异步处理
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

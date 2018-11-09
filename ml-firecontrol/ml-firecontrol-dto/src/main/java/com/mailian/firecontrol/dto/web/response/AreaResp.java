@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mailian.core.bean.TreeEntity;
 import com.mailian.core.util.FilterUtil;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.AreaRank;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -34,6 +35,8 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
     private List<AreaResp> childAreaList;
     @ApiModelProperty(value = "区分id用")
     private String disStr;
+    @ApiModelProperty(value = "区分父级id用",hidden = true)
+    private String parentDisStr;
 
     public Integer getId() {
         return id;
@@ -99,6 +102,14 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
         this.disStr = disStr;
     }
 
+    public String getParentDisStr() {
+        return parentDisStr;
+    }
+
+    public void setParentDisStr(String parentDisStr) {
+        this.parentDisStr = parentDisStr;
+    }
+
     @JsonIgnore
     @Override
     public String getIdStr() {
@@ -108,7 +119,7 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
     @JsonIgnore
     @Override
     public String getParentIdStr() {
-        return parentId.toString();
+        return parentId.toString()+StringUtils.nvl(parentDisStr,"");
     }
 
     @JsonIgnore
@@ -132,10 +143,17 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
     @JsonIgnore
     @Override
     public boolean filterByParam(Object... params) {
-        if(FilterUtil.likeStr(areaName,params[0])){
-            return true;
+        if(params.length==1) {
+            if (FilterUtil.likeStr(areaName, params[0])) {
+                return true;
+            }
         }
-
+        if(params.length > 1) {
+            List<Integer> precinctId = (List<Integer>) params[1];
+            if (FilterUtil.likeStr(areaName, params[0]) && areaRank.intValue() == AreaRank.OTHER.id.intValue() && precinctId.contains(id)){
+                return true;
+            }
+        }
         return false;
     }
 

@@ -84,15 +84,10 @@ public class UnitDeviceCache {
         if(StringUtils.isNull(unitDevice)){
             return;
         }
-        UnitRedisInfo unitRedisInfo = new UnitRedisInfo();
         Unit unit = unitMapper.selectByPrimaryKey(unitDevice.getUnitId());
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
         String deviceId = unitDevice.getDeviceId();
-        unitRedisInfo.setDeviceId(deviceId);
-        unitRedisInfo.setId(unit.getId());
-        unitRedisInfo.setUnitName(unit.getUnitName());
-        unitRedisInfo.setPrecinctId(unit.getPrecinctId());
-        unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+        UnitRedisInfo unitRedisInfo = copyToUnitRedisInfo(deviceId,unit,precinct);
         redisUtils.addHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,deviceId,unitRedisInfo,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
     }
 
@@ -111,16 +106,24 @@ public class UnitDeviceCache {
         UnitRedisInfo unitRedisInfo;
         Map<String,UnitRedisInfo> unitInfoMap = new HashMap<>();
         for (UnitDevice unitDevice : unitDeviceList) {
-            unitRedisInfo = new UnitRedisInfo();
-            unitRedisInfo.setDeviceId(unitDevice.getDeviceId());
-            unitRedisInfo.setId(unit.getId());
-            unitRedisInfo.setUnitName(unit.getUnitName());
-            unitRedisInfo.setPrecinctId(unit.getPrecinctId());
-            unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+            unitRedisInfo = copyToUnitRedisInfo(unitDevice.getDeviceId(),unit,precinct);
             unitInfoMap.put(unitDevice.getDeviceId(),unitRedisInfo);
         }
-
         redisUtils.addAllHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,unitInfoMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+    }
+
+
+    private UnitRedisInfo copyToUnitRedisInfo(String deviceId,Unit unit,Precinct precinct){
+        UnitRedisInfo unitRedisInfo = new UnitRedisInfo();
+        unitRedisInfo.setDeviceId(deviceId);
+        unitRedisInfo.setId(unit.getId());
+        unitRedisInfo.setUnitName(unit.getUnitName());
+        unitRedisInfo.setPrecinctId(unit.getPrecinctId());
+        unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+        unitRedisInfo.setAreaId(unit.getAreaId());
+        unitRedisInfo.setCityId(unit.getCityId());
+        unitRedisInfo.setProvinceId(unit.getProvinceId());
+        return unitRedisInfo;
     }
 
     /**

@@ -9,6 +9,7 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.AlarmMisreport;
 import com.mailian.firecontrol.common.enums.ItemBtype;
 import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
@@ -32,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -65,7 +65,7 @@ public class BigscreenController extends BaseController {
         return ResponseResult.buildOkResult(areaService.selectProvinceAndCityList(areaName));
     }
 
-    @ApiOperation(value = "获取管辖区数结构，用于大屏运营商展示", httpMethod = "GET")
+    @ApiOperation(value = "获取管辖区数结构，用于大屏管辖区展示", httpMethod = "GET")
     @GetMapping(value = "getAreaAndPrecinctList")
     public ResponseResult<List<AreaResp>> getAreaAndPrecinctList(@CurUser ShiroUser shiroUser,
                                                                  @ApiParam(value="区域名") @RequestParam(value = "areaName",required = false) String areaName){
@@ -78,6 +78,22 @@ public class BigscreenController extends BaseController {
             dataScope = new DataScope(precinctIds);
         }
         return ResponseResult.buildOkResult(areaService.selectAreaAndPrecinctList(areaName,dataScope));
+    }
+
+
+    @ApiOperation(value = "获取单位数结构，用于大屏单位展示", httpMethod = "GET")
+    @GetMapping(value = "getAreaAndUnitList")
+    public ResponseResult<List<AreaResp>> getAreaAndUnitList(@CurUser ShiroUser shiroUser,
+                                                                 @ApiParam(value="区域名") @RequestParam(value = "areaName",required = false) String areaName){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult();
+            }
+            dataScope = new DataScope("precinct_id",precinctIds);
+        }
+        return ResponseResult.buildOkResult(areaService.selectAreaAndUnitList(areaName,dataScope));
     }
 
 
@@ -180,7 +196,7 @@ public class BigscreenController extends BaseController {
 
     @ApiOperation(value = "获取单位走势(单位)", httpMethod = "GET")
     @RequestMapping(value="/getUnitTrendByUnitId",method = RequestMethod.GET)
-    public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(@CurUser ShiroUser shiroUser, BgSearchReq bgSearchReq) throws ParseException {
+    public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(@CurUser ShiroUser shiroUser, BgSearchReq bgSearchReq){
         bgSearchReq.setUnitId(StringUtils.nvl(bgSearchReq.getUnitId(),shiroUser.getUnitId()));
         if(StringUtils.isEmpty(bgSearchReq.getUnitId())){
             return error("单位不存在");
@@ -300,7 +316,45 @@ public class BigscreenController extends BaseController {
     }
 
 
+    @ApiOperation(value = "获取警情分析(运营商)", httpMethod = "GET")
+    @RequestMapping(value="/getAlarmAnalysis",method = RequestMethod.GET)
+    public ResponseResult<AlarmAnalysisResp> getAlarmAnalysis(@ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+                                                              @ApiParam(value = "日期类型  1日,2周,3月") @RequestParam(value = "dateType",required = false,defaultValue = "1") Integer dateType){
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getAlarmAnalysisByAreaAndScope(areaId,dateType,null,null));
+    }
+
+    @ApiOperation(value = "获取警情分析(管辖区)", httpMethod = "GET")
+    @RequestMapping(value="/getAlarmAnalysisByPrecinct",method = RequestMethod.GET)
+    public ResponseResult<AlarmAnalysisResp> getAlarmAnalysisByPrecinct(@CurUser ShiroUser shiroUser,
+                                                                    @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+                                                                    @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId,
+                                                                        @ApiParam(value = "日期类型  1日,2周,3月") @RequestParam(value = "dateType",required = false,defaultValue = "1") Integer dateType){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isNotEmpty(precinctId)) {
+                /*无数据权限*/
+                if (!precinctIds.contains(precinctId)) {
+                    return ResponseResult.buildOkResult(new AlarmAnalysisResp());
+                }
+            }
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new AlarmAnalysisResp());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+        if(StringUtils.isNotEmpty(precinctId)){
+            dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
+        }
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getAlarmAnalysisByAreaAndScope(areaId,dateType, AlarmMisreport.EFFECTIVE.id,dataScope));
+    }
 
 
+    @ApiOperation(value = "获取火警信息统计", httpMethod = "GET")
+    @RequestMapping(value="/getFireAlarmCount",method = RequestMethod.GET)
+    public ResponseResult<FireAlarmCountResp> getFireAlarmCount(@CurUser ShiroUser shiroUser,
+                                                               @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId){
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getFireAlarmCountByArea(areaId));
+    }
 
 }

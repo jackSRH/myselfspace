@@ -5,10 +5,7 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
-import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
+import com.mailian.firecontrol.dto.web.response.*;
 
 import java.util.List;
 import java.util.Map;
@@ -54,4 +51,18 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      */
     List<FacilitiesAlarm> selectFacilitiesAlarmByMap(Map<String,Object> queryMap);
 
+    /**
+     * 警情分析
+     * @param areaId
+     * @param dataScope
+     * @return
+     */
+    AlarmAnalysisResp getAlarmAnalysisByAreaAndScope(Integer areaId,Integer dateType,Integer misreport, DataScope dataScope);
+
+    /**
+     * 火灾统计
+     * @param areaId
+     * @return
+     */
+    FireAlarmCountResp getFireAlarmCountByArea(Integer areaId);
 }
