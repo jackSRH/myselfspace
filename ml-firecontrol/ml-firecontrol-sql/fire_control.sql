@@ -614,3 +614,24 @@ CREATE TABLE `t_unit_device`(
   `update_by` 		varchar(32) 	DEFAULT NULL 				COMMENT '更新者',
   PRIMARY KEY (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '';
+
+·
+-- ----------------------------
+-- 27、APP表
+-- ----------------------------
+drop table if exists t_app;
+CREATE TABLE `t_app` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `version` varchar(32) NOT NULL COMMENT '安装包版本',
+  `name` varchar(32) DEFAULT NULL COMMENT '名称',
+  `path` varchar(100) NOT NULL COMMENT '安装包路径',
+  `log` varchar(255) DEFAULT NULL COMMENT '版本更新内容',
+  `md5` varchar(32) NOT NULL COMMENT 'MD5编码',
+  `forceup` int(2) NOT NULL COMMENT '是否强制升级 0：是，1否',
+  `type` int(2) NOT NULL COMMENT '0：管理端，1：用户端',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `create_by` varchar(32) NOT NULL COMMENT '创建者',
+  `update_by` varchar(32) NOT NULL COMMENT '更新者',
+  PRIMARY KEY (`id`)
+) engine=innodb auto_increment=1 default charset=utf8 comment = 'app信息表';

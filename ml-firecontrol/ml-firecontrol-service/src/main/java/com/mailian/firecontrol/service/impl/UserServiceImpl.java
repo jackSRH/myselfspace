@@ -99,7 +99,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
         int result = 0;
         User user = new User();
         BeanUtils.copyProperties(userReq,user);
-        if(StringUtils.isNotEmpty(userReq.getId())){
+        if(StringUtils.isEmpty(userReq.getId())){
             user.setStatus(StringUtils.nvl(user.getStatus(),Status.NORMAL.id));
             user.setPassword(MD5Util.md5(CommonConstant.DEFAULT_PASSWORD));
             result = insert(user);
