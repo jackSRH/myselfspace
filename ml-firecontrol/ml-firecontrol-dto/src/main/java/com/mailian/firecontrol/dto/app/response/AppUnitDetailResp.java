@@ -61,6 +61,10 @@ public class AppUnitDetailResp implements Serializable {
 
     @ApiModelProperty(value = "摄像头参数")
     private List<CameraListResp> cameraListResps;
+    @ApiModelProperty(value = "今日报警")
+    private Integer alarmNum;
+    @ApiModelProperty(value = "今日预警")
+    private Integer earlyWarningNum;
 
     public Integer getUnitId() {
         return unitId;
@@ -220,5 +224,21 @@ public class AppUnitDetailResp implements Serializable {
 
     public void setCameraListResps(List<CameraListResp> cameraListResps) {
         this.cameraListResps = cameraListResps;
+    }
+
+    public Integer getAlarmNum() {
+        return alarmNum;
+    }
+
+    public void setAlarmNum(Integer alarmNum) {
+        this.alarmNum = alarmNum;
+    }
+
+    public Integer getEarlyWarningNum() {
+        return earlyWarningNum;
+    }
+
+    public void setEarlyWarningNum(Integer earlyWarningNum) {
+        this.earlyWarningNum = earlyWarningNum;
     }
 }

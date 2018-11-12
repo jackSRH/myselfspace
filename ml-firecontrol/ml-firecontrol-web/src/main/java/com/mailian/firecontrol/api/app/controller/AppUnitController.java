@@ -8,10 +8,7 @@ import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
-import com.mailian.firecontrol.common.enums.FaMisreportType;
-import com.mailian.firecontrol.common.enums.NoticeType;
-import com.mailian.firecontrol.common.enums.RealNoticeType;
+import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
@@ -104,9 +101,13 @@ public class AppUnitController extends BaseController {
         }
 
         AppUnitDetailResp appUnitDetailResp = unitService.getAppUnitDetailById(unitId);
-        /*设置摄像头*/
-        List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
-        appUnitDetailResp.setCameraListResps(cameraListResps);
+        Map<Integer,Integer> alarmCountMap = facilitiesAlarmService.countAlarmNumByUnitId(unitId);
+        if(alarmCountMap.containsKey(AlarmType.ALARM.id)) {
+            appUnitDetailResp.setAlarmNum(alarmCountMap.get(AlarmType.ALARM.id));
+        }
+        if(alarmCountMap.containsKey(AlarmType.EARLY_WARNING.id)) {
+            appUnitDetailResp.setEarlyWarningNum(alarmCountMap.get(AlarmType.EARLY_WARNING.id));
+        }
         return ResponseResult.buildOkResult(appUnitDetailResp);
     }
 

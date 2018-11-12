@@ -65,4 +65,11 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @return
      */
     FireAlarmCountResp getFireAlarmCountByArea(Integer areaId);
+
+    /**
+     * 告警统计
+     * @param unitId
+     * @return
+     */
+    Map<Integer,Integer> countAlarmNumByUnitId(Integer unitId);
 }

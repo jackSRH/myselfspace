@@ -351,6 +351,28 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         return fireAlarmCountResp;
     }
 
+    @Override
+    public Map<Integer, Integer> countAlarmNumByUnitId(Integer unitId) {
+        Date now = new Date();
+        Date startTime = DateUtil.getStartDate(now);
+        Date endTime = now;
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
+        queryMap.put("startDate",startTime);
+        queryMap.put("endDate",endTime);
+        queryMap.put("unitId",unitId);
+        List<Map<String,Object>> alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
+
+        Map<Integer, Integer> resultMap = new HashMap<>();
+        for (Map<String, Object> alarmCountMap : alarmResultList) {
+            Object alarmTypeObj = alarmCountMap.get("alarmType");
+            if(StringUtils.isNotNull(alarmTypeObj)){
+                resultMap.put(Integer.parseInt(alarmTypeObj.toString()),Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+            }
+        }
+        return resultMap;
+    }
+
     /**
      * 设置环比
      * @param alarmNumInfo
