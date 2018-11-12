@@ -561,6 +561,9 @@ drop table if exists `t_facilities_alarm`;
 create table `t_facilities_alarm` (
   `id` 					int(11) 		not null auto_increment    	comment 'ID',
   `unit_id` 			int(11) 		DEFAULT NULL 				COMMENT '单位id',
+  `area_id` 			int(11) 		DEFAULT NULL 				COMMENT '区域id',
+  `province_id` 		int(11) 		DEFAULT NULL 				COMMENT '省份id',
+  `city_id` 			int(11) 		DEFAULT NULL 				COMMENT '城市id',
   `precinct_id` 		int(11) 		DEFAULT NULL 				COMMENT '管辖区id',
   `struct_address` 		varchar(64)		DEFAULT NULL 				COMMENT '地址(编号)',
   `facilities_id` 		int(11) 		DEFAULT NULL 				comment '设施id',

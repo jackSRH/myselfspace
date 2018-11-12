@@ -40,4 +40,12 @@ public interface AreaService extends BaseService<Area> {
      * @return
      */
     List<AreaResp> selectAreaAndPrecinctList(String areaName, DataScope dataScope);
+
+    /**
+     * 单位树形结构
+     * @param areaName
+     * @param dataScope
+     * @return
+     */
+    List<AreaResp> selectAreaAndUnitList(String areaName, DataScope dataScope);
 }

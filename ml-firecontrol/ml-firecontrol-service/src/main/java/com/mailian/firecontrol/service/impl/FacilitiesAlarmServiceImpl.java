@@ -5,21 +5,20 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.db.DataScope;
+import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
 import com.mailian.firecontrol.common.enums.AlarmType;
 import com.mailian.firecontrol.common.enums.FaMisreportType;
+import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
-import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
+import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
@@ -254,6 +253,116 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     @Override
     public List<FacilitiesAlarm> selectFacilitiesAlarmByMap(Map<String,Object> queryMap){
         return  manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
+    }
+
+    @Override
+    public AlarmAnalysisResp getAlarmAnalysisByAreaAndScope(Integer areaId,Integer dateType,Integer misreport, DataScope dataScope) {
+        AlarmAnalysisResp alarmAnalysisResp = new AlarmAnalysisResp();
+
+        Date now = new Date();
+        Date startTime = DateUtil.getStartDate(now);
+        Date endTime = now;
+        Date yDate = DateUtil.getDateAfterDay(now,-1);
+        Date upStartTime = DateUtil.getStartDate(yDate);
+        Date upEndTime = DateUtil.getEndDate(yDate);
+
+        if(ReqDateType.WEEK.id.equals(dateType)){
+            startTime = DateUtil.getDateAfterDay(now,-7);
+            upStartTime = DateUtil.getDateAfterDay(now,-14);
+            upEndTime = startTime;
+        }else if(ReqDateType.MONTH.id.equals(dateType)){
+            startTime = DateUtil.addMonth(now,-1);
+            upStartTime = DateUtil.addMonth(now,-2);
+            upEndTime = startTime;
+        }
+
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+
+
+        if(StringUtils.isNotNull(dataScope)){
+            queryMap.put("precinctIds",dataScope.getDataIds());
+        }
+        queryMap.put("misreport",misreport);
+        queryMap.put("startDate",startTime);
+        queryMap.put("endDate",endTime);
+        List<Map<String,Object>> alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
+
+        for (Map<String, Object> alarmCountMap : alarmResultList) {
+            Object alarmTypeObj = alarmCountMap.get("alarmType");
+            if(StringUtils.isNotNull(alarmTypeObj)){
+                Integer alramType = Integer.parseInt(alarmTypeObj.toString());
+                if(AlarmType.ALARM.id.equals(alramType)){
+                    alarmAnalysisResp.getAlarmNum().settAn(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alramType)){
+                    alarmAnalysisResp.getEarlyWarningNum().settAn(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+            }
+        }
+
+        queryMap.put("startDate",upStartTime);
+        queryMap.put("endDate",upEndTime);
+        alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
+
+        for (Map<String, Object> alarmCountMap : alarmResultList) {
+            Object alarmTypeObj = alarmCountMap.get("alarmType");
+            if(StringUtils.isNotNull(alarmTypeObj)){
+                Integer alramType = Integer.parseInt(alarmTypeObj.toString());
+                if(AlarmType.ALARM.id.equals(alramType)){
+                    alarmAnalysisResp.getAlarmNum().setyAn(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alramType)){
+                    alarmAnalysisResp.getEarlyWarningNum().setyAn(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+            }
+        }
+
+        //设置环比
+        AlarmAnalysisResp.NumInfo alarmNumInfo = alarmAnalysisResp.getAlarmNum();
+        setRingRatio(alarmNumInfo);
+        //设置环比
+        AlarmAnalysisResp.NumInfo earlyWarningNumInfo = alarmAnalysisResp.getEarlyWarningNum();
+        setRingRatio(earlyWarningNumInfo);
+
+        return alarmAnalysisResp;
+    }
+
+    @Override
+    public FireAlarmCountResp getFireAlarmCountByArea(Integer areaId) {
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        List<Map<String,Object>> alarmResultList = manageManualMapper.countFaRealNumByMap(queryMap);
+
+        FireAlarmCountResp fireAlarmCountResp = new FireAlarmCountResp();
+        for (Map<String, Object> alarmCountMap : alarmResultList) {
+            Object misreportObj = alarmCountMap.get("misreport");
+            if(StringUtils.isNotNull(misreportObj)){
+                Integer alramType = Integer.parseInt(misreportObj.toString());
+                if(FaMisreportType.MISREPORT.id.equals(alramType)){
+                    fireAlarmCountResp.setMisreportNum(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+                if(FaMisreportType.EFFECTIVE.id.equals(alramType)){
+                    fireAlarmCountResp.setEffectiveNum(Integer.parseInt(alarmCountMap.get("alarmNum").toString()));
+                }
+            }
+        }
+
+        return fireAlarmCountResp;
+    }
+
+    /**
+     * 设置环比
+     * @param alarmNumInfo
+     */
+    private void setRingRatio(AlarmAnalysisResp.NumInfo alarmNumInfo) {
+        if(alarmNumInfo.getyAn()!=0){
+            double ringRatio = BigDecimalUtil.div(BigDecimalUtil.sub(alarmNumInfo.gettAn(),alarmNumInfo.getyAn()),alarmNumInfo.getyAn());
+            alarmNumInfo.setRingRatio((int)ringRatio*100);
+        }else{
+            double ringRatio = BigDecimalUtil.div(BigDecimalUtil.sub(alarmNumInfo.gettAn(),alarmNumInfo.getyAn()),1);
+            alarmNumInfo.setRingRatio((int)ringRatio*100);
+        }
     }
 
 

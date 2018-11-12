@@ -115,5 +115,84 @@
         </if>
     </select>
 
+    <select id="countFaTypeNumByMap" parameterType="java.util.Map" resultType="java.util.Map">
+        select alarm_type as alarmType,count(1) as alarmNum from t_facilities_alarm
+        <where>
+            <if test="unitId != null">
+                and unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
+            <if test="areaId != null">
+                and area_id = #{areaId,jdbcType=INTEGER}
+            </if>
+            <if test="provinceId != null">
+                and province_id = #{provinceId,jdbcType=INTEGER}
+            </if>
+            <if test="cityId != null">
+                and city_id = #{cityId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctId != null">
+                and precinct_id = #{precinctId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctIds != null">
+                and precinct_id in
+                <foreach close=")" collection="precinctIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="alarmTime != null">
+                and alarm_time = #{alarmTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="startDate != null and endDate != null">
+                and alarm_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="alarmType != null">
+                and alarm_type = #{alarmType,jdbcType=INTEGER}
+            </if>
+            <if test="misreport != null">
+                and misreport = #{misreport,jdbcType=INTEGER}
+            </if>
+        </where>
+        group by alarm_type
+    </select>
 
+
+    <select id="countFaRealNumByMap" parameterType="java.util.Map" resultType="java.util.Map">
+        select misreport as misreport,count(1) as alarmNum from t_facilities_alarm
+        <where>
+            <if test="unitId != null">
+                and unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
+            <if test="areaId != null">
+                and area_id = #{areaId,jdbcType=INTEGER}
+            </if>
+            <if test="provinceId != null">
+                and province_id = #{provinceId,jdbcType=INTEGER}
+            </if>
+            <if test="cityId != null">
+                and city_id = #{cityId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctId != null">
+                and precinct_id = #{precinctId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctIds != null">
+                and precinct_id in
+                <foreach close=")" collection="precinctIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="alarmTime != null">
+                and alarm_time = #{alarmTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="startDate != null and endDate != null">
+                and alarm_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="alarmType != null">
+                and alarm_type = #{alarmType,jdbcType=INTEGER}
+            </if>
+            <if test="misreport != null">
+                and misreport = #{misreport,jdbcType=INTEGER}
+            </if>
+        </where>
+        group by misreport
+    </select>
 </mapper>

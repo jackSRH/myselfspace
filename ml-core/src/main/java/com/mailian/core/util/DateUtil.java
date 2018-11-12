@@ -466,6 +466,92 @@ public class DateUtil {
 	     c.set(Calendar.MILLISECOND, 999);
 	     return c.getTime();
 	}
+
+
+	/**
+	 * 得到一周开始时间
+	 * @param date
+	 * @return
+	 */
+	public static Date getWeekStartDate(Date date) {
+		if(date==null)
+		{
+			return null;
+		}
+		Calendar c=Calendar.getInstance();
+		c.setTime(new Date(date.getTime()));
+
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek());
+		c.set(Calendar.HOUR, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+
+		return c.getTime();
+	}
+
+	/**
+	 * 得到一周结束时间
+	 * @param date
+	 * @return
+	 */
+	public static Date getWeekEndDate(Date date)
+	{
+		if(date==null)
+		{
+			return null;
+		}
+		Calendar c=Calendar.getInstance();
+		c.setTime(new Date(date.getTime()));
+
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 6);
+		c.set(Calendar.HOUR, 23);
+		c.set(Calendar.MINUTE, 59);
+		c.set(Calendar.SECOND, 59);
+		return c.getTime();
+	}
+
+	/**
+	 * 得到一月开始时间
+	 * @param date
+	 * @return
+	 */
+	public static Date getMonthStartDate(Date date)
+	{
+		if(date==null)
+		{
+			return null;
+		}
+		Calendar c=Calendar.getInstance();
+		c.setTime(new Date(date.getTime()));
+		//获取某月最小天数
+		int startDay = c.getActualMinimum(Calendar.DAY_OF_MONTH);
+		c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), startDay, 0, 0, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
+	}
+
+	/**
+	 * 得到一月结束时间
+	 * @param date
+	 * @return
+	 */
+	public static Date getMonthEndDate(Date date)
+	{
+		if(date==null)
+		{
+			return null;
+		}
+		Calendar c=Calendar.getInstance();
+		c.setTime(new Date(date.getTime()));
+		//获取某周最大天数
+		int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+		c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), lastDay, 23, 59, 59);
+		c.set(Calendar.MILLISECOND, 999);
+		return c.getTime();
+	}
+
 	
 	/**
 	 * 得到一天的开始

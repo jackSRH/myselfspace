@@ -18,7 +18,20 @@ public class UnitRedisInfo {
      * 单位名称
      */
     private String unitName;
+    /**
+     * 区域id
+     */
+    private Integer areaId;
 
+    /**
+     * 省份id
+     */
+    private Integer provinceId;
+
+    /**
+     * 城市id
+     */
+    private Integer cityId;
     /**
      * 管辖区id
      */
@@ -67,5 +80,29 @@ public class UnitRedisInfo {
 
     public void setContactPhone(String contactPhone) {
         this.contactPhone = contactPhone;
+    }
+
+    public Integer getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Integer areaId) {
+        this.areaId = areaId;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
     }
 }

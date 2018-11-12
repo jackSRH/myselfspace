@@ -10,8 +10,10 @@ import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.AreaRank;
 import com.mailian.firecontrol.dao.auto.mapper.AreaMapper;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
+import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
+import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.web.response.AreaResp;
 import com.mailian.firecontrol.service.AreaService;
 import org.springframework.aop.framework.AopContext;
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wangqiaoqing
@@ -33,6 +37,8 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
 
     @Resource
     private PrecinctMapper precinctMapper;
+    @Resource
+    private UnitMapper unitMapper;
 
     @Cacheable(value = CommonConstant.SYS_AREA_KEY)
     @Override
@@ -76,11 +82,61 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
         if(StringUtils.isNotNull(dataScope)){
             List<Precinct> precincts = precinctMapper.selectBatchIds(dataScope.getDataIds());
             appendPrecincts(areaResps, precincts);
+            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName,dataScope.getDataIds());
         }else{
             List<Precinct> precincts = precinctMapper.selectByMap(null);
             appendPrecincts(areaResps, precincts);
+            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
         }
-        return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
+    }
+
+    @Override
+    public List<AreaResp> selectAreaAndUnitList(String areaName, DataScope dataScope) {
+        AreaService areaService = (AreaService) AopContext.currentProxy();
+        List<AreaResp> areaResps = areaService.selectAll();
+
+        if(StringUtils.isNotNull(dataScope)){
+            List<Precinct> precincts = precinctMapper.selectBatchIds(dataScope.getDataIds());
+            appendPrecincts(areaResps, precincts);
+
+            //添加对应单位
+            Map<String,Object> queryMap = new HashMap<>();
+            queryMap.put("precinctScope",dataScope);
+            List<Unit> units = unitMapper.selectByMap(queryMap);
+            appendUnits(areaResps,units);
+            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName,dataScope.getDataIds());
+        }else{
+            List<Precinct> precincts = precinctMapper.selectByMap(null);
+            appendPrecincts(areaResps, precincts);
+
+            List<Unit> units = unitMapper.selectByMap(null);
+            appendUnits(areaResps,units);
+            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
+        }
+    }
+
+    /**
+     * 追加单位至区域
+     * @param areaResps
+     * @param units
+     */
+    private void appendUnits(List<AreaResp> areaResps, List<Unit> units) {
+        AreaResp areaResp;
+        int i=1;
+        String pDisStr = "P";
+        String disStr = "U";
+        for (Unit unit : units) {
+            areaResp = new AreaResp();
+            areaResp.setId(unit.getId());
+            areaResp.setAreaName(unit.getUnitName());
+            areaResp.setAreaRank(AreaRank.OTHER.id);
+            areaResp.setOrderNum(i);
+            areaResp.setParentId(unit.getPrecinctId());
+            areaResp.setDisStr(disStr);
+            areaResp.setParentDisStr(pDisStr);
+            areaResps.add(areaResp);
+            i++;
+        }
     }
 
     /**
