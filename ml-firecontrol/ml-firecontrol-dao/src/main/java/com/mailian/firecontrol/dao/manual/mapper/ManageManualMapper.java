@@ -5,6 +5,7 @@ import com.mailian.firecontrol.dao.auto.model.DiagramStruct;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
 import com.mailian.firecontrol.dto.DiagramItemDto;
+import com.mailian.firecontrol.dto.web.response.AlarmIndustryShareResp;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface ManageManualMapper {
     List<Map<String,Object>> countFaTypeNumByMap(Map<String,Object> queryMap);
 
     List<Map<String,Object>> countFaRealNumByMap(Map<String,Object> queryMap);
+
+    List<AlarmIndustryShareResp> countAlarmIndustryShare(Map<String,Object> queryMap);
 }

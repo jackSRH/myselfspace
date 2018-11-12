@@ -328,7 +328,7 @@ public class BigscreenController extends BaseController {
     public ResponseResult<AlarmAnalysisResp> getAlarmAnalysisByPrecinct(@CurUser ShiroUser shiroUser,
                                                                     @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
                                                                     @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId,
-                                                                        @ApiParam(value = "日期类型  1日,2周,3月") @RequestParam(value = "dateType",required = false,defaultValue = "1") Integer dateType){
+                                                                    @ApiParam(value = "日期类型  1日,2周,3月") @RequestParam(value = "dateType",required = false,defaultValue = "1") Integer dateType){
         DataScope dataScope = null;
         if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
             List<Integer> precinctIds = shiroUser.getPrecinctIds();
@@ -355,6 +355,99 @@ public class BigscreenController extends BaseController {
     public ResponseResult<FireAlarmCountResp> getFireAlarmCount(@CurUser ShiroUser shiroUser,
                                                                @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId){
         return ResponseResult.buildOkResult(facilitiesAlarmService.getFireAlarmCountByArea(areaId));
+    }
+
+
+    @ApiOperation(value = "警情行业占比", httpMethod = "GET")
+    @RequestMapping(value="/getAlarmIndustryShare",method = RequestMethod.GET)
+    public ResponseResult<List<AlarmIndustryShareResp>> getAlarmIndustryShare(@CurUser ShiroUser shiroUser,
+              @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+              @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId,
+              @ApiParam(value = "告警类型 1：告警，2：预警,不传为1") @RequestParam(value = "alarmType",required = false,defaultValue = "1") Integer alarmType){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isNotEmpty(precinctId)) {
+                /*无数据权限*/
+                if (!precinctIds.contains(precinctId)) {
+                    return ResponseResult.buildOkResult(new ArrayList<>());
+                }
+            }
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new ArrayList<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+        if(StringUtils.isNotEmpty(precinctId)){
+            dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
+        }
+        List<AlarmIndustryShareResp> alarmIndustryShareResps = facilitiesAlarmService.getAlarmIndustryShare(areaId,dataScope,alarmType);
+        return ResponseResult.buildOkResult(alarmIndustryShareResps);
+    }
+
+    @ApiOperation(value = "警情状态趋势（运营商）", httpMethod = "GET")
+    @RequestMapping(value="/getAlarmTrend",method = RequestMethod.GET)
+    public ResponseResult<List<AlarmStatisticsResp>> getAlarmTrend(@ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+            @ApiParam(value = "告警类型 1：告警，2：预警,不传为1") @RequestParam(value = "alarmType",required = false,defaultValue = "1") Integer alarmType){
+
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getAlarmTrend(areaId,null,alarmType));
+    }
+
+    @ApiOperation(value = "警情状态趋势（管辖区）", httpMethod = "GET")
+    @RequestMapping(value="/getAlarmTrendByPrecinct",method = RequestMethod.GET)
+    public ResponseResult<List<AlarmStatisticsResp>> getAlarmTrendByPrecinct(@CurUser ShiroUser shiroUser,
+             @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+             @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId,
+             @ApiParam(value = "告警类型 1：告警，2：预警,不传为1") @RequestParam(value = "alarmType",required = false,defaultValue = "1") Integer alarmType){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isNotEmpty(precinctId)) {
+                /*无数据权限*/
+                if (!precinctIds.contains(precinctId)) {
+                    return ResponseResult.buildOkResult(new ArrayList<>());
+                }
+            }
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new ArrayList<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+        if(StringUtils.isNotEmpty(precinctId)){
+            dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
+        }
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getAlarmTrend(areaId,dataScope,alarmType));
+    }
+
+    @ApiOperation(value = "当前告警（运营商）", httpMethod = "GET")
+    @RequestMapping(value="/getCurAlarm",method = RequestMethod.GET)
+    public ResponseResult<List<CurAlarmResp>> getCurAlarm(@ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId){
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getCurAlarm(areaId,null));
+    }
+
+    @ApiOperation(value = "当前告警（管辖区）", httpMethod = "GET")
+    @RequestMapping(value="/getCurAlarmByPrecinct",method = RequestMethod.GET)
+    public ResponseResult<List<CurAlarmResp>> getCurAlarmByPrecinct(@CurUser ShiroUser shiroUser,
+                             @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+                             @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isNotEmpty(precinctId)) {
+                /*无数据权限*/
+                if (!precinctIds.contains(precinctId)) {
+                    return ResponseResult.buildOkResult(new ArrayList<>());
+                }
+            }
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new ArrayList<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+        if(StringUtils.isNotEmpty(precinctId)){
+            dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
+        }
+        return ResponseResult.buildOkResult(facilitiesAlarmService.getCurAlarm(areaId,dataScope));
     }
 
 }

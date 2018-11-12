@@ -561,6 +561,7 @@ drop table if exists `t_facilities_alarm`;
 create table `t_facilities_alarm` (
   `id` 					int(11) 		not null auto_increment    	comment 'ID',
   `unit_id` 			int(11) 		DEFAULT NULL 				COMMENT '单位id',
+  `unit_type` 		int(2) 			DEFAULT NULL 				COMMENT '单位类型',
   `area_id` 			int(11) 		DEFAULT NULL 				COMMENT '区域id',
   `province_id` 		int(11) 		DEFAULT NULL 				COMMENT '省份id',
   `city_id` 			int(11) 		DEFAULT NULL 				COMMENT '城市id',
@@ -618,7 +619,7 @@ CREATE TABLE `t_unit_device`(
   PRIMARY KEY (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '';
 
-·
+
 -- ----------------------------
 -- 27、APP表
 -- ----------------------------
@@ -638,3 +639,5 @@ CREATE TABLE `t_app` (
   `update_by` varchar(32) NOT NULL COMMENT '更新者',
   PRIMARY KEY (`id`)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = 'app信息表';
+
+

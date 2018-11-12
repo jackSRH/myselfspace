@@ -2,7 +2,7 @@
 *
 * FacilitiesAlarm.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-11-09
+* @date 2018-11-12
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -185,6 +185,11 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
      * 状态（0正常 1停用）
      */
     private Integer status;
+
+    /**
+     * 单位类型
+     */
+    private Integer unitType;
 
     /**
      * t_facilities_alarm
@@ -469,5 +474,13 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(Integer unitType) {
+        this.unitType = unitType;
     }
 }

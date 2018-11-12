@@ -208,6 +208,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 facilitiesAlarm.setAlarmStatus(alarmStatus.id);
                 facilitiesAlarm.setAlarmType(alarmType.id);
                 facilitiesAlarm.setAlarmWay(AlarmWay.AUTO.id);
+                facilitiesAlarm.setUnitType(unitRedisInfo.getUnitType());
 
                 Date alarmSTime = ThreadLocalDateUtil.parse(alarm.getStime());
                 facilitiesAlarm.setAlarmTime(alarmSTime);

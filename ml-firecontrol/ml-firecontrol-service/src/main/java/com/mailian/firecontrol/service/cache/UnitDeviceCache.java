@@ -123,6 +123,7 @@ public class UnitDeviceCache {
         unitRedisInfo.setAreaId(unit.getAreaId());
         unitRedisInfo.setCityId(unit.getCityId());
         unitRedisInfo.setProvinceId(unit.getProvinceId());
+        unitRedisInfo.setUnitType(unit.getUnitType());
         return unitRedisInfo;
     }
 

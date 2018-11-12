@@ -18,17 +18,25 @@ import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.dto.web.response.AlarmAnalysisResp;
+import com.mailian.firecontrol.dto.web.response.AlarmIndustryShareResp;
+import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
+import com.mailian.firecontrol.dto.web.response.AlarmStatisticsResp;
+import com.mailian.firecontrol.dto.web.response.CurAlarmResp;
+import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
+import com.mailian.firecontrol.dto.web.response.FireAlarmCountResp;
+import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
+import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
 import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
-import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,8 +51,6 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     private UnitService unitService;
     @Resource
     private ManageManualMapper manageManualMapper;
-    @Resource
-    private DeviceItemRepository deviceItemRepository;
     @Resource
     private FacilitiesService facilitiesService;
 
@@ -439,6 +445,101 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             }
         }
         return alarmNumResp;
+    }
+
+    @Override
+    public List<AlarmIndustryShareResp> getAlarmIndustryShare(Integer areaId,DataScope dataScope, Integer alarmType){
+        Date endDate = new Date();
+        Date startDate = DateUtil.getDateBeforeMonth(endDate,1);
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        queryMap.put("endDate",endDate);
+        queryMap.put("startDate",startDate);
+        queryMap.put("alarmType",alarmType);
+        if(StringUtils.isNotNull(dataScope)){
+            queryMap.put("precinctIds",dataScope.getDataIds());
+        }
+
+        return manageManualMapper.countAlarmIndustryShare(queryMap);
+    }
+
+    @Override
+    public List<CurAlarmResp> getCurAlarm(Integer areaId, DataScope dataScope){
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        if(StringUtils.isNotNull(dataScope)){
+            queryMap.put("precinctIds",dataScope.getDataIds());
+        }
+        queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
+        List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
+        List<CurAlarmResp> curAlarmResps = new ArrayList<>();
+        if(StringUtils.isEmpty(facilitiesAlarms)){
+            return curAlarmResps;
+        }
+
+        Set<Integer> unitIds = new HashSet<>();
+        for(FacilitiesAlarm facilitiesAlarm :facilitiesAlarms){
+            unitIds.add(facilitiesAlarm.getUnitId());
+        }
+        List<Unit> units = unitService.selectBatchIds(unitIds);
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(units)){
+            for(Unit unit : units){
+                unitId2Name.put(unit.getId(),unit.getUnitName());
+            }
+        }
+
+        CurAlarmResp curAlarmResp;
+        for(FacilitiesAlarm facilitiesAlarm :facilitiesAlarms){
+            curAlarmResp = new CurAlarmResp();
+            curAlarmResp.setId(facilitiesAlarm.getId());
+            curAlarmResp.setAlarmContent(facilitiesAlarm.getAlarmContent());
+            curAlarmResp.setAlarmStatus(facilitiesAlarm.getAlarmStatus());
+            curAlarmResp.setAlarmTime(facilitiesAlarm.getAlarmTime());
+            curAlarmResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
+            curAlarmResps.add(curAlarmResp);
+        }
+        return curAlarmResps;
+    }
+
+    @Override
+    public List<AlarmStatisticsResp> getAlarmTrend(Integer areaId, DataScope dataScope, Integer alarmType){
+        Date endDate = new Date();
+        Date startDate = DateUtil.getDateBeforeMonth(endDate,1);
+        Map<String,Object> queryMap = new HashMap<>();
+        BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        queryMap.put("endDate",endDate);
+        queryMap.put("startDate",startDate);
+        queryMap.put("alarmType",alarmType);
+        if(StringUtils.isNotNull(dataScope)){
+            queryMap.put("precinctIds",dataScope.getDataIds());
+        }
+
+        List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
+        List<AlarmStatisticsResp> alarmStatisticsResps = new ArrayList<>();
+        if(StringUtils.isEmpty(facilitiesAlarms)){
+            return alarmStatisticsResps;
+        }
+
+        Map<String,Integer> date2AlarmNum = new HashMap<>();
+        String day;
+        for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
+            day = DateUtil.toString(facilitiesAlarm.getAlarmTime(),DateUtil.DATE_PATTERN);
+            int alarmNum = date2AlarmNum.containsKey(day)?date2AlarmNum.get(day):0;
+            alarmNum += 1;
+            date2AlarmNum.put(day,alarmNum);
+        }
+
+        List<String> dates = DateUtil.getDaysBetween(startDate,endDate);
+        AlarmStatisticsResp alarmStatisticsResp;
+        for(String date: dates){
+            alarmStatisticsResp = new AlarmStatisticsResp();
+            alarmStatisticsResp.setDate(date);
+            int alarmNum = StringUtils.isNotEmpty(date2AlarmNum.get(date))?date2AlarmNum.get(date):0;
+            alarmStatisticsResp.setAlarmNum(alarmNum);
+            alarmStatisticsResps.add(alarmStatisticsResp);
+        }
+        return alarmStatisticsResps;
     }
 
 }

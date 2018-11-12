@@ -72,4 +72,21 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @return
      */
     Map<Integer,Integer> countAlarmNumByUnitId(Integer unitId);
+
+    /**
+     * 获取行业告警占比
+     * @param alarmType
+     * @return
+     */
+    List<AlarmIndustryShareResp> getAlarmIndustryShare(Integer areaId,DataScope dataScope,Integer alarmType);
+
+    /**
+     * 获取告警趋势
+     * @param alarmType
+     * @return
+     */
+    List<AlarmStatisticsResp> getAlarmTrend(Integer areaId,DataScope dataScope,Integer alarmType);
+
+    List<CurAlarmResp> getCurAlarm(Integer areaId,DataScope dataScope);
+
 }

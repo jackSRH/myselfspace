@@ -42,6 +42,19 @@ public class UnitRedisInfo {
      */
     private String contactPhone;
 
+    /**
+     * 单位类型
+     */
+    private Integer unitType;
+
+    public Integer getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(Integer unitType) {
+        this.unitType = unitType;
+    }
+
     public Integer getId() {
         return id;
     }

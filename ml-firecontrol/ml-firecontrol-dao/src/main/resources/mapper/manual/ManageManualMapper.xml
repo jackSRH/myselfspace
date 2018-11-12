@@ -31,6 +31,24 @@
             <if test="startDate != null and endDate != null">
                 and alarm_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
             </if>
+            <if test="provinceId != null">
+                and province_id = #{alarmType,jdbcType=INTEGER}
+            </if>
+            <if test="cityId != null">
+                and city_id = #{cityId,jdbcType=INTEGER}
+            </if>
+            <if test="areaId != null">
+                and area_id = #{areaId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctId != null">
+                and precinct_id = #{precinctId,jdbcType=INTEGER}
+            </if>
+            <if test="precinctIds != null">
+                and precinct_id in
+                <foreach close=")" collection="precinctIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
         </where>
     </select>
     <select id="selectDiagramStructByAlarmItemId"
@@ -195,4 +213,32 @@
         </where>
         group by misreport
     </select>
+
+
+    <resultMap id = "AlarmIndustryShareMap" type="com.mailian.firecontrol.dto.web.response.AlarmIndustryShareResp">
+        <result column="unit_type" jdbcType="INTEGER" property="unitType" />
+        <result column="alarmNum" jdbcType="INTEGER" property="alarmNum" />
+    </resultMap>
+
+    <select id="countAlarmIndustryShare" parameterType="java.util.Map" resultMap="AlarmIndustryShareMap">
+        SELECT
+          COUNT(*) AS alarmNum,unit_type
+        FROM t_facilities_alarm
+        <where>
+            and unit_type IS NOT NULL
+            <if test="startDate != null and endDate != null">
+                and alarm_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="alarmType != null">
+                and alarm_type = #{alarmType,jdbcType=INTEGER}
+            </if>
+        </where>
+        GROUP BY unit_type
+    </select>
+
+
+
+
+
+
 </mapper>
