@@ -11,12 +11,16 @@ import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.AlarmMisreport;
+import com.mailian.firecontrol.common.enums.OptType;
 import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
+import com.mailian.firecontrol.dao.auto.model.AlarmLog;
+import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dto.DayTime;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemHistoryData;
+import com.mailian.firecontrol.dto.web.ProgressDetailResp;
 import com.mailian.firecontrol.dto.web.request.BgSearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.framework.util.ConvertDateUtil;
@@ -54,6 +58,8 @@ public class BigscreenController extends BaseController {
     private DeviceItemRepository deviceItemRepository;
     @Autowired
     private UnitCameraService unitCameraService;
+    @Autowired
+    private AlarmLogService alarmLogService;
 
     @ApiOperation(value = "获取省份城市级别，用于大屏运营商展示", httpMethod = "GET")
     @GetMapping(value = "getProvinceAndCityList")
@@ -471,6 +477,39 @@ public class BigscreenController extends BaseController {
             unitId = shiroUser.getUnitId();
         }
         return ResponseResult.buildOkResult(unitService.getUnitRealtimeData(unitId));
+    }
+
+
+    @ApiOperation(value = "火灾进度详情", httpMethod = "GET")
+    @RequestMapping(value="/alarmProgressDetail",method = RequestMethod.GET)
+    public ResponseResult<List<ProgressDetailResp>> alarmProgressDetail(@CurUser ShiroUser shiroUser,
+                                                                  @ApiParam(value = "告警id") @RequestParam(value = "alarmId") Integer alarmId){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+
+        if(StringUtils.isNotNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+        /*获取操作日志*/
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("alarmId",alarmId);
+        List<AlarmLog> alarmLogs = alarmLogService.selectByMap(queryMap);
+        
+        List<ProgressDetailResp> respList = new ArrayList<>();
+        for (AlarmLog alarmLog : alarmLogs) {
+            ProgressDetailResp resp = new ProgressDetailResp();
+            resp.setOptTime(alarmLog.getOptTime());
+            resp.setOptContent(alarmLog.getOptContent());
+            resp.setOptName(alarmLog.getOptName());
+            resp.setOptType(alarmLog.getOptType());
+            resp.setRoleName(alarmLog.getOptRole());
+            respList.add(resp);
+        }
+        /*设置对应时间及操作人*/
+        ProgressDetailResp createResp = new ProgressDetailResp();
+        createResp.setOptTime(facilitiesAlarm.getAlarmTime());
+        createResp.setOptType(OptType.ALARM.id);
+        respList.add(createResp);
+        return ResponseResult.buildOkResult(respList);
     }
 
 }

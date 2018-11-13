@@ -7,6 +7,7 @@ import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -89,4 +90,37 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
 
     List<CurAlarmResp> getCurAlarm(Integer areaId,DataScope dataScope);
 
+    /**
+     * 报警误报
+     * @param uid
+     * @param userName
+     * @param roleName
+     * @param alarmId
+     * @return
+     */
+    int misreportAlarm(Integer uid,String userName,String roleName, Integer alarmId);
+
+    /**
+     * 有效报警
+     * @param uid
+     * @param userName
+     * @param dutyName
+     * @param roleName
+     * @param alarmId
+     * @param isComplete
+     * @return
+     */
+    int effectiveAlarm(Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult);
+
+    /**
+     * 完成告警
+     * @param uid
+     * @param userName
+     * @param roleName
+     * @param alarmId
+     * @param handleEndTime
+     * @param handleResult
+     * @return
+     */
+    int completeAlarm(Integer uid, String userName, String roleName,Integer alarmId,Date handleEndTime,String handleResult);
 }

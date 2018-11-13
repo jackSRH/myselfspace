@@ -10,9 +10,7 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.common.manager.SystemManager;
-import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
-import com.mailian.firecontrol.dao.auto.model.Precinct;
-import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dto.CountDataInfo;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.app.AppAlarmInfo;
@@ -22,10 +20,7 @@ import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
 import com.mailian.firecontrol.dto.app.response.AppUnitResp;
 import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
 import com.mailian.firecontrol.dto.web.response.CameraListResp;
-import com.mailian.firecontrol.service.FacilitiesAlarmService;
-import com.mailian.firecontrol.service.PrecinctService;
-import com.mailian.firecontrol.service.UnitCameraService;
-import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.cache.NoticeCache;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther: wangqiaoqing
@@ -59,6 +51,10 @@ public class AppUnitController extends BaseController {
     private PrecinctService precinctService;
     @Autowired
     private UnitCameraService unitCameraService;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private AlarmLogService alarmLogService;
 
     @Log(title = "app单位",action = "搜素单位")
     @ApiOperation(value = "搜索单位列表", httpMethod = "GET")
@@ -249,23 +245,23 @@ public class AppUnitController extends BaseController {
             return error("报警不存在");
         }
 
+        Precinct precinct = precinctService.selectByPrimaryKey(facilitiesAlarm.getPrecinctId());
+
         Integer handleStatus = facilitiesAlarm.getHandleStatus();
         if(AlarmHandleStatus.RESPONSE.id.equals(handleStatus)) {
+            Date now = new Date();
+            List<Role> roleList = roleService.selectRolesByUserId(shiroUser.getId());
+            String roleName = "";
+            if(StringUtils.isNotEmpty(roleList)) {
+                roleName = roleList.get(0).getRoleName();
+            }
             //误报
             if(FaMisreportType.MISREPORT.id.equals(misreport)){
-                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
-                upAlarm.setId(facilitiesAlarm.getId());
-                upAlarm.setMisreport(FaMisreportType.MISREPORT.id);
-                upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
-                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+                facilitiesAlarmService.misreportAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
             }
             //有效
             if(FaMisreportType.EFFECTIVE.id.equals(misreport)){
-                FacilitiesAlarm upAlarm = new FacilitiesAlarm();
-                upAlarm.setId(facilitiesAlarm.getId());
-                upAlarm.setMisreport(FaMisreportType.EFFECTIVE.id);
-                upAlarm.setHandleStatus(AlarmHandleStatus.UNDER_WAY.id);
-                facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+                facilitiesAlarmService.effectiveAlarm(shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,false,null,null);
             }
         }
         return ResponseResult.buildOkResult();
@@ -284,9 +280,24 @@ public class AppUnitController extends BaseController {
         Integer handleStatus = facilitiesAlarm.getHandleStatus();
         if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus)) {
             FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+            Date now = new Date();
             upAlarm.setId(facilitiesAlarm.getId());
             upAlarm.setHandleStatus(AlarmHandleStatus.RESPONSE.id);
+            upAlarm.setResponseTime(now);
+            upAlarm.setResponseUid(shiroUser.getId());
             facilitiesAlarmService.updateByPrimaryKeySelective(upAlarm);
+
+            List<Role> roleList = roleService.selectRolesByUserId(shiroUser.getId());
+
+            AlarmLog alarmLog = new AlarmLog();
+            alarmLog.setAlarmId(alarmId);
+            alarmLog.setOptName(shiroUser.getFullName());
+            if(StringUtils.isNotEmpty(roleList)) {
+                alarmLog.setOptRole(roleList.get(0).getRoleName());
+            }
+            alarmLog.setOptTime(now);
+            alarmLog.setOptType(OptType.RES_ALARM.id);
+            alarmLogService.insert(alarmLog);
         }
         return ResponseResult.buildOkResult();
     }

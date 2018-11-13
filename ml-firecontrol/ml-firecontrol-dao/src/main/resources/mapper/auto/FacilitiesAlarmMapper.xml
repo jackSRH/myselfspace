@@ -18,6 +18,9 @@
     <result column="alarm_type" jdbcType="INTEGER" property="alarmType" />
     <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
     <result column="alarm_end_time" jdbcType="TIMESTAMP" property="alarmEndTime" />
+    <result column="response_time" jdbcType="TIMESTAMP" property="responseTime" />
+    <result column="response_uid" jdbcType="INTEGER" property="responseUid" />
+    <result column="confirm_uid" jdbcType="INTEGER" property="confirmUid" />
     <result column="alarm_way" jdbcType="INTEGER" property="alarmWay" />
     <result column="handle_time" jdbcType="TIMESTAMP" property="handleTime" />
     <result column="handle_end_time" jdbcType="TIMESTAMP" property="handleEndTime" />
@@ -46,10 +49,11 @@
   <sql id="Base_Column_List">
     id, unit_id, area_id, province_id, city_id, precinct_id, struct_address, facilities_id, 
     alarm_id, alarm_item_id, alarm_content, alarm_level, alarm_status, alarm_type, alarm_time, 
-    alarm_end_time, alarm_way, handle_time, handle_end_time, handle_status, handle_result, 
-    handle_uid, misreport, alarm_reason, alarm_area, die_num, injured, property_loss, 
-    emedial_measures, up_core_time, core_confirm_time, core_handle_uname, core_handle_result, 
-    hash_code, status, create_time, update_time, create_by, update_by, unit_type
+    alarm_end_time, response_time, response_uid, confirm_uid, alarm_way, handle_time, 
+    handle_end_time, handle_status, handle_result, handle_uid, misreport, alarm_reason, 
+    alarm_area, die_num, injured, property_loss, emedial_measures, up_core_time, core_confirm_time, 
+    core_handle_uname, core_handle_result, hash_code, status, create_time, update_time, 
+    create_by, update_by, unit_type
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -70,6 +74,7 @@
       facilities_id, alarm_id, alarm_item_id, 
       alarm_content, alarm_level, alarm_status, 
       alarm_type, alarm_time, alarm_end_time, 
+      response_time, response_uid, confirm_uid, 
       alarm_way, handle_time, handle_end_time, 
       handle_status, handle_result, handle_uid, 
       misreport, alarm_reason, alarm_area, 
@@ -84,6 +89,7 @@
       #{facilitiesId,jdbcType=INTEGER}, #{alarmId,jdbcType=INTEGER}, #{alarmItemId,jdbcType=VARCHAR}, 
       #{alarmContent,jdbcType=VARCHAR}, #{alarmLevel,jdbcType=INTEGER}, #{alarmStatus,jdbcType=INTEGER}, 
       #{alarmType,jdbcType=INTEGER}, #{alarmTime,jdbcType=TIMESTAMP}, #{alarmEndTime,jdbcType=TIMESTAMP}, 
+      #{responseTime,jdbcType=TIMESTAMP}, #{responseUid,jdbcType=INTEGER}, #{confirmUid,jdbcType=INTEGER}, 
       #{alarmWay,jdbcType=INTEGER}, #{handleTime,jdbcType=TIMESTAMP}, #{handleEndTime,jdbcType=TIMESTAMP}, 
       #{handleStatus,jdbcType=INTEGER}, #{handleResult,jdbcType=VARCHAR}, #{handleUid,jdbcType=INTEGER}, 
       #{misreport,jdbcType=INTEGER}, #{alarmReason,jdbcType=VARCHAR}, #{alarmArea,jdbcType=VARCHAR}, 
@@ -144,6 +150,15 @@
       </if>
       <if test="alarmEndTime != null">
         alarm_end_time,
+      </if>
+      <if test="responseTime != null">
+        response_time,
+      </if>
+      <if test="responseUid != null">
+        response_uid,
+      </if>
+      <if test="confirmUid != null">
+        confirm_uid,
       </if>
       <if test="alarmWay != null">
         alarm_way,
@@ -263,6 +278,15 @@
       </if>
       <if test="alarmEndTime != null">
         #{alarmEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="responseTime != null">
+        #{responseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="responseUid != null">
+        #{responseUid,jdbcType=INTEGER},
+      </if>
+      <if test="confirmUid != null">
+        #{confirmUid,jdbcType=INTEGER},
       </if>
       <if test="alarmWay != null">
         #{alarmWay,jdbcType=INTEGER},
@@ -386,6 +410,15 @@
       <if test="alarmEndTime != null">
         alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="responseTime != null">
+        response_time = #{responseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="responseUid != null">
+        response_uid = #{responseUid,jdbcType=INTEGER},
+      </if>
+      <if test="confirmUid != null">
+        confirm_uid = #{confirmUid,jdbcType=INTEGER},
+      </if>
       <if test="alarmWay != null">
         alarm_way = #{alarmWay,jdbcType=INTEGER},
       </if>
@@ -478,6 +511,9 @@
       alarm_type = #{alarmType,jdbcType=INTEGER},
       alarm_time = #{alarmTime,jdbcType=TIMESTAMP},
       alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP},
+      response_time = #{responseTime,jdbcType=TIMESTAMP},
+      response_uid = #{responseUid,jdbcType=INTEGER},
+      confirm_uid = #{confirmUid,jdbcType=INTEGER},
       alarm_way = #{alarmWay,jdbcType=INTEGER},
       handle_time = #{handleTime,jdbcType=TIMESTAMP},
       handle_end_time = #{handleEndTime,jdbcType=TIMESTAMP},
@@ -553,6 +589,15 @@
       </if>
       <if test="alarmEndTime != null">
          and alarm_end_time = #{alarmEndTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="responseTime != null">
+         and response_time = #{responseTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="responseUid != null">
+         and response_uid = #{responseUid,jdbcType=INTEGER}
+      </if>
+      <if test="confirmUid != null">
+         and confirm_uid = #{confirmUid,jdbcType=INTEGER}
       </if>
       <if test="alarmWay != null">
          and alarm_way = #{alarmWay,jdbcType=INTEGER}
@@ -650,30 +695,34 @@
       facilities_id, alarm_id, alarm_item_id, 
       alarm_content, alarm_level, alarm_status, 
       alarm_type, alarm_time, alarm_end_time, 
-      alarm_way, handle_time, handle_end_time, 
-      handle_status, handle_result, handle_uid, 
-      misreport, alarm_reason, alarm_area, 
-      die_num, injured, property_loss, 
-      emedial_measures, up_core_time, 
-      core_confirm_time, core_handle_uname, 
-      core_handle_result, hash_code, status, 
-      create_time, update_time, create_by, 
-      update_by, unit_type) values 
+      response_time, response_uid, 
+      confirm_uid, alarm_way, handle_time, 
+      handle_end_time, handle_status, 
+      handle_result, handle_uid, misreport, 
+      alarm_reason, alarm_area, die_num, 
+      injured, property_loss, emedial_measures, 
+      up_core_time, core_confirm_time, 
+      core_handle_uname, core_handle_result, 
+      hash_code, status, create_time, 
+      update_time, create_by, update_by, 
+      unit_type) values 
     <foreach collection="objs" index="index" item="item" separator=",">
        (#{item.unitId,jdbcType=INTEGER}, #{item.areaId,jdbcType=INTEGER}, #{item.provinceId,jdbcType=INTEGER}, 
         #{item.cityId,jdbcType=INTEGER}, #{item.precinctId,jdbcType=INTEGER}, #{item.structAddress,jdbcType=VARCHAR}, 
         #{item.facilitiesId,jdbcType=INTEGER}, #{item.alarmId,jdbcType=INTEGER}, #{item.alarmItemId,jdbcType=VARCHAR}, 
         #{item.alarmContent,jdbcType=VARCHAR}, #{item.alarmLevel,jdbcType=INTEGER}, #{item.alarmStatus,jdbcType=INTEGER}, 
         #{item.alarmType,jdbcType=INTEGER}, #{item.alarmTime,jdbcType=TIMESTAMP}, #{item.alarmEndTime,jdbcType=TIMESTAMP}, 
-        #{item.alarmWay,jdbcType=INTEGER}, #{item.handleTime,jdbcType=TIMESTAMP}, #{item.handleEndTime,jdbcType=TIMESTAMP}, 
-        #{item.handleStatus,jdbcType=INTEGER}, #{item.handleResult,jdbcType=VARCHAR}, #{item.handleUid,jdbcType=INTEGER}, 
-        #{item.misreport,jdbcType=INTEGER}, #{item.alarmReason,jdbcType=VARCHAR}, #{item.alarmArea,jdbcType=VARCHAR}, 
-        #{item.dieNum,jdbcType=VARCHAR}, #{item.injured,jdbcType=VARCHAR}, #{item.propertyLoss,jdbcType=VARCHAR}, 
-        #{item.emedialMeasures,jdbcType=VARCHAR}, #{item.upCoreTime,jdbcType=TIMESTAMP}, 
-        #{item.coreConfirmTime,jdbcType=TIMESTAMP}, #{item.coreHandleUname,jdbcType=VARCHAR}, 
-        #{item.coreHandleResult,jdbcType=VARCHAR}, #{item.hashCode,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, 
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, 
-        #{item.updateBy,jdbcType=VARCHAR}, #{item.unitType,jdbcType=INTEGER})
+        #{item.responseTime,jdbcType=TIMESTAMP}, #{item.responseUid,jdbcType=INTEGER}, 
+        #{item.confirmUid,jdbcType=INTEGER}, #{item.alarmWay,jdbcType=INTEGER}, #{item.handleTime,jdbcType=TIMESTAMP}, 
+        #{item.handleEndTime,jdbcType=TIMESTAMP}, #{item.handleStatus,jdbcType=INTEGER}, 
+        #{item.handleResult,jdbcType=VARCHAR}, #{item.handleUid,jdbcType=INTEGER}, #{item.misreport,jdbcType=INTEGER}, 
+        #{item.alarmReason,jdbcType=VARCHAR}, #{item.alarmArea,jdbcType=VARCHAR}, #{item.dieNum,jdbcType=VARCHAR}, 
+        #{item.injured,jdbcType=VARCHAR}, #{item.propertyLoss,jdbcType=VARCHAR}, #{item.emedialMeasures,jdbcType=VARCHAR}, 
+        #{item.upCoreTime,jdbcType=TIMESTAMP}, #{item.coreConfirmTime,jdbcType=TIMESTAMP}, 
+        #{item.coreHandleUname,jdbcType=VARCHAR}, #{item.coreHandleResult,jdbcType=VARCHAR}, 
+        #{item.hashCode,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}, 
+        #{item.unitType,jdbcType=INTEGER})
     </foreach>
   </insert>
 </mapper>

@@ -576,6 +576,9 @@ create table `t_facilities_alarm` (
   alarm_type			int(4)		 	default null				comment '告警类型',
   alarm_time			datetime		default null				comment '告警时间',
   alarm_end_time		datetime		default null				comment '告警结束时间',
+  response_time			datetime		default null				comment '响应时间',
+  response_uid 			int(11)			default null				comment '响应人',
+  confirm_uid 			int(11)			default null				comment '确认人',
   alarm_way				int(2)          default null				comment '告警方式 0:自动 1:人工',
   `handle_time` 		datetime 		DEFAULT NULL 				COMMENT '受理时间',
   `handle_end_time` 	datetime 		DEFAULT NULL 				COMMENT '受理结束时间',
@@ -641,3 +644,21 @@ CREATE TABLE `t_app` (
 ) engine=innodb auto_increment=1 default charset=utf8 comment = 'app信息表';
 
 
+-- ----------------------------
+-- 28、警情处理日志表
+-- ----------------------------
+drop table if exists `t_alarm_log`;
+create table `t_alarm_log` (
+  `id` 					int(11) 		not null auto_increment    	comment 'ID',
+  `alarm_id`			int(11)			default null				comment '警情id',
+  opt_name				varchar(32)		default null				comment '操作人姓名',
+  opt_role				varchar(32)		default null				comment '操作人角色',
+  opt_time				datetime		default null				comment '操作时间',
+  opt_type				int(4)			default null				comment '操作类型  0:告警  1:响应告警  2:确定告警  3:处理告警中 4:告警已处理',
+  opt_content			varchar(32)		default null				comment '操作内容',
+  `status` 				int(2) 			DEFAULT NULL 				COMMENT '状态（0正常 1停用）',
+  `create_time` 		datetime 		DEFAULT NULL 				COMMENT '创建时间',
+  `create_by` 			varchar(32) 	DEFAULT NULL 				COMMENT '创建者',
+  primary key (`id`),
+  unique key (alarm_id)
+) engine=innodb auto_increment=1 default charset=utf8 comment = '警情处理日志表';
