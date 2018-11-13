@@ -338,6 +338,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     public FireAlarmCountResp getFireAlarmCountByArea(Integer areaId) {
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        queryMap.put("alarmType",AlarmType.ALARM.id);
         List<Map<String,Object>> alarmResultList = manageManualMapper.countFaRealNumByMap(queryMap);
 
         FireAlarmCountResp fireAlarmCountResp = new FireAlarmCountResp();
@@ -470,6 +471,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         if(StringUtils.isNotNull(dataScope)){
             queryMap.put("precinctIds",dataScope.getDataIds());
         }
+        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
         queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
         List<CurAlarmResp> curAlarmResps = new ArrayList<>();

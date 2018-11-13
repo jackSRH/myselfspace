@@ -10,6 +10,7 @@
         <result column="area_id" javaType="INTEGER" property="areaId" />
         <result column="province_id" javaType="INTEGER" property="provinceId" />
         <result column="city_id" javaType="INTEGER" property="cityId" />
+        <result column="unit_type" jdbcType="INTEGER" property="unitType" />
     </resultMap>
     <update id="updateUnitDeviceBatch">
         <foreach collection="upList" item="item" index="index" open="" close="" separator=";">
@@ -26,7 +27,7 @@
     </delete>
 
     <select id="selectUnitDeviceByDeviceIds" resultMap="UnitDeviceResultMap">
-        select u.id,ud.device_id,u.unit_name,u.precinct_id,u.area_id,u.province_id,u.city_id from t_unit_device ud,t_unit u
+        select u.id,ud.device_id,u.unit_name,u.precinct_id,u.area_id,u.province_id,u.city_id,u.unit_type from t_unit_device ud,t_unit u
         where ud.unit_id = u.id
         and device_id in
         <foreach close=")" collection="deviceIds" index="i" item="item" open="(" separator=",">
@@ -59,6 +60,17 @@
                 <foreach close=")" collection="deviceIds" index="i" item="item" open="(" separator=",">
                     #{item,jdbcType=VARCHAR}
                 </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="countUnitPatrol" resultType="java.lang.Integer">
+        select count(1) from t_unit_patrol
+        <where>
+            <if test="unitId != null">
+                and unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
+            <if test="startDate != null and endDate != null">
+                and start_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>

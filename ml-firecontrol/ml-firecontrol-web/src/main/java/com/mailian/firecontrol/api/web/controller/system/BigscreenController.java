@@ -9,8 +9,8 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.AlarmMisreport;
-import com.mailian.firecontrol.common.enums.ItemBtype;
 import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dto.DayTime;
@@ -20,10 +20,7 @@ import com.mailian.firecontrol.dto.push.DeviceItemHistoryData;
 import com.mailian.firecontrol.dto.web.request.BgSearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.framework.util.ConvertDateUtil;
-import com.mailian.firecontrol.service.AreaService;
-import com.mailian.firecontrol.service.FacilitiesAlarmService;
-import com.mailian.firecontrol.service.UnitDeviceService;
-import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import io.swagger.annotations.Api;
@@ -45,9 +42,6 @@ import java.util.*;
 @Api(description = "大屏相关接口")
 @WebAPI
 public class BigscreenController extends BaseController {
-    private static final List<Integer> UNIT_TREND_TYPES = Arrays.asList(
-            ItemBtype.VOLTAGE.id,ItemBtype.ELECTRICCURRENT.id,
-            ItemBtype.LEAKAGE.id,ItemBtype.CABLE_TEMPERATURE.id);
     @Autowired
     private UnitService unitService;
     @Autowired
@@ -58,6 +52,8 @@ public class BigscreenController extends BaseController {
     private UnitDeviceService unitDeviceService;
     @Autowired
     private DeviceItemRepository deviceItemRepository;
+    @Autowired
+    private UnitCameraService unitCameraService;
 
     @ApiOperation(value = "获取省份城市级别，用于大屏运营商展示", httpMethod = "GET")
     @GetMapping(value = "getProvinceAndCityList")
@@ -194,6 +190,22 @@ public class BigscreenController extends BaseController {
         return ResponseResult.buildOkResult(unitService.getUnitMapDataByAreaAndScope(areaId,unitType,dataScope));
     }
 
+
+    @ApiOperation(value = "获取单位地图信息(单位)", httpMethod = "GET")
+    @RequestMapping(value="/getUnitMapDataByUnit",method = RequestMethod.GET)
+    public ResponseResult<UnitMapResp> getUnitMapDataByUnit(@CurUser ShiroUser shiroUser,
+                                                                    @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        if(StringUtils.isNotEmpty(unitId)){
+            unitId = shiroUser.getUnitId();
+        }
+
+        UnitMapResp unitMapResp = unitService.getUnitMapDataByUnitId(unitId);
+        /*设置摄像头*/
+        List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
+        unitMapResp.setCameraListResps(cameraListResps);
+        return ResponseResult.buildOkResult(cameraListResps);
+    }
+
     @ApiOperation(value = "获取单位走势(单位)", httpMethod = "GET")
     @RequestMapping(value="/getUnitTrendByUnitId",method = RequestMethod.GET)
     public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(@CurUser ShiroUser shiroUser, BgSearchReq bgSearchReq){
@@ -230,7 +242,7 @@ public class BigscreenController extends BaseController {
         BgUnitTrendListResp bgUnitTrendListResp;
         List<BgUnitTrendResp> bgUnitTrendResps;
         Map<String,BgUnitTrendResp> typeDayMap = new HashMap<>();
-        for(Integer type : UNIT_TREND_TYPES){
+        for(Integer type : CommonConstant.UNIT_TREND_TYPES){
             bgUnitTrendResps = new ArrayList<>();
             BgUnitTrendResp bgUnitTrendResp;
             for(DayTime dayTime : dates){
@@ -278,7 +290,7 @@ public class BigscreenController extends BaseController {
         String itemId;
         for(DeviceItem deviceItem : items){
             btype = deviceItem.getBtype();
-            if(!UNIT_TREND_TYPES.contains(btype)){
+            if(!CommonConstant.UNIT_TREND_TYPES.contains(btype)){
                 continue;
             }
             itemId = deviceItem.getId();
@@ -448,6 +460,17 @@ public class BigscreenController extends BaseController {
             dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
         }
         return ResponseResult.buildOkResult(facilitiesAlarmService.getCurAlarm(areaId,dataScope));
+    }
+
+
+    @ApiOperation(value = "获取单位实时数据", httpMethod = "GET")
+    @RequestMapping(value="/getUnitRealtimeData",method = RequestMethod.GET)
+    public ResponseResult<UnitRealtimeDataResp> getUnitRealtimeData(@CurUser ShiroUser shiroUser,
+                                                            @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        if(StringUtils.isNotEmpty(unitId)){
+            unitId = shiroUser.getUnitId();
+        }
+        return ResponseResult.buildOkResult(unitService.getUnitRealtimeData(unitId));
     }
 
 }

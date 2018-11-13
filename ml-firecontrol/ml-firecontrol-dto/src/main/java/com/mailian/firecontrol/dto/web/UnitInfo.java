@@ -51,6 +51,12 @@ public class UnitInfo {
     private BigDecimal lng;
     @ApiModelProperty(value = "纬度")
     private BigDecimal lat;
+    @ApiModelProperty(value = "管辖区名称")
+    private String precinctName;
+    @ApiModelProperty(value = "负责人")
+    private String dutyName;
+    @ApiModelProperty(value = "负责人电话")
+    private String dutyPhone;
 
     public BigDecimal getLng() {
         return lng;
@@ -218,5 +224,29 @@ public class UnitInfo {
 
     public void setDeviceIds(List<String> deviceIds) {
         this.deviceIds = deviceIds;
+    }
+
+    public String getPrecinctName() {
+        return precinctName;
+    }
+
+    public void setPrecinctName(String precinctName) {
+        this.precinctName = precinctName;
+    }
+
+    public String getDutyName() {
+        return dutyName;
+    }
+
+    public void setDutyName(String dutyName) {
+        this.dutyName = dutyName;
+    }
+
+    public String getDutyPhone() {
+        return dutyPhone;
+    }
+
+    public void setDutyPhone(String dutyPhone) {
+        this.dutyPhone = dutyPhone;
     }
 }

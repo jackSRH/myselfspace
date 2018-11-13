@@ -10,11 +10,7 @@ import com.mailian.firecontrol.dto.app.response.AppUnitDetailResp;
 import com.mailian.firecontrol.dto.app.response.AppUnitResp;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
-import com.mailian.firecontrol.dto.web.response.DeviceResp;
-import com.mailian.firecontrol.dto.web.response.PieResp;
-import com.mailian.firecontrol.dto.web.response.UnitListResp;
-import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
+import com.mailian.firecontrol.dto.web.response.*;
 
 import java.util.List;
 
@@ -93,4 +89,18 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     List<String> getDevicesByUnitId(Integer unitId);
+
+    /**
+     * 单位地图
+     * @param unitId
+     * @return
+     */
+    UnitMapResp getUnitMapDataByUnitId(Integer unitId);
+
+    /**
+     * 获取单位实时数据
+     * @param unitId
+     * @return
+     */
+    UnitRealtimeDataResp getUnitRealtimeData(Integer unitId);
 }

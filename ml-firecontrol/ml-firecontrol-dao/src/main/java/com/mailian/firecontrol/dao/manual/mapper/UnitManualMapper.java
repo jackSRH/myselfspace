@@ -25,4 +25,6 @@ public interface UnitManualMapper {
     List<UnitDevice> selectUnitDeviceByMap(Map<String,Object> queryMap);
 
     int updateUnitDeviceBatch(@Param(value = "upList") List<UnitDevice> upList);
+
+    int countUnitPatrol(Map<String,Object> queryMap);
 }

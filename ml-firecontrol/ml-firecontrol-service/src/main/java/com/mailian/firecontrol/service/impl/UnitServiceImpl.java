@@ -13,6 +13,7 @@ import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
@@ -29,6 +30,7 @@ import com.mailian.firecontrol.dto.app.response.ItemDataResp;
 import com.mailian.firecontrol.dto.app.response.SwitchResp;
 import com.mailian.firecontrol.dto.push.Device;
 import com.mailian.firecontrol.dto.push.DeviceItem;
+import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
@@ -355,7 +357,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Date endTime = DateUtil.getEndDate(now);
         queryMap.put("startDate",startTime);
         queryMap.put("endDate",endTime);
-        List<FacilitiesAlarm> facilitiesAlarmList = facilitiesAlarmMapper.selectByMap(queryMap);
+        List<FacilitiesAlarm> facilitiesAlarmList = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         Integer alarmCount = 0;
         Integer earlyWarningCount = 0;
         for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
@@ -440,11 +442,98 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
 
         /*设置开关状态*/
+        List<SwitchResp> switchResps = getSwitchResps(unitId);
+        appUnitDetailResp.setSwitchResps(switchResps);
+
+        /*设置电压电流等数据项*/
+        List<ItemDataResp> voltages = new ArrayList<>();
+        List<ItemDataResp> electriccurrents = new ArrayList<>();
+        List<ItemDataResp> cableTemperatures = new ArrayList<>();
+        List<ItemDataResp> leakages = new ArrayList<>();
+
+        setItemData(unitId, voltages, electriccurrents, cableTemperatures, leakages);
+
+        appUnitDetailResp.setVoltages(voltages);
+        appUnitDetailResp.setElectriccurrents(electriccurrents);
+        appUnitDetailResp.setCableTemperatures(cableTemperatures);
+        appUnitDetailResp.setLeakages(leakages);
+
+        return appUnitDetailResp;
+    }
+
+    /**
+     * 设置实时数据
+     * @param unitId
+     * @param voltages
+     * @param electriccurrents
+     * @param cableTemperatures
+     * @param leakages
+     */
+    private void setItemData(Integer unitId, List<ItemDataResp> voltages, List<ItemDataResp> electriccurrents, List<ItemDataResp> cableTemperatures, List<ItemDataResp> leakages) {
+        List<String> deviceIds = getDevicesByUnitId(unitId);
+        if(StringUtils.isEmpty(deviceIds)){
+            return;
+        }
+
+        //获取单位下所有数据项
+        List<DeviceItem> items = new ArrayList<>();
+        Map<String,List<DeviceItem>> deviceItemMap =  deviceItemRepository.getDeviceItemInfosByCodes(deviceIds);
+        if(StringUtils.isNotEmpty(deviceItemMap)){
+            for (List<DeviceItem> deviceItems : deviceItemMap.values()) {
+                items.addAll(deviceItems);
+            }
+        }
+        Map<String, List<DeviceItem>> deviceCalcItemMap = deviceItemRepository.getCalcItemsByDeviceCodes(deviceIds);
+        if(StringUtils.isNotEmpty(deviceCalcItemMap)){
+            for (List<DeviceItem> deviceItems : deviceCalcItemMap.values()) {
+                items.addAll(deviceItems);
+            }
+        }
+        if(StringUtils.isEmpty(items)){
+            return;
+        }
+
+        //查找类型和数据项的关系
+        List<String> needFindItemIds = new ArrayList<>();
+        Integer btype;
+        for(DeviceItem deviceItem : items){
+            btype = deviceItem.getBtype();
+            if(!CommonConstant.UNIT_TREND_TYPES.contains(btype)){
+                continue;
+            }
+            needFindItemIds.add(deviceItem.getId());
+        }
+
+        Map<String, DeviceItemRealTimeData> realTimeDataMap = deviceItemRepository.getDeviceItemRealTimeDatasByItemIds(needFindItemIds);
+        for(DeviceItem deviceItem : items){
+            ItemDataResp itemDataResp = new ItemDataResp();
+            itemDataResp.setDisplayname(deviceItem.getDisplayname());
+            itemDataResp.setUnit(deviceItem.getUnit());
+            itemDataResp.setVal(CommonConstant.ITEM_INITIAL_VALUE);
+            if(realTimeDataMap.containsKey(deviceItem.getId())){
+                itemDataResp.setVal(realTimeDataMap.get(deviceItem.getId()).getVal());
+                if(ItemBtype.VOLTAGE.id.equals(deviceItem.getBtype())){
+                    voltages.add(itemDataResp);
+                }
+                if(ItemBtype.LEAKAGE.id.equals(deviceItem.getBtype())){
+                    leakages.add(itemDataResp);
+                }
+                if(ItemBtype.CABLE_TEMPERATURE.id.equals(deviceItem.getBtype())){
+                    cableTemperatures.add(itemDataResp);
+                }
+                if(ItemBtype.ELECTRICCURRENT.id.equals(deviceItem.getBtype())){
+                    electriccurrents.add(itemDataResp);
+                }
+            }
+        }
+    }
+
+    private List<SwitchResp> getSwitchResps(Integer unitId) {
         //找到对应遥控数据项
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitId",unitId);
-        queryMap.put("type",StructType.REMOTE.id);
-        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
+        Map<String,Object> map = new HashMap<>();
+        map.put("unitId",unitId);
+        map.put("type",StructType.REMOTE.id);
+        List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(map);
         Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
         for (DiagramItemDto diagramItem : diagramItems) {
             if(dsIdItemMap.containsKey(diagramItem.getDsId())){
@@ -456,8 +545,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
 
+        List<SwitchResp> switchResps = new ArrayList<>();
         if(StringUtils.isNotEmpty(dsIdItemMap)){
-            List<SwitchResp> switchResps = new ArrayList<>();
             for (Map<Integer, DiagramItemDto> typeItemMap : dsIdItemMap.values()) {
                 DiagramItemDto ykItem = typeItemMap.get(DiaItemType.TELECONTROL.id);
                 DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
@@ -473,59 +562,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                     switchResps.add(switchResp);
                 }
             }
-
-            appUnitDetailResp.setSwitchResps(switchResps);
         }
-
-        /*设置电压电流等数据项*/
-        queryMap.clear();
-        queryMap.put("unitId",unitId);
-        queryMap.put("type",StructType.FACILITY.id);
-        diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
-        List<String> itemIds = new ArrayList<>();
-        for (DiagramItemDto diagramItem : diagramItems) {
-            if(DiaItemType.DATA_ITEM.id.equals(diagramItem.getItemType())){
-                itemIds.add(diagramItem.getItemId());
-            }
-        }
-
-        if(StringUtils.isNotNull(itemIds)){
-            Map<String, DeviceItem> deviceItemMap = deviceItemRepository.getDeviceItemInfosByItemIds(itemIds);
-
-            if(StringUtils.isNotEmpty(deviceItemMap)){
-                List<ItemDataResp> voltages = new ArrayList<>();
-                List<ItemDataResp> electriccurrents = new ArrayList<>();
-                List<ItemDataResp> cableTemperatures = new ArrayList<>();
-                List<ItemDataResp> leakages = new ArrayList<>();
-
-                for (DeviceItem deviceItem : deviceItemMap.values()) {
-                    ItemDataResp itemDataResp = new ItemDataResp();
-                    itemDataResp.setDisplayname(deviceItem.getDisplayname());
-                    itemDataResp.setUnit(deviceItem.getUnit());
-                    itemDataResp.setVal(deviceItem.getVal());
-
-                    if(ItemBtype.VOLTAGE.id.equals(deviceItem.getBtype())){
-                        voltages.add(itemDataResp);
-                    }
-                    if(ItemBtype.ELECTRICCURRENT.id.equals(deviceItem.getBtype())){
-                        electriccurrents.add(itemDataResp);
-                    }
-                    if(ItemBtype.CABLE_TEMPERATURE.id.equals(deviceItem.getBtype())){
-                        cableTemperatures.add(itemDataResp);
-                    }
-                    if(ItemBtype.LEAKAGE.id.equals(deviceItem.getBtype())){
-                        leakages.add(itemDataResp);
-                    }
-                }
-
-                appUnitDetailResp.setVoltages(voltages);
-                appUnitDetailResp.setElectriccurrents(electriccurrents);
-                appUnitDetailResp.setCableTemperatures(cableTemperatures);
-                appUnitDetailResp.setLeakages(leakages);
-            }
-        }
-
-        return appUnitDetailResp;
+        return switchResps;
     }
 
     @Override
@@ -607,6 +645,104 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     @Override
     public List<String> getDevicesByUnitId(Integer unitId) {
         return unitManualMapper.selectDevicesByUnitId(unitId);
+    }
+
+    @Override
+    public UnitMapResp getUnitMapDataByUnitId(Integer unitId) {
+        UnitMapResp unitMapResp = new UnitMapResp();
+
+        Unit unit = selectByPrimaryKey(unitId);
+        if(StringUtils.isNull(unit)){
+            throw new RequestException(ResponseCode.FAIL.code,"单位不存在");
+        }
+        UnitInfo unitInfo = new UnitInfo();
+        unitInfo.setId(unitId);
+        unitInfo.setUnitName(unit.getUnitName());
+        unitInfo.setAreaId(unit.getAreaId());
+        unitInfo.setPrecinctId(unit.getPrecinctId());
+        unitInfo.setTransactor(unit.getTransactor());
+        unitInfo.setContactPhone(unit.getContactPhone());
+        unitInfo.setAddress(unit.getAddress());
+        unitInfo.setBusinessScope(unit.getBusinessScope());
+        unitInfo.setItems(unit.getItems());
+        unitInfo.setJoinTime(unit.getJoinTime());
+        unitInfo.setUnitType(unit.getUnitType());
+        unitInfo.setSuperviseLevel(unit.getSuperviseLevel());
+        unitInfo.setEconomySystem(unit.getEconomySystem());
+
+        unitInfo.setLng(unit.getLng());
+        unitInfo.setLat(unit.getLat());
+        unitInfo.setUnitPic(unit.getUnitPic());
+
+        /*获取管辖区信息*/
+        Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
+        if(StringUtils.isNotNull(precinct)){
+            unitInfo.setPrecinctName(precinct.getPrecinctName());
+            unitInfo.setDutyName(precinct.getDutyName());
+            unitInfo.setDutyPhone(precinct.getDutyPhone());
+        }
+        unitMapResp.setUnitInfo(unitInfo);
+
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        Date now = new Date();
+        Date startTime = DateUtil.getStartDate(now);
+        Date endTime = DateUtil.getEndDate(now);
+        queryMap.put("startDate",startTime);
+        queryMap.put("endDate",endTime);
+        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
+        List<Map<String,Object>> alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
+        Integer allCount = 0;
+        for (Map<String, Object> alarmCountMap : alarmResultList) {
+            Object alarmTypeObj = alarmCountMap.get("alarmType");
+            if(StringUtils.isNotNull(alarmTypeObj)){
+                Integer alramType = Integer.parseInt(alarmTypeObj.toString());
+                Integer alarmNum = Integer.parseInt(alarmCountMap.get("alarmNum").toString());
+                if(AlarmType.ALARM.id.equals(alramType)){
+                    unitMapResp.setAlarmCount(alarmNum);
+                    allCount = allCount + alarmNum;
+                }
+                if(AlarmType.EARLY_WARNING.id.equals(alramType)){
+                    unitMapResp.setEarlyWarningCount(alarmNum);
+                    allCount = allCount + alarmNum;
+                }
+            }
+        }
+        unitMapResp.setAllCount(allCount);
+
+        /*统计巡查次数*/
+        Integer patrolCount = unitManualMapper.countUnitPatrol(queryMap);
+        unitMapResp.setPatrol(patrolCount);
+        return unitMapResp;
+    }
+
+    @Override
+    public UnitRealtimeDataResp getUnitRealtimeData(Integer unitId) {
+        UnitRealtimeDataResp unitRealtimeDataResp = new UnitRealtimeDataResp();
+
+        /*获取当前烟感、漏电状态*/
+        int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
+        unitRealtimeDataResp.setSomkeStatus(Status.NORMAL.id);
+        if(somkeAlarmCount>0){
+            unitRealtimeDataResp.setSomkeStatus(Status.DISABLE.id);
+        }
+
+        /*设置开关状态*/
+        List<SwitchResp> switchResps = getSwitchResps(unitId);
+        unitRealtimeDataResp.setSwitchResps(switchResps);
+
+        /*设置电压电流等数据项*/
+        List<ItemDataResp> voltages = new ArrayList<>();
+        List<ItemDataResp> electriccurrents = new ArrayList<>();
+        List<ItemDataResp> cableTemperatures = new ArrayList<>();
+        List<ItemDataResp> leakages = new ArrayList<>();
+        setItemData(unitId, voltages, electriccurrents, cableTemperatures, leakages);
+
+        unitRealtimeDataResp.setVoltages(voltages);
+        unitRealtimeDataResp.setElectriccurrents(electriccurrents);
+        unitRealtimeDataResp.setCableTemperatures(cableTemperatures);
+        unitRealtimeDataResp.setLeakages(leakages);
+        return unitRealtimeDataResp;
     }
 
 
