@@ -52,6 +52,10 @@ public class AppLoginController extends BaseController {
         subject.login(jwtToken);
 
         ShiroUser shiroUser = (ShiroUser) subject.getPrincipal();
+        if(StringUtils.isNotEmpty(shiroUser.getUnitId())){
+            return error("登录无权限");
+        }
+
         AppUser appUser = new AppUser();
         appUser.setToken(jwtToken.getPrincipal().toString());
         appUser.setId(shiroUser.getId());
