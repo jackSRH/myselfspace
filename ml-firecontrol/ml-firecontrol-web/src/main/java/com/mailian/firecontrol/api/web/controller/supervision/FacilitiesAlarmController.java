@@ -7,32 +7,23 @@ import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
+import com.mailian.core.enums.BooleanEnum;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
+import com.mailian.firecontrol.common.enums.AlarmMisreport;
 import com.mailian.firecontrol.common.manager.SystemManager;
-import com.mailian.firecontrol.dao.auto.model.Facilities;
-import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
-import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.AlarmHandleReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmResp;
-import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAutoAlarmResp;
-import com.mailian.firecontrol.service.FacilitiesAlarmService;
-import com.mailian.firecontrol.service.FacilitiesService;
-import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -48,6 +39,12 @@ public class FacilitiesAlarmController extends BaseController {
     private UnitService unitService;
     @Resource
     private FacilitiesService facilitiesService;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private AlarmLogService alarmLogService;
+    @Autowired
+    private PrecinctService precinctService;
 
     @Log(title = "单位监控",action = "查找设施告警列表")
     @ApiOperation(value = "查找设施告警列表", httpMethod = "GET")
@@ -165,18 +162,40 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "设置火灾自动报警处理信息")
     @ApiOperation(value = "设置火灾自动报警处理信息", httpMethod = "POST")
     @RequestMapping(value="/setAlarmHandleInfo",method = RequestMethod.POST)
-    public ResponseResult setAlarmHandleInfo(@RequestBody AlarmHandleReq alarmHandleReq){
+    public ResponseResult setAlarmHandleInfo(@CurUser ShiroUser shiroUser,@RequestBody AlarmHandleReq alarmHandleReq){
         if(StringUtils.isNull(alarmHandleReq)){
             return error("参数不能为空");
         }
         if(StringUtils.isEmpty(alarmHandleReq.getId())){
             return error("告警id不能为空");
         }
+        Integer alarmId = alarmHandleReq.getId();
+        /*判断警情当前状态*/
+        FacilitiesAlarm alarmDb = facilitiesAlarmService.selectByPrimaryKey(alarmHandleReq.getId());
+        if(StringUtils.isNull(alarmDb)){
+            return error("告警不存在");
+        }
 
-        FacilitiesAlarm facilitiesAlarm = new FacilitiesAlarm();
-        BeanUtils.copyProperties(alarmHandleReq,facilitiesAlarm);
-        Boolean updateRes = facilitiesAlarmService.updateByPrimaryKeySelective(facilitiesAlarm) > 0;
-        return updateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+        List<Role> roleList = roleService.selectRolesByUserId(shiroUser.getId());
+        String roleName = "";
+        if(StringUtils.isNotEmpty(roleList)) {
+            roleName = roleList.get(0).getRoleName();
+        }
+
+        Integer handleStatus = StringUtils.nvl(alarmDb.getHandleStatus(),AlarmHandleStatus.UNTREATED.id);
+        if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus) || AlarmHandleStatus.RESPONSE.id.equals(handleStatus)){
+            if(AlarmMisreport.MISREPORT.id.equals(alarmHandleReq.getMisreport())){
+                facilitiesAlarmService.misreportAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
+            }else if(AlarmMisreport.EFFECTIVE.id.equals(alarmHandleReq.getMisreport())){
+                Precinct precinct = precinctService.selectByPrimaryKey(alarmDb.getPrecinctId());
+                facilitiesAlarmService.effectiveAlarm(shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus()),alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
+            }
+        }
+
+        if(AlarmHandleStatus.UNDER_WAY.id.equals(handleStatus) && BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus())){
+            facilitiesAlarmService.completeAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId,alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
+        }
+        return ResponseResult.buildOkResult();
     }
 
 }

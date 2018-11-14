@@ -5,8 +5,11 @@ import com.mailian.firecontrol.dao.auto.mapper.UnitDeviceMapper;
 import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.service.UnitDeviceService;
+import com.mailian.firecontrol.service.cache.UnitDeviceCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,14 @@ import java.util.Map;
 public class UnitDeviceServiceImpl extends BaseServiceImpl<UnitDevice,UnitDeviceMapper> implements UnitDeviceService {
     @Resource
     private UnitManualMapper unitManualMapper;
+
+    @Autowired
+    private UnitDeviceCache addUnitDevices;
+
+    @PostConstruct
+    public void init() {
+        addUnitDevices.addUnitDevices();
+    }
 
     @Override
     public List<UnitDevice> selectByDeviceIds(List<String> deviceIds) {

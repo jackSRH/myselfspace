@@ -8,41 +8,27 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
-import com.mailian.firecontrol.common.enums.AlarmType;
-import com.mailian.firecontrol.common.enums.FaMisreportType;
-import com.mailian.firecontrol.common.enums.ReqDateType;
+import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
+import com.mailian.firecontrol.dao.auto.model.AlarmLog;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.AlarmAnalysisResp;
-import com.mailian.firecontrol.dto.web.response.AlarmIndustryShareResp;
-import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
-import com.mailian.firecontrol.dto.web.response.AlarmStatisticsResp;
-import com.mailian.firecontrol.dto.web.response.CurAlarmResp;
-import com.mailian.firecontrol.dto.web.response.FacilitiesAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmCountResp;
-import com.mailian.firecontrol.dto.web.response.FireAlarmListResp;
-import com.mailian.firecontrol.dto.web.response.FireAutoAlarmListResp;
+import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.service.AlarmLogService;
 import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm, FacilitiesAlarmMapper> implements FacilitiesAlarmService {
@@ -53,6 +39,8 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     private ManageManualMapper manageManualMapper;
     @Resource
     private FacilitiesService facilitiesService;
+    @Autowired
+    private AlarmLogService alarmLogService;
 
     @Override
     public PageBean<FacilitiesAlarmListResp> getFacilitiesAlarmList(DataScope dataScope, SearchReq searchReq){
@@ -338,6 +326,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     public FireAlarmCountResp getFireAlarmCountByArea(Integer areaId) {
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
+        queryMap.put("alarmType",AlarmType.ALARM.id);
         List<Map<String,Object>> alarmResultList = manageManualMapper.countFaRealNumByMap(queryMap);
 
         FireAlarmCountResp fireAlarmCountResp = new FireAlarmCountResp();
@@ -470,6 +459,8 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         if(StringUtils.isNotNull(dataScope)){
             queryMap.put("precinctIds",dataScope.getDataIds());
         }
+        queryMap.put("alarmType",AlarmType.ALARM.id);
+        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
         queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
         List<CurAlarmResp> curAlarmResps = new ArrayList<>();
@@ -500,6 +491,111 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             curAlarmResps.add(curAlarmResp);
         }
         return curAlarmResps;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int misreportAlarm(Integer uid,String userName,String roleName, Integer alarmId) {
+        Date now = new Date();
+        FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+        upAlarm.setId(alarmId);
+        upAlarm.setMisreport(FaMisreportType.MISREPORT.id);
+        upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+        upAlarm.setHandleTime(now);
+        upAlarm.setHandleEndTime(now);
+        upAlarm.setHandleUid(uid);
+        upAlarm.setConfirmUid(uid);
+        updateByPrimaryKeySelective(upAlarm);
+
+        List<AlarmLog> addLogs = new ArrayList<>();
+        AlarmLog alarmLog = new AlarmLog();
+        alarmLog.setAlarmId(alarmId);
+        alarmLog.setOptName(userName);
+        alarmLog.setOptRole(roleName);
+        alarmLog.setOptTime(now);
+        alarmLog.setOptType(OptType.CONFIRM_ALARM.id);
+        alarmLog.setOptContent("确认是误报");
+        addLogs.add(alarmLog);
+
+        AlarmLog alarmLogComplete = new AlarmLog();
+        alarmLogComplete.setAlarmId(alarmId);
+        alarmLogComplete.setOptName(userName);
+        alarmLogComplete.setOptRole(roleName);
+        alarmLogComplete.setOptTime(now);
+        alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
+        addLogs.add(alarmLog);
+        alarmLogService.insertBatch(addLogs);
+        return updateByPrimaryKeySelective(upAlarm);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int effectiveAlarm(Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult) {
+        Date now = new Date();
+        FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+        upAlarm.setId(alarmId);
+        upAlarm.setMisreport(FaMisreportType.EFFECTIVE.id);
+        upAlarm.setHandleStatus(AlarmHandleStatus.UNDER_WAY.id);
+        upAlarm.setHandleTime(new Date());
+        upAlarm.setConfirmUid(uid);
+
+        List<AlarmLog> addLogs = new ArrayList<>();
+        AlarmLog alarmLog = new AlarmLog();
+        alarmLog.setAlarmId(alarmId);
+        alarmLog.setOptName(userName);
+        alarmLog.setOptRole(roleName);
+        alarmLog.setOptTime(now);
+        alarmLog.setOptType(OptType.CONFIRM_ALARM.id);
+        addLogs.add(alarmLog);
+
+        AlarmLog prolog = new AlarmLog();
+        prolog.setAlarmId(alarmId);
+        prolog.setOptName(dutyName);
+        prolog.setOptRole("");
+        prolog.setOptTime(now);
+        prolog.setOptType(OptType.PROGRESS_ALARM.id);
+        addLogs.add(prolog);
+
+        if(isComplete){
+            upAlarm.setHandleEndTime(StringUtils.nvl(handleEndTime,new Date()));
+            upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+            upAlarm.setHandleResult(handleResult);
+            upAlarm.setHandleUid(uid);
+
+            AlarmLog alarmLogComplete = new AlarmLog();
+            alarmLogComplete.setAlarmId(alarmId);
+            alarmLogComplete.setOptName(userName);
+            alarmLogComplete.setOptRole(roleName);
+            alarmLogComplete.setOptTime(now);
+            alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
+            alarmLogComplete.setOptContent(handleResult);
+            addLogs.add(alarmLogComplete);
+        }
+        alarmLogService.insertBatch(addLogs);
+
+        return updateByPrimaryKeySelective(upAlarm);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int completeAlarm(Integer uid, String userName, String roleName, Integer alarmId, Date handleEndTime, String handleResult) {
+        Date now = new Date();
+        FacilitiesAlarm upAlarm = new FacilitiesAlarm();
+        upAlarm.setId(alarmId);
+        upAlarm.setHandleEndTime(StringUtils.nvl(handleEndTime,new Date()));
+        upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+        upAlarm.setHandleResult(handleResult);
+        upAlarm.setHandleUid(uid);
+
+        AlarmLog alarmLogComplete = new AlarmLog();
+        alarmLogComplete.setAlarmId(alarmId);
+        alarmLogComplete.setOptName(userName);
+        alarmLogComplete.setOptRole(roleName);
+        alarmLogComplete.setOptTime(now);
+        alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
+        alarmLogComplete.setOptContent(handleResult);
+        alarmLogService.insert(alarmLogComplete);
+        return updateByPrimaryKeySelective(upAlarm);
     }
 
     @Override

@@ -13,10 +13,10 @@ public class AlarmHandleReq {
     private String handleResult;
     @ApiModelProperty(value = "是否误报 1:误报 2:有效 3:其它")
     private Integer misreport;
-    @ApiModelProperty(value = "当前状态 0:未处理、1:已响应、2:处理中、3:已处理")
-    private Integer handleStatus;
-    @ApiModelProperty(value = "受理时间")
-    private Date handleTime;
+    @ApiModelProperty(value = "是否已处理 0:未处理  1:已处理")
+    private Integer handleStatus = 0;
+    @ApiModelProperty(value = "处理时间")
+    private Date handleEndTime;
 
     public Integer getId() {
         return id;
@@ -50,11 +50,11 @@ public class AlarmHandleReq {
         this.handleStatus = handleStatus;
     }
 
-    public Date getHandleTime() {
-        return handleTime;
+    public Date getHandleEndTime() {
+        return handleEndTime;
     }
 
-    public void setHandleTime(Date handleTime) {
-        this.handleTime = handleTime;
+    public void setHandleEndTime(Date handleEndTime) {
+        this.handleEndTime = handleEndTime;
     }
 }

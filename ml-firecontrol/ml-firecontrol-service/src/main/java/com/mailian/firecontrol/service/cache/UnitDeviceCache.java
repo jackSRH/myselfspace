@@ -13,6 +13,8 @@ import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dto.UnitRedisInfo;
 import com.mailian.firecontrol.dto.push.DeviceCommunicationStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,8 @@ import java.util.Map;
  */
 @Component
 public class UnitDeviceCache {
+    private static final Logger log = LoggerFactory.getLogger(UnitDeviceCache.class);
+
     @Autowired
     private RedisUtils redisUtils;
     @Resource
@@ -110,6 +114,50 @@ public class UnitDeviceCache {
             unitInfoMap.put(unitDevice.getDeviceId(),unitRedisInfo);
         }
         redisUtils.addAllHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,unitInfoMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+    }
+
+    /**
+     * 添加单位网关关联关系
+     */
+    @Async
+    public void addUnitDevices(){
+        List<UnitDevice> unitDeviceList =  unitDeviceMapper.selectByMap(null);
+        if(StringUtils.isNotEmpty(unitDeviceList)){
+            List<Unit> unitList = unitMapper.selectByMap(null);
+            Map<Integer,Unit> unitMap = new HashMap<>();
+            for (Unit unit : unitList) {
+                unitMap.put(unit.getId(),unit);
+            }
+            List<Precinct> precincts = precinctMapper.selectByMap(null);
+            Map<Integer,Precinct> precinctMap = new HashMap<>();
+            for (Precinct precinct : precincts) {
+                precinctMap.put(precinct.getId(),precinct);
+            }
+
+            Map<String,UnitRedisInfo> unitInfoMap = new HashMap<>();
+            for (UnitDevice unitDevice : unitDeviceList) {
+                Unit unit = unitMap.get(unitDevice.getUnitId());
+                if(StringUtils.isNull(unit)){
+                    continue;
+                }
+
+                Precinct precinct = precinctMap.get(unit.getPrecinctId());
+                UnitRedisInfo unitRedisInfo = new UnitRedisInfo();
+                unitRedisInfo.setDeviceId(unitDevice.getDeviceId());
+                unitRedisInfo.setId(unit.getId());
+                unitRedisInfo.setUnitName(unit.getUnitName());
+                unitRedisInfo.setPrecinctId(unit.getPrecinctId());
+                unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+                unitRedisInfo.setAreaId(unit.getAreaId());
+                unitRedisInfo.setCityId(unit.getCityId());
+                unitRedisInfo.setProvinceId(unit.getProvinceId());
+                unitRedisInfo.setUnitType(unit.getUnitType());
+
+                unitInfoMap.put(unitDevice.getDeviceId(),unitRedisInfo);
+            }
+            redisUtils.addAllHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,unitInfoMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+            log.info("添加单位网关关联关系成功，总数:{}",unitInfoMap.size());
+        }
     }
 
 

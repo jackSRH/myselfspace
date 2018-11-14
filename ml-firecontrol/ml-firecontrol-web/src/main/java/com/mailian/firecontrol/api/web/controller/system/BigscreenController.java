@@ -9,21 +9,22 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.AlarmMisreport;
-import com.mailian.firecontrol.common.enums.ItemBtype;
+import com.mailian.firecontrol.common.enums.OptType;
 import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
+import com.mailian.firecontrol.dao.auto.model.AlarmLog;
+import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dto.DayTime;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemHistoryData;
+import com.mailian.firecontrol.dto.web.ProgressDetailResp;
 import com.mailian.firecontrol.dto.web.request.BgSearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.framework.util.ConvertDateUtil;
-import com.mailian.firecontrol.service.AreaService;
-import com.mailian.firecontrol.service.FacilitiesAlarmService;
-import com.mailian.firecontrol.service.UnitDeviceService;
-import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import io.swagger.annotations.Api;
@@ -45,9 +46,6 @@ import java.util.*;
 @Api(description = "大屏相关接口")
 @WebAPI
 public class BigscreenController extends BaseController {
-    private static final List<Integer> UNIT_TREND_TYPES = Arrays.asList(
-            ItemBtype.VOLTAGE.id,ItemBtype.ELECTRICCURRENT.id,
-            ItemBtype.LEAKAGE.id,ItemBtype.CABLE_TEMPERATURE.id);
     @Autowired
     private UnitService unitService;
     @Autowired
@@ -58,6 +56,10 @@ public class BigscreenController extends BaseController {
     private UnitDeviceService unitDeviceService;
     @Autowired
     private DeviceItemRepository deviceItemRepository;
+    @Autowired
+    private UnitCameraService unitCameraService;
+    @Autowired
+    private AlarmLogService alarmLogService;
 
     @ApiOperation(value = "获取省份城市级别，用于大屏运营商展示", httpMethod = "GET")
     @GetMapping(value = "getProvinceAndCityList")
@@ -194,6 +196,22 @@ public class BigscreenController extends BaseController {
         return ResponseResult.buildOkResult(unitService.getUnitMapDataByAreaAndScope(areaId,unitType,dataScope));
     }
 
+
+    @ApiOperation(value = "获取单位地图信息(单位)", httpMethod = "GET")
+    @RequestMapping(value="/getUnitMapDataByUnit",method = RequestMethod.GET)
+    public ResponseResult<UnitMapResp> getUnitMapDataByUnit(@CurUser ShiroUser shiroUser,
+                                                                    @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        if(StringUtils.isNotEmpty(unitId)){
+            unitId = shiroUser.getUnitId();
+        }
+
+        UnitMapResp unitMapResp = unitService.getUnitMapDataByUnitId(unitId);
+        /*设置摄像头*/
+        List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
+        unitMapResp.setCameraListResps(cameraListResps);
+        return ResponseResult.buildOkResult(cameraListResps);
+    }
+
     @ApiOperation(value = "获取单位走势(单位)", httpMethod = "GET")
     @RequestMapping(value="/getUnitTrendByUnitId",method = RequestMethod.GET)
     public ResponseResult<List<BgUnitTrendListResp>> getUnitTrendByUnitId(@CurUser ShiroUser shiroUser, BgSearchReq bgSearchReq){
@@ -230,7 +248,7 @@ public class BigscreenController extends BaseController {
         BgUnitTrendListResp bgUnitTrendListResp;
         List<BgUnitTrendResp> bgUnitTrendResps;
         Map<String,BgUnitTrendResp> typeDayMap = new HashMap<>();
-        for(Integer type : UNIT_TREND_TYPES){
+        for(Integer type : CommonConstant.UNIT_TREND_TYPES){
             bgUnitTrendResps = new ArrayList<>();
             BgUnitTrendResp bgUnitTrendResp;
             for(DayTime dayTime : dates){
@@ -278,7 +296,7 @@ public class BigscreenController extends BaseController {
         String itemId;
         for(DeviceItem deviceItem : items){
             btype = deviceItem.getBtype();
-            if(!UNIT_TREND_TYPES.contains(btype)){
+            if(!CommonConstant.UNIT_TREND_TYPES.contains(btype)){
                 continue;
             }
             itemId = deviceItem.getId();
@@ -448,6 +466,50 @@ public class BigscreenController extends BaseController {
             dataScope = new DataScope("precinct_id", Arrays.asList(precinctId));
         }
         return ResponseResult.buildOkResult(facilitiesAlarmService.getCurAlarm(areaId,dataScope));
+    }
+
+
+    @ApiOperation(value = "获取单位实时数据", httpMethod = "GET")
+    @RequestMapping(value="/getUnitRealtimeData",method = RequestMethod.GET)
+    public ResponseResult<UnitRealtimeDataResp> getUnitRealtimeData(@CurUser ShiroUser shiroUser,
+                                                            @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        if(StringUtils.isNotEmpty(unitId)){
+            unitId = shiroUser.getUnitId();
+        }
+        return ResponseResult.buildOkResult(unitService.getUnitRealtimeData(unitId));
+    }
+
+
+    @ApiOperation(value = "火灾进度详情", httpMethod = "GET")
+    @RequestMapping(value="/alarmProgressDetail",method = RequestMethod.GET)
+    public ResponseResult<List<ProgressDetailResp>> alarmProgressDetail(@CurUser ShiroUser shiroUser,
+                                                                  @ApiParam(value = "告警id") @RequestParam(value = "alarmId") Integer alarmId){
+        FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
+
+        if(StringUtils.isNotNull(facilitiesAlarm)){
+            return error("报警不存在");
+        }
+        /*获取操作日志*/
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("alarmId",alarmId);
+        List<AlarmLog> alarmLogs = alarmLogService.selectByMap(queryMap);
+        
+        List<ProgressDetailResp> respList = new ArrayList<>();
+        for (AlarmLog alarmLog : alarmLogs) {
+            ProgressDetailResp resp = new ProgressDetailResp();
+            resp.setOptTime(alarmLog.getOptTime());
+            resp.setOptContent(alarmLog.getOptContent());
+            resp.setOptName(alarmLog.getOptName());
+            resp.setOptType(alarmLog.getOptType());
+            resp.setRoleName(alarmLog.getOptRole());
+            respList.add(resp);
+        }
+        /*设置对应时间及操作人*/
+        ProgressDetailResp createResp = new ProgressDetailResp();
+        createResp.setOptTime(facilitiesAlarm.getAlarmTime());
+        createResp.setOptType(OptType.ALARM.id);
+        respList.add(createResp);
+        return ResponseResult.buildOkResult(respList);
     }
 
 }

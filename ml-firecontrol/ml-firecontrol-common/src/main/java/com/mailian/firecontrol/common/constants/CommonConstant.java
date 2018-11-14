@@ -1,5 +1,9 @@
 package com.mailian.firecontrol.common.constants;
 
+import com.mailian.firecontrol.common.enums.ItemBtype;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -58,4 +62,9 @@ public class CommonConstant {
 
     /** 分隔符 */
     public static final String SPLIT_STR = ";";
+
+    /** 单位数据项类型*/
+    public static final List<Integer> UNIT_TREND_TYPES = Arrays.asList(
+            ItemBtype.VOLTAGE.id,ItemBtype.ELECTRICCURRENT.id,
+            ItemBtype.LEAKAGE.id,ItemBtype.CABLE_TEMPERATURE.id);
 }

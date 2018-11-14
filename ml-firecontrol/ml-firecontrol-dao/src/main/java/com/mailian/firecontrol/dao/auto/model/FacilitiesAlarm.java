@@ -2,7 +2,7 @@
 *
 * FacilitiesAlarm.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-11-12
+* @date 2018-11-13
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -90,6 +90,21 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
      * 告警结束时间
      */
     private Date alarmEndTime;
+
+    /**
+     * 响应时间
+     */
+    private Date responseTime;
+
+    /**
+     * 响应人
+     */
+    private Integer responseUid;
+
+    /**
+     * 确认人
+     */
+    private Integer confirmUid;
 
     /**
      * 告警方式 0:自动 1:人工
@@ -322,6 +337,30 @@ public class FacilitiesAlarm extends BaseDomain implements Serializable {
 
     public void setAlarmEndTime(Date alarmEndTime) {
         this.alarmEndTime = alarmEndTime;
+    }
+
+    public Date getResponseTime() {
+        return responseTime;
+    }
+
+    public void setResponseTime(Date responseTime) {
+        this.responseTime = responseTime;
+    }
+
+    public Integer getResponseUid() {
+        return responseUid;
+    }
+
+    public void setResponseUid(Integer responseUid) {
+        this.responseUid = responseUid;
+    }
+
+    public Integer getConfirmUid() {
+        return confirmUid;
+    }
+
+    public void setConfirmUid(Integer confirmUid) {
+        this.confirmUid = confirmUid;
     }
 
     public Integer getAlarmWay() {
