@@ -14,11 +14,20 @@ import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
-import com.mailian.firecontrol.common.enums.*;
-import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
+import com.mailian.firecontrol.common.enums.AlarmType;
+import com.mailian.firecontrol.common.enums.DiaItemType;
+import com.mailian.firecontrol.common.enums.FaMisreportType;
+import com.mailian.firecontrol.common.enums.ItemBtype;
+import com.mailian.firecontrol.common.enums.StructType;
+import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
+import com.mailian.firecontrol.common.enums.UnitType;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
-import com.mailian.firecontrol.dao.auto.model.*;
+import com.mailian.firecontrol.dao.auto.model.Area;
+import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
+import com.mailian.firecontrol.dao.auto.model.Precinct;
+import com.mailian.firecontrol.dao.auto.model.Unit;
+import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dto.CountDataInfo;
@@ -33,7 +42,14 @@ import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
+import com.mailian.firecontrol.dto.web.response.DeviceResp;
+import com.mailian.firecontrol.dto.web.response.PieData;
+import com.mailian.firecontrol.dto.web.response.PieResp;
+import com.mailian.firecontrol.dto.web.response.UnitListResp;
+import com.mailian.firecontrol.dto.web.response.UnitMapResp;
+import com.mailian.firecontrol.dto.web.response.UnitRealtimeDataResp;
+import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.DeviceItemOpertionService;
 import com.mailian.firecontrol.service.UnitDeviceService;
@@ -49,7 +65,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implements UnitService {
@@ -67,8 +89,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private UnitDeviceService unitDeviceService;
     @Autowired
     private UnitDeviceCache unitDeviceCache;
-    @Resource
-    private FacilitiesAlarmMapper facilitiesAlarmMapper;
     @Resource
     private ManageManualMapper manageManualMapper;
     @Autowired
@@ -745,7 +765,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         return unitRealtimeDataResp;
     }
 
-
     @Override
     public CountDataInfo getUnitTotalByScope(DataScope dataScope) {
         Map<String,Object> queryMap = new HashMap<>();
@@ -762,6 +781,34 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
         return getCountDataInfo(unitIdList,onlineCount);
+    }
+
+    @Override
+    public List<DeviceResp> getDeviceByUnitId(Integer unitId){
+        List<DeviceResp> deviceRespList = new ArrayList<>();
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        List<UnitDevice> unitDevices = unitDeviceService.selectByMap(queryMap);
+        if(StringUtils.isEmpty(unitDevices)){
+            return deviceRespList;
+        }
+
+        List<String> deviceIds= new ArrayList<>();
+        for(UnitDevice unitDevice:unitDevices){
+            deviceIds.add(unitDevice.getDeviceId());
+        }
+        List<Device> devices = deviceRepository.getDevicesByCodes(deviceIds);
+        if(StringUtils.isEmpty(devices)){
+            return  deviceRespList;
+        }
+
+        DeviceResp deviceResp;
+        for(Device device: devices) {
+            deviceResp = new DeviceResp();
+            BeanUtils.copyProperties(device,deviceResp);
+            deviceRespList.add(deviceResp);
+        }
+        return deviceRespList;
     }
 
 }

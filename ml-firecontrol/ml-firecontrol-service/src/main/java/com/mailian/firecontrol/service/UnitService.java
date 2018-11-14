@@ -103,4 +103,13 @@ public interface UnitService extends BaseService<Unit> {
      * @return
      */
     UnitRealtimeDataResp getUnitRealtimeData(Integer unitId);
+
+    /**
+     * 获取单位下的网关
+     * @return
+     * @param unitId
+     */
+    List<DeviceResp> getDeviceByUnitId(Integer unitId);
+
+
 }

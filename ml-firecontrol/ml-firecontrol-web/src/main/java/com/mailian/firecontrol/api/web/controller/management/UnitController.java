@@ -206,4 +206,13 @@ public class UnitController extends BaseController {
         return ResponseResult.buildOkResult(res);
     }
 
+    @Log(title = "配置管理",action = "获取单位下的网关")
+    @ApiOperation(value = "获取单位下的网关", httpMethod = "GET")
+    @GetMapping(value = "/getDeviceByUnitId")
+    public ResponseResult<List<DeviceResp>> getDeviceByUnitId(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
+        return ResponseResult.buildOkResult(unitService.getDeviceByUnitId(unitId));
+    }
+
+
+
 }

@@ -4,8 +4,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.util.MD5Util;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.util.StringUtil;
 import com.mailian.firecontrol.dao.auto.mapper.AppMapper;
 import com.mailian.firecontrol.dao.auto.model.App;
 import com.mailian.firecontrol.dto.app.AppInfo;
@@ -93,7 +93,7 @@ public class AppServiceImpl extends BaseServiceImpl<App, AppMapper> implements A
     public ResponseResult upLoadApp(AppInfo appInfo, MultipartFile appFile) throws Exception{
         App app = new App();
         BeanUtils.copyProperties(appInfo,app);
-        String md5 = StringUtil.getMd5InputStream(appFile.getInputStream());
+        String md5 = MD5Util.getMd5InputStream(appFile.getInputStream());
         app.setMd5(md5);
         String filename = appFile.getOriginalFilename();
         app.setName(filename);
