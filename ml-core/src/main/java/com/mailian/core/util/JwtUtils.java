@@ -87,7 +87,7 @@ public class JwtUtils {
      * @return
      */
     public boolean isRefreshToken(Claims claims){
-        return (System.currentTimeMillis() - claims.getIssuedAt().getTime())/(1000 * 60) > 10;
+        return (System.currentTimeMillis() - claims.getIssuedAt().getTime())/(1000 * 60) > 30;
     }
 
     /**
