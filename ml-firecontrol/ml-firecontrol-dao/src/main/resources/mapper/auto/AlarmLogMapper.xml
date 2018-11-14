@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.AlarmLogMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.AlarmLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="alarm_id" jdbcType="INTEGER" property="alarmId" />
+    <result column="opt_name" jdbcType="VARCHAR" property="optName" />
+    <result column="opt_role" jdbcType="VARCHAR" property="optRole" />
+    <result column="opt_time" jdbcType="TIMESTAMP" property="optTime" />
+    <result column="opt_type" jdbcType="INTEGER" property="optType" />
+    <result column="opt_content" jdbcType="VARCHAR" property="optContent" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, alarm_id, opt_name, opt_role, opt_time, opt_type, opt_content, status, create_time, 
+    create_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_alarm_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_alarm_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.AlarmLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_alarm_log (alarm_id, opt_name, opt_role, 
+      opt_time, opt_type, opt_content, 
+      status, create_time, create_by
+      )
+    values (#{alarmId,jdbcType=INTEGER}, #{optName,jdbcType=VARCHAR}, #{optRole,jdbcType=VARCHAR}, 
+      #{optTime,jdbcType=TIMESTAMP}, #{optType,jdbcType=INTEGER}, #{optContent,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.AlarmLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_alarm_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="alarmId != null">
+        alarm_id,
+      </if>
+      <if test="optName != null">
+        opt_name,
+      </if>
+      <if test="optRole != null">
+        opt_role,
+      </if>
+      <if test="optTime != null">
+        opt_time,
+      </if>
+      <if test="optType != null">
+        opt_type,
+      </if>
+      <if test="optContent != null">
+        opt_content,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="alarmId != null">
+        #{alarmId,jdbcType=INTEGER},
+      </if>
+      <if test="optName != null">
+        #{optName,jdbcType=VARCHAR},
+      </if>
+      <if test="optRole != null">
+        #{optRole,jdbcType=VARCHAR},
+      </if>
+      <if test="optTime != null">
+        #{optTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="optType != null">
+        #{optType,jdbcType=INTEGER},
+      </if>
+      <if test="optContent != null">
+        #{optContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.AlarmLog">
+    update t_alarm_log
+    <set>
+      <if test="alarmId != null">
+        alarm_id = #{alarmId,jdbcType=INTEGER},
+      </if>
+      <if test="optName != null">
+        opt_name = #{optName,jdbcType=VARCHAR},
+      </if>
+      <if test="optRole != null">
+        opt_role = #{optRole,jdbcType=VARCHAR},
+      </if>
+      <if test="optTime != null">
+        opt_time = #{optTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="optType != null">
+        opt_type = #{optType,jdbcType=INTEGER},
+      </if>
+      <if test="optContent != null">
+        opt_content = #{optContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.AlarmLog">
+    update t_alarm_log
+    set alarm_id = #{alarmId,jdbcType=INTEGER},
+      opt_name = #{optName,jdbcType=VARCHAR},
+      opt_role = #{optRole,jdbcType=VARCHAR},
+      opt_time = #{optTime,jdbcType=TIMESTAMP},
+      opt_type = #{optType,jdbcType=INTEGER},
+      opt_content = #{optContent,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_alarm_log
+    <where>
+      <if test="alarmId != null">
+         and alarm_id = #{alarmId,jdbcType=INTEGER}
+      </if>
+      <if test="optName != null">
+         and opt_name = #{optName,jdbcType=VARCHAR}
+      </if>
+      <if test="optRole != null">
+         and opt_role = #{optRole,jdbcType=VARCHAR}
+      </if>
+      <if test="optTime != null">
+         and opt_time = #{optTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="optType != null">
+         and opt_type = #{optType,jdbcType=INTEGER}
+      </if>
+      <if test="optContent != null">
+         and opt_content = #{optContent,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+         and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_alarm_log
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_alarm_log
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_alarm_log (alarm_id, opt_name, opt_role, 
+      opt_time, opt_type, opt_content, 
+      status, create_time, create_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.alarmId,jdbcType=INTEGER}, #{item.optName,jdbcType=VARCHAR}, #{item.optRole,jdbcType=VARCHAR}, 
+        #{item.optTime,jdbcType=TIMESTAMP}, #{item.optType,jdbcType=INTEGER}, #{item.optContent,jdbcType=VARCHAR}, 
+        #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>
