@@ -2,6 +2,7 @@ package com.mailian.firecontrol.service.impl;
 
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
+import com.mailian.firecontrol.common.enums.ItemStype;
 import com.mailian.firecontrol.dto.SelectDto;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
@@ -28,24 +29,33 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
     //1：制冷 ,1代表下发值，制冷代表状态；
     //1:2:3:制冷,1代表状态值，2代表下发值，3代表是否可控，制冷代表状态
     @Override
-    public String getYaoceStatus(String yaokongItemId, String statusItemId){
+    public String getYaokongStatus(String yaokongItemId, String statusItemId){
         String	status = "无";
         DeviceItemRealTimeData realTimeData = deviceItemRepository.getRtDataByItemId(statusItemId);
-        if(StringUtils.isNull(realTimeData)|| realTimeData.getVal() == CommonConstant.ITEM_INITIAL_VALUE) {
+        DeviceItem yaokongItem = deviceItemRepository.getDeviceItemInfosByItemId(yaokongItemId);
+        DeviceItem statusItem = deviceItemRepository.getDeviceItemInfosByItemId(statusItemId);
+        if(StringUtils.isNull(realTimeData)|| realTimeData.getVal() == CommonConstant.ITEM_INITIAL_VALUE
+            || StringUtils.isNull(yaokongItem) || StringUtils.isNull(statusItem)) {
             return status;
         }
 
-        DeviceItem yaokongItem = deviceItemRepository.getDeviceItemInfosByItemId(yaokongItemId);
-        DeviceItem statusItem = deviceItemRepository.getDeviceItemInfosByItemId(statusItemId);
-        String ykDesc = StringUtils.isNull(yaokongItem)?"":yaokongItem.getDesc();
-        String[] allType = ykDesc.split(CommonConstant.SPLIT_STR);
+        int val = 0;
+        if(ItemStype.TRANSPORTYC.id.intValue() == statusItem.getStype() || ItemStype.OPERATIONYC.id.intValue() == statusItem.getStype()){
+            if(realTimeData.getVal() < 50){
+                val = 1;
+            }
+        }else{
+            val = Integer.valueOf(realTimeData.getVal().toString());
+        }
 
+        String ykDesc = yaokongItem.getDesc();
+        String[] allType = ykDesc.split(CommonConstant.SPLIT_STR);
         for (String typeStr : allType) {
             String[] type = typeStr.split(":");
             if(type.length == 2) {
-                status = realTimeData.getVal() == 1?statusItem.getDesc1():statusItem.getDesc0();
+                status = val == 1?statusItem.getDesc1():statusItem.getDesc0();
             }else {
-                if(Integer.valueOf(type[0]) == realTimeData.getVal().intValue()) {
+                if(Integer.valueOf(type[0]) == val) {
                     status = type[3];
                 }
             }

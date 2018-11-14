@@ -463,7 +463,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                 DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
 
                 if(StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
-                    String status = deviceItemOpertionService.getYaoceStatus(ykItem.getItemId(),switchItem.getItemId());
+                    String status = deviceItemOpertionService.getYaokongStatus(ykItem.getItemId(),switchItem.getItemId());
                     List<SelectDto> selectDtos = deviceItemOpertionService.getYaokongEnumList(ykItem.getItemId());
 
                     SwitchResp switchResp = new SwitchResp();
@@ -586,7 +586,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                     DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
 
                     if (StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
-                        String status = deviceItemOpertionService.getYaoceStatus(ykItem.getItemId(), switchItem.getItemId());
+                        String status = deviceItemOpertionService.getYaokongStatus(ykItem.getItemId(), switchItem.getItemId());
                         List<SelectDto> selectDtos = deviceItemOpertionService.getYaokongEnumList(ykItem.getItemId());
 
                         unitSwitchResp = new UnitSwitchResp();

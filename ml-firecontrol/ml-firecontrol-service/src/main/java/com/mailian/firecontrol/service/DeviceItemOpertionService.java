@@ -11,7 +11,7 @@ public interface DeviceItemOpertionService {
 	 * @param yaokongItemId,statusItemId
 	 * @return
 	 */
-	String getYaoceStatus(String yaokongItemId, String statusItemId);
+	String getYaokongStatus(String yaokongItemId, String statusItemId);
 
 	/**
 	 * 通过遥控数据项id获取遥控控制状态以及对应枚举值
