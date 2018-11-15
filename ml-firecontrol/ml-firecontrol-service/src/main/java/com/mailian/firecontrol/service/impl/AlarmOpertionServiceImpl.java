@@ -143,7 +143,10 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 paramMap.put(UNITNAME,unitRedisInfo.getUnitName());
 
                 String itemId = alarm.getId();
-                String etime = alarm.getEtime().compareTo(alarm.getStime()) < 0?"":alarm.getEtime();
+                String etime = "";
+                if(StringUtils.isNotEmpty(alarm.getEtime()) && alarm.getEtime().compareTo(alarm.getStime()) > 0){
+                    etime = alarm.getEtime();
+                }
                 AlarmStatus alarmStatus = StringUtils.isEmpty(etime)?AlarmStatus.ALARMING:AlarmStatus.ALARMED;
                 AlarmLevel alarmLevel = AlarmLevel.getAlarmLevel(alarm.getLevel());
                 String alarmItemName = "";
@@ -199,7 +202,6 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     continue;
                 }
 
-
                 FacilitiesAlarm facilitiesAlarm = new FacilitiesAlarm();
                 facilitiesAlarm.setUnitId(unitRedisInfo.getId());
                 facilitiesAlarm.setPrecinctId(unitRedisInfo.getPrecinctId());
@@ -213,6 +215,9 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 facilitiesAlarm.setAlarmType(alarmType.id);
                 facilitiesAlarm.setAlarmWay(AlarmWay.AUTO.id);
                 facilitiesAlarm.setUnitType(unitRedisInfo.getUnitType());
+                facilitiesAlarm.setProvinceId(unitRedisInfo.getProvinceId());
+                facilitiesAlarm.setCityId(unitRedisInfo.getCityId());
+                facilitiesAlarm.setAreaId(unitRedisInfo.getAreaId());
 
                 Date alarmSTime = ThreadLocalDateUtil.parse(alarm.getStime());
                 facilitiesAlarm.setAlarmTime(alarmSTime);
@@ -270,7 +275,10 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
             UnitRedisInfo unitRedisInfo;
             for (Alarm alarm : upAlarmList) {
                 FacilitiesAlarm facilitiesAlarm = facilitiesAlarmMap.get(alarm.getAlarmid());
-                String etime = alarm.getEtime().compareTo(alarm.getStime()) < 0?"":alarm.getEtime();
+                String etime = "";
+                if(StringUtils.isNotEmpty(alarm.getEtime()) && alarm.getEtime().compareTo(alarm.getStime()) > 0){
+                    etime = alarm.getEtime();
+                }
                 AlarmStatus alarmStatus = StringUtils.isEmpty(etime)?AlarmStatus.ALARMING:AlarmStatus.ALARMED;
                 if(StringUtils.isNotEmpty(etime) && StringUtils.isNull(facilitiesAlarm.getAlarmEndTime())){
                     upFacilitiesAlarm = new FacilitiesAlarm();
