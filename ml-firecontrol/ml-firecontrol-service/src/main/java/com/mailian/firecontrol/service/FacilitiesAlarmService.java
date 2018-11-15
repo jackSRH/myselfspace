@@ -76,17 +76,17 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
 
     /**
      * 获取行业告警占比
-     * @param alarmType
+     * @param areaId
      * @return
      */
-    List<AlarmIndustryShareResp> getAlarmIndustryShare(Integer areaId,DataScope dataScope,Integer alarmType);
+    List<AlarmIndustryShareResp> getAlarmIndustryShare(Integer areaId,DataScope dataScope);
 
     /**
      * 获取告警趋势
-     * @param alarmType
+     * @param areaId
      * @return
      */
-    List<AlarmStatisticsResp> getAlarmTrend(Integer areaId,DataScope dataScope,Integer alarmType);
+    List<AlarmStatusTrendResp> getAlarmTrend(Integer areaId,DataScope dataScope);
 
     List<CurAlarmResp> getCurAlarm(Integer areaId,DataScope dataScope);
 

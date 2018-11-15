@@ -9,6 +9,16 @@ public class AlarmIndustryShareResp {
     private Integer unitType;
     @ApiModelProperty(value = "告警数量")
     private Integer alarmNum;
+    @ApiModelProperty(value = "单位类型描述（行业）")
+    private String unitTypeDesc;
+
+    public String getUnitTypeDesc() {
+        return unitTypeDesc;
+    }
+
+    public void setUnitTypeDesc(String unitTypeDesc) {
+        this.unitTypeDesc = unitTypeDesc;
+    }
 
     public Integer getUnitType() {
         return unitType;

@@ -11,8 +11,10 @@ import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.TreeParser;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.app.AppInfo;
+import com.mailian.firecontrol.dto.push.Alarm;
 import com.mailian.firecontrol.dto.web.response.MenuResp;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
+import com.mailian.firecontrol.service.AlarmOpertionService;
 import com.mailian.firecontrol.service.AppService;
 import com.mailian.firecontrol.service.MenuService;
 import io.swagger.annotations.Api;
@@ -24,6 +26,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +46,8 @@ public class LoginController {
     private MenuService menuService;
     @Autowired
     private AppService appService;
+    @Autowired
+    private AlarmOpertionService alarmOpertionService;
 
 
     @Log(title = "系统",action = "登录")
@@ -93,6 +98,13 @@ public class LoginController {
     @RequestMapping(value = "/upLoadApp", method = RequestMethod.POST)
     public ResponseResult upLoadApp(AppInfo appInfo, MultipartFile appFile) throws Exception {
         return appService.upLoadApp(appInfo,appFile);
+    }
+
+    @ApiOperation(value = "造告警数据（上线前删掉）", httpMethod = "POST")
+    @RequestMapping(value = "/pushAlarms", method = RequestMethod.POST)
+    public ResponseResult pushAlarms(@RequestBody List<Alarm> alarms){
+        alarmOpertionService.dealRealTimeAlarm(alarms);
+        return ResponseResult.buildOkResult();
     }
 
 }
