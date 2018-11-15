@@ -487,7 +487,7 @@ public class BigscreenController extends BaseController {
                                                                   @ApiParam(value = "告警id") @RequestParam(value = "alarmId") Integer alarmId){
         FacilitiesAlarm facilitiesAlarm = facilitiesAlarmService.selectByPrimaryKey(alarmId);
 
-        if(StringUtils.isNotNull(facilitiesAlarm)){
+        if(StringUtils.isNull(facilitiesAlarm)){
             return error("报警不存在");
         }
         /*获取操作日志*/

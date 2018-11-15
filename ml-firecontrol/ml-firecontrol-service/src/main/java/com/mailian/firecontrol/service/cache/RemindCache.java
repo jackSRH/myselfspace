@@ -72,7 +72,7 @@ public class RemindCache {
 
         AlarmRemindInfo result = null;
         if(StringUtils.isNotEmpty(objects)) {
-            if(StringUtils.isNotEmpty(areaId)) {
+            if(StringUtils.isNull(areaId)) {
                 result = (AlarmRemindInfo) objects.get(0);
             }else {
                 Area area = areaService.getAreaById(areaId);
