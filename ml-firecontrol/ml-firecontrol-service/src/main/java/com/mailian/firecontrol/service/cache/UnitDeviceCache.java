@@ -62,16 +62,18 @@ public class UnitDeviceCache {
             List<UnitRedisInfo> unitDeviceList = unitManualMapper.selectUnitDeviceByDeviceIds(deviceIds);
 
             List<Precinct> precincts = precinctMapper.selectByMap(null);
-            Map<Integer,String> phoneMap = new HashMap<>();
+            Map<Integer,Precinct> precinctMap = new HashMap<>();
             for (Precinct precinct : precincts) {
                 if(StringUtils.isNotEmpty(precinct.getDutyPhone())) {
-                    phoneMap.put(precinct.getId(),precinct.getDutyPhone());
+                    precinctMap.put(precinct.getId(),precinct);
                 }
             }
 
             unitDeviceMap = new HashMap<>();
             for (UnitRedisInfo unitRedisInfo : unitDeviceList) {
-                unitRedisInfo.setContactPhone(phoneMap.get(unitRedisInfo.getPrecinctId()));
+                Precinct precinct = precinctMap.get(unitRedisInfo.getPrecinctId());
+                unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+                unitRedisInfo.setDutyName(precinct.getDutyName());
                 unitDeviceMap.put(unitRedisInfo.getDeviceId(),unitRedisInfo);
             }
             redisUtils.addAllHashValue(CommonConstant.SYS_DEVICE_UNIT_KEY,unitDeviceMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
@@ -148,10 +150,13 @@ public class UnitDeviceCache {
                 unitRedisInfo.setUnitName(unit.getUnitName());
                 unitRedisInfo.setPrecinctId(unit.getPrecinctId());
                 unitRedisInfo.setContactPhone(precinct.getDutyPhone());
+                unitRedisInfo.setDutyName(precinct.getDutyName());
                 unitRedisInfo.setAreaId(unit.getAreaId());
                 unitRedisInfo.setCityId(unit.getCityId());
                 unitRedisInfo.setProvinceId(unit.getProvinceId());
                 unitRedisInfo.setUnitType(unit.getUnitType());
+                unitRedisInfo.setLat(unit.getLat());
+                unitRedisInfo.setLng(unit.getLng());
 
                 unitInfoMap.put(unitDevice.getDeviceId(),unitRedisInfo);
             }

@@ -22,6 +22,7 @@ import com.mailian.firecontrol.dto.web.response.AlarmNumResp;
 import com.mailian.firecontrol.dto.web.response.CameraListResp;
 import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.cache.NoticeCache;
+import com.mailian.firecontrol.service.cache.RemindCache;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -55,6 +56,8 @@ public class AppUnitController extends BaseController {
     private RoleService roleService;
     @Autowired
     private AlarmLogService alarmLogService;
+    @Autowired
+    private RemindCache remindCache;
 
     @Log(title = "app单位",action = "搜素单位")
     @ApiOperation(value = "搜索单位列表", httpMethod = "GET")
@@ -257,11 +260,11 @@ public class AppUnitController extends BaseController {
             }
             //误报
             if(FaMisreportType.MISREPORT.id.equals(misreport)){
-                facilitiesAlarmService.misreportAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
+                facilitiesAlarmService.misreportAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
             }
             //有效
             if(FaMisreportType.EFFECTIVE.id.equals(misreport)){
-                facilitiesAlarmService.effectiveAlarm(shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,false,null,null);
+                facilitiesAlarmService.effectiveAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,false,null,null);
             }
         }
         return ResponseResult.buildOkResult();
@@ -298,6 +301,8 @@ public class AppUnitController extends BaseController {
             alarmLog.setOptTime(now);
             alarmLog.setOptType(OptType.RES_ALARM.id);
             alarmLogService.insert(alarmLog);
+
+            remindCache.removeRemind(facilitiesAlarm.getAlarmId());
         }
         return ResponseResult.buildOkResult();
     }

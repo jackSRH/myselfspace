@@ -31,6 +31,9 @@
             <if test="startDate != null and endDate != null">
                 and alarm_time between  #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
             </if>
+            <if test="endAlarmTime != null">
+                and <![CDATA[ alarm_time <= #{endAlarmTime,jdbcType=TIMESTAMP} ]]>
+            </if>
             <if test="provinceId != null">
                 and province_id = #{alarmType,jdbcType=INTEGER}
             </if>

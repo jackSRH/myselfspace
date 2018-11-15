@@ -8,10 +8,9 @@ import com.mailian.core.util.*;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.common.util.SmsUtils;
-import com.mailian.firecontrol.dao.auto.model.DiagramStruct;
-import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
-import com.mailian.firecontrol.dao.auto.model.SysConfig;
+import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
+import com.mailian.firecontrol.dto.AlarmRemindInfo;
 import com.mailian.firecontrol.dto.UnitRedisInfo;
 import com.mailian.firecontrol.dto.app.NoticeInfo;
 import com.mailian.firecontrol.dto.push.Alarm;
@@ -22,6 +21,7 @@ import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.SysConfigService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
 import com.mailian.firecontrol.service.cache.NoticeCache;
+import com.mailian.firecontrol.service.cache.RemindCache;
 import com.mailian.firecontrol.service.cache.UnitDeviceCache;
 import com.mailian.firecontrol.service.repository.AlarmRepository;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
@@ -67,6 +67,8 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
     private ManageManualMapper manageManualMapper;
     @Autowired
     private AlarmRepository alarmRepository;
+    @Autowired
+    private RemindCache remindCache;
 
     private Template template;
     private static final String FACILITIESNAME = "facilitiesName";
@@ -125,6 +127,8 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
         Collection<Alarm> addAlarmList = alarmMap.values();
         List<FacilitiesAlarm> addFacilitiesAlarmList = new ArrayList<>();
         List<FacilitiesAlarm> upFacilitiesAlarmList = new ArrayList<>();
+
+        List<AlarmRemindInfo> remindInfos = new ArrayList<>();
         /* 处理新增告警 */
         if(StringUtils.isNotEmpty(addAlarmList)) {
             UnitRedisInfo unitRedisInfo;
@@ -226,12 +230,36 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     pushAlarmInfoToApp(alarm.getAlarmid(), alarmSTime, eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId(),unitRedisInfo.getId());
                 }
 
+                facilitiesAlarm.setProvinceId(unitRedisInfo.getProvinceId());
+                facilitiesAlarm.setCityId(unitRedisInfo.getCityId());
+                facilitiesAlarm.setAreaId(unitRedisInfo.getAreaId());
+
                 facilitiesAlarm.setStatus(Status.NORMAL.id);
                 facilitiesAlarm.setHashCode(alarm.getHashCode());
                 facilitiesAlarm.setCreateBy("system");
                 facilitiesAlarm.setCreateTime(new Date());
                 facilitiesAlarm.setUpdateBy("system");
                 facilitiesAlarm.setUpdateTime(new Date());
+
+                AlarmRemindInfo alarmRemindInfo = new AlarmRemindInfo();
+                alarmRemindInfo.setAlarmId(alarm.getAlarmid());
+                alarmRemindInfo.setAddress(diagramStruct.getStructAddress());
+                alarmRemindInfo.setAlarmContent(alarmItemName+alarmType.desc);
+                alarmRemindInfo.setAlarmTime(alarmSTime);
+                alarmRemindInfo.setUnitName(unitRedisInfo.getUnitName());
+                alarmRemindInfo.setDutyName(unitRedisInfo.getDutyName());
+                alarmRemindInfo.setDutyPhone(unitRedisInfo.getContactPhone());
+
+                alarmRemindInfo.setProvinceId(facilitiesAlarm.getProvinceId());
+                alarmRemindInfo.setCityId(facilitiesAlarm.getCityId());
+                alarmRemindInfo.setAreaId(facilitiesAlarm.getAreaId());
+                alarmRemindInfo.setPrecinctId(facilitiesAlarm.getPrecinctId());
+                alarmRemindInfo.setUnitId(facilitiesAlarm.getUnitId());
+                alarmRemindInfo.setLng(unitRedisInfo.getLng());
+                alarmRemindInfo.setLat(unitRedisInfo.getLat());
+
+                remindInfos.add(alarmRemindInfo);
+
                 addFacilitiesAlarmList.add(facilitiesAlarm);
             }
         }
@@ -296,6 +324,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
         }
 
         if(StringUtils.isNotEmpty(addFacilitiesAlarmList)){
+            remindCache.addReminds(remindInfos);
             facilitiesAlarmService.insertBatch(addFacilitiesAlarmList);
         }
         if(StringUtils.isNotEmpty(upFacilitiesAlarmList)){

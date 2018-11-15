@@ -1,5 +1,7 @@
 package com.mailian.firecontrol.dto;
 
+import java.math.BigDecimal;
+
 /**
  * @Auther: wangqiaoqing
  * @Date: 2018/11/1
@@ -43,9 +45,24 @@ public class UnitRedisInfo {
     private String contactPhone;
 
     /**
+     * 责任人
+     */
+    private String dutyName;
+
+    /**
      * 单位类型
      */
     private Integer unitType;
+
+    /**
+     * 经度
+     */
+    private BigDecimal lng;
+
+    /**
+     * 纬度
+     */
+    private BigDecimal lat;
 
     public Integer getUnitType() {
         return unitType;
@@ -117,5 +134,29 @@ public class UnitRedisInfo {
 
     public void setCityId(Integer cityId) {
         this.cityId = cityId;
+    }
+
+    public String getDutyName() {
+        return dutyName;
+    }
+
+    public void setDutyName(String dutyName) {
+        this.dutyName = dutyName;
+    }
+
+    public BigDecimal getLng() {
+        return lng;
+    }
+
+    public void setLng(BigDecimal lng) {
+        this.lng = lng;
+    }
+
+    public BigDecimal getLat() {
+        return lat;
+    }
+
+    public void setLat(BigDecimal lat) {
+        this.lat = lat;
     }
 }

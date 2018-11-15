@@ -11,6 +11,8 @@
         <result column="province_id" javaType="INTEGER" property="provinceId" />
         <result column="city_id" javaType="INTEGER" property="cityId" />
         <result column="unit_type" jdbcType="INTEGER" property="unitType" />
+        <result column="lng" jdbcType="DECIMAL" property="lng" />
+        <result column="lat" jdbcType="DECIMAL" property="lat" />
     </resultMap>
     <update id="updateUnitDeviceBatch">
         <foreach collection="upList" item="item" index="index" open="" close="" separator=";">
@@ -27,7 +29,7 @@
     </delete>
 
     <select id="selectUnitDeviceByDeviceIds" resultMap="UnitDeviceResultMap">
-        select u.id,ud.device_id,u.unit_name,u.precinct_id,u.area_id,u.province_id,u.city_id,u.unit_type from t_unit_device ud,t_unit u
+        select u.id,ud.device_id,u.unit_name,u.precinct_id,u.area_id,u.province_id,u.city_id,u.unit_type,u.lng,u.lat from t_unit_device ud,t_unit u
         where ud.unit_id = u.id
         and device_id in
         <foreach close=")" collection="deviceIds" index="i" item="item" open="(" separator=",">

@@ -36,6 +36,8 @@ public class CommonConstant {
     public static final String DEVICE_CODE_CALC_ITEM="mlfirecontrol:codeCalcItems";
     /** 通知模块键值 */
     public static final String ALARM_NOTICE = "mlfirecontrol:alarmNotice";
+    /** 提醒模块键值 */
+    public static final String ALARM_REMIND = "mlfirecontrol:alarmRemind";
 
 
     /* 推送redis默认失效时间(永不失效) */

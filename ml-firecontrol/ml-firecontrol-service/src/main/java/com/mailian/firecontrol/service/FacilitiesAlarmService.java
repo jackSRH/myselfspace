@@ -98,7 +98,7 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @param alarmId
      * @return
      */
-    int misreportAlarm(Integer uid,String userName,String roleName, Integer alarmId);
+    int misreportAlarm(FacilitiesAlarm alarmDb,Integer uid,String userName,String roleName, Integer alarmId);
 
     /**
      * 有效报警
@@ -110,7 +110,7 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @param isComplete
      * @return
      */
-    int effectiveAlarm(Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult);
+    int effectiveAlarm(FacilitiesAlarm alarmDb,Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult);
 
     /**
      * 完成告警

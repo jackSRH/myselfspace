@@ -188,7 +188,7 @@ public class FacilitiesAlarmController extends BaseController {
                 facilitiesAlarmService.misreportAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
             }else if(AlarmMisreport.EFFECTIVE.id.equals(alarmHandleReq.getMisreport())){
                 Precinct precinct = precinctService.selectByPrimaryKey(alarmDb.getPrecinctId());
-                facilitiesAlarmService.effectiveAlarm(shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus()),alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
+                facilitiesAlarmService.effectiveAlarm(alarmDb,shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus()),alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
             }
         }
 

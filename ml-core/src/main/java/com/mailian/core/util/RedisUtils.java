@@ -130,6 +130,18 @@ public class RedisUtils {
         return listOperations.leftPush(key,t);
     }
 
+    public <T> Long leftPushAll(String key,List<T> objs, long expire) {
+        Long result = listOperations.leftPushAll(key,objs.toArray());
+        setExpire(key,expire);
+        return result;
+    }
+
+    public <T> Long leftPush(String key,T t, long expire) {
+        Long result = listOperations.leftPush(key,t);
+        setExpire(key,expire);
+        return result;
+    }
+
     public void deleteListValue(String key,long var,Object obj){
         listOperations.remove(key,var,obj);
     }

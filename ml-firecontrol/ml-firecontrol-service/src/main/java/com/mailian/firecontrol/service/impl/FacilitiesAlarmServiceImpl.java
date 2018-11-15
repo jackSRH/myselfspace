@@ -10,6 +10,7 @@ import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
+import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.model.AlarmLog;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
@@ -21,6 +22,7 @@ import com.mailian.firecontrol.service.AlarmLogService;
 import com.mailian.firecontrol.service.FacilitiesAlarmService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.cache.RemindCache;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,10 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     private FacilitiesService facilitiesService;
     @Autowired
     private AlarmLogService alarmLogService;
+    @Autowired
+    private RemindCache remindCache;
+    @Resource
+    private PrecinctMapper precinctMapper;
 
     @Override
     public PageBean<FacilitiesAlarmListResp> getFacilitiesAlarmList(DataScope dataScope, SearchReq searchReq){
@@ -495,7 +501,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int misreportAlarm(Integer uid,String userName,String roleName, Integer alarmId) {
+    public int misreportAlarm(FacilitiesAlarm alarmDb,Integer uid,String userName,String roleName, Integer alarmId) {
         Date now = new Date();
         FacilitiesAlarm upAlarm = new FacilitiesAlarm();
         upAlarm.setId(alarmId);
@@ -525,12 +531,14 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
         addLogs.add(alarmLog);
         alarmLogService.insertBatch(addLogs);
+
+        remindCache.removeRemind(alarmDb.getAlarmId());
         return updateByPrimaryKeySelective(upAlarm);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int effectiveAlarm(Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult) {
+    public int effectiveAlarm(FacilitiesAlarm alarmDb,Integer uid, String userName, String dutyName, String roleName, Integer alarmId, boolean isComplete,Date handleEndTime,String handleResult) {
         Date now = new Date();
         FacilitiesAlarm upAlarm = new FacilitiesAlarm();
         upAlarm.setId(alarmId);
@@ -571,6 +579,8 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             alarmLogComplete.setOptContent(handleResult);
             addLogs.add(alarmLogComplete);
         }
+
+        remindCache.removeRemind(alarmDb.getAlarmId());
         alarmLogService.insertBatch(addLogs);
 
         return updateByPrimaryKeySelective(upAlarm);
@@ -594,6 +604,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         alarmLogComplete.setOptTime(now);
         alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
         alarmLogComplete.setOptContent(handleResult);
+
         alarmLogService.insert(alarmLogComplete);
         return updateByPrimaryKeySelective(upAlarm);
     }

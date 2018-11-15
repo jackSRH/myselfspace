@@ -16,6 +16,7 @@ import com.mailian.firecontrol.common.enums.ReqDateType;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.AlarmLog;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
+import com.mailian.firecontrol.dto.AlarmRemindInfo;
 import com.mailian.firecontrol.dto.DayTime;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.push.DeviceItem;
@@ -25,6 +26,7 @@ import com.mailian.firecontrol.dto.web.request.BgSearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.framework.util.ConvertDateUtil;
 import com.mailian.firecontrol.service.*;
+import com.mailian.firecontrol.service.cache.RemindCache;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
 import io.swagger.annotations.Api;
@@ -60,6 +62,8 @@ public class BigscreenController extends BaseController {
     private UnitCameraService unitCameraService;
     @Autowired
     private AlarmLogService alarmLogService;
+    @Autowired
+    private RemindCache remindCache;
 
     @ApiOperation(value = "获取省份城市级别，用于大屏运营商展示", httpMethod = "GET")
     @GetMapping(value = "getProvinceAndCityList")
@@ -512,4 +516,39 @@ public class BigscreenController extends BaseController {
         return ResponseResult.buildOkResult(respList);
     }
 
+
+    @ApiOperation(value = "最新报警（运营商）", httpMethod = "GET")
+    @RequestMapping(value="/getNewAlarm",method = RequestMethod.GET)
+    public ResponseResult<AlarmRemindInfo> getNewAlarm(@ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId){
+        return ResponseResult.buildOkResult(remindCache.getFristRemindByAreaId(areaId));
+    }
+
+    @ApiOperation(value = "最新报警（管辖区）", httpMethod = "GET")
+    @RequestMapping(value="/getNewAlarmByPrecinct",method = RequestMethod.GET)
+    public ResponseResult<AlarmRemindInfo> getNewAlarmByPrecinct(@CurUser ShiroUser shiroUser,
+                                                                 @ApiParam(value = "区域id") @RequestParam(value = "areaId",required = false) Integer areaId,
+                                                                 @ApiParam(value = "管辖区id") @RequestParam(value = "precinctId",required = false) Integer precinctId){
+        List<Integer> precinctIds = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())) {
+            precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isNotEmpty(precinctId)) {
+                /*无数据权限*/
+                if (!precinctIds.contains(precinctId)) {
+                    return ResponseResult.buildOkResult();
+                }
+            }
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult();
+            }
+        }
+
+        precinctIds = Arrays.asList(precinctId);
+        return ResponseResult.buildOkResult(remindCache.getFristRemindByPrecinct(precinctIds));
+    }
+
+    @ApiOperation(value = "最新报警（单位）", httpMethod = "GET")
+    @RequestMapping(value="/getNewAlarmByUnit",method = RequestMethod.GET)
+    public ResponseResult<AlarmRemindInfo> getNewAlarmByUnit(@ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+        return ResponseResult.buildOkResult(remindCache.getFristRemindByUnit(unitId));
+    }
 }
