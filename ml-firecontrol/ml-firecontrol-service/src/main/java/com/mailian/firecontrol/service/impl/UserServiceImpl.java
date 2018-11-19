@@ -11,15 +11,11 @@ import com.mailian.core.util.MD5Util;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.dao.auto.mapper.UserMapper;
-import com.mailian.firecontrol.dao.auto.model.User;
-import com.mailian.firecontrol.dao.auto.model.UserPrecinct;
-import com.mailian.firecontrol.dao.auto.model.UserRole;
+import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
-import com.mailian.firecontrol.service.UserPrecinctService;
-import com.mailian.firecontrol.service.UserRoleService;
-import com.mailian.firecontrol.service.UserService;
+import com.mailian.firecontrol.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +39,10 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
     private SystemManualMapper systemManualMapper;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private PrecinctService precinctService;
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public List<User> getUsersByName(String userName) {
@@ -79,14 +79,56 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
 
         Page page = PageHelper.startPage(userQueryReq.getCurrentPage(),userQueryReq.getPageSize());
         page.setOrderBy(" id desc ");
-        List<User> userList = baseMapper.selectByMap(queryMap);
+        List<User> userList = selectByMap(queryMap);
 
         List<UserInfo> userInfoList = new ArrayList<>();
         UserInfo userInfo;
+        Map<Integer,String> precinctMap = new HashMap<>();
+
+        List<Role> roleList = roleService.getAllRole();
+        Map<Integer,Role> roleMap = new HashMap<>();
+        for (Role role : roleList) {
+            roleMap.put(role.getId(),role);
+        }
+
         for (User user : userList) {
             userInfo = new UserInfo();
             BeanUtils.copyProperties(user,userInfo);
             userInfoList.add(userInfo);
+
+            List<Integer> precinctIds = getPrecinctIds(user.getId());
+            if(StringUtils.isNotEmpty(precinctIds)){
+                userInfo.setPrecinctIds(precinctIds);
+                for (Integer precinctId : precinctIds) {
+                    precinctMap.put(precinctId,null);
+                }
+            }
+
+            List<Integer> roleIds = userRoleService.selectRoleIdsByUid(user.getId());
+            if(StringUtils.isNotEmpty(roleIds)) {
+                userInfo.setRoleIds(roleIds);
+                userInfo.setRoleNames(new ArrayList<>());
+                for (Integer roleId : roleIds) {
+                    userInfo.getRoleNames().add(roleMap.get(roleId).getRoleName());
+                }
+            }
+        }
+
+        if(StringUtils.isNotEmpty(precinctMap)){
+            List<Precinct> precincts = precinctService.selectBatchIds(precinctMap.keySet());
+
+            for (Precinct precinct : precincts) {
+                precinctMap.put(precinct.getId(),precinct.getPrecinctName());
+            }
+
+            for (UserInfo info : userInfoList) {
+                info.setPrecinctNames(new ArrayList<>());
+                if(StringUtils.isNotEmpty(info.getPrecinctIds())){
+                    for (Integer precinctId : info.getPrecinctIds()) {
+                        info.getPrecinctNames().add(precinctMap.get(precinctId));
+                    }
+                }
+            }
         }
 
         return new PageBean<>(userQueryReq.getCurrentPage(),userQueryReq.getPageSize(),(int)page.getTotal(),userInfoList);

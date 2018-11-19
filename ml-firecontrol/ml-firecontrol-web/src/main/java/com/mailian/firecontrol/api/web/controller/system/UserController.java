@@ -68,7 +68,6 @@ public class UserController extends BaseController {
     @Log(title = "系统",action = "用户详情")
     @ApiOperation(value = "用户详情", httpMethod = "GET",notes = "根据用户id获取用户详细信息")
     @RequestMapping(value="/userDetail/{uid}",method = RequestMethod.GET)
-    @JsonView(value = ViewManager.WebDetailView.class)
     public ResponseResult<UserInfo> userDetail(@ApiParam(name="uid",value = "用户id",required = true) @PathVariable("uid") Integer uid){
         User user = userService.selectByPrimaryKey(uid);
         if(StringUtils.isNull(user)){
@@ -118,8 +117,8 @@ public class UserController extends BaseController {
 
 
     @Log(title = "系统",action = "删除用户")
-    @ApiOperation(value = "删除用户", httpMethod = "GET")
-    @RequestMapping(value="/delete/{uid}",method = RequestMethod.GET)
+    @ApiOperation(value = "删除用户", httpMethod = "POST")
+    @RequestMapping(value="/delete/{uid}",method = RequestMethod.POST)
     public ResponseResult delete(@CurUser ShiroUser shiroUser,@ApiParam(name="uid",value = "用户id",required = true) @PathVariable("uid") Integer uid){
         User userDb = userService.selectByPrimaryKey(uid);
         if(StringUtils.isNull(userDb)){

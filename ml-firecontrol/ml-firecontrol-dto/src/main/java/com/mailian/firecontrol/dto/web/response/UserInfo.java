@@ -34,6 +34,13 @@ public class UserInfo extends BaseInfo implements Serializable {
     private List<Integer> roleIds;
     @ApiModelProperty(value = "拥有的管辖区列表")
     private List<Integer> precinctIds;
+    @ApiModelProperty(value = "管辖区名称")
+    private List<String> precinctNames;
+    @ApiModelProperty(value = "角色名")
+    private List<String> roleNames;
+    @ApiModelProperty(value = "单位id")
+    private Integer unitId;
+
 
     @JsonView(value = ViewManager.SimpleView.class)
     public Integer getId() {
@@ -103,5 +110,31 @@ public class UserInfo extends BaseInfo implements Serializable {
 
     public void setPrecinctIds(List<Integer> precinctIds) {
         this.precinctIds = precinctIds;
+    }
+
+    @JsonView(value = ViewManager.SimpleView.class)
+    public List<String> getPrecinctNames() {
+        return precinctNames;
+    }
+
+    public void setPrecinctNames(List<String> precinctNames) {
+        this.precinctNames = precinctNames;
+    }
+
+    @JsonView(value = ViewManager.SimpleView.class)
+    public List<String> getRoleNames() {
+        return roleNames;
+    }
+
+    public void setRoleNames(List<String> roleNames) {
+        this.roleNames = roleNames;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 }

@@ -5,6 +5,7 @@ import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.manager.ValidationManager;
+import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dto.web.request.PrecinctQueryReq;
 import com.mailian.firecontrol.dto.web.request.PrecinctReq;
 import com.mailian.firecontrol.dto.web.response.PrecinctResp;
@@ -15,6 +16,9 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Auther: wangqiaoqing
@@ -35,6 +39,21 @@ public class PrecinctController {
     public ResponseResult<PageBean<PrecinctResp>> getList(@ApiParam(value = "管辖区查询信息") PrecinctQueryReq queryReq){
         return ResponseResult.buildOkResult(precinctService.queryByPage(queryReq));
     }
+
+    @ApiOperation(value = "获取所有管辖区", httpMethod = "POST")
+    @PostMapping(value = "getAllList")
+    public ResponseResult<List<PrecinctResp>> getAllList(){
+        List<Precinct> precincts = precinctService.selectByMap(null);
+        List<PrecinctResp> precinctRespList = new ArrayList<>();
+        for (Precinct precinct : precincts) {
+            PrecinctResp precinctResp = new PrecinctResp();
+            precinctResp.setId(precinct.getId());
+            precinctResp.setPrecinctName(precinct.getPrecinctName());
+            precinctRespList.add(precinctResp);
+        }
+        return ResponseResult.buildOkResult(precinctRespList);
+    }
+
 
     @Log(title = "系统",action = "新增或修改管辖区")
     @ApiOperation(value = "新增或修改管辖区", httpMethod = "POST")
