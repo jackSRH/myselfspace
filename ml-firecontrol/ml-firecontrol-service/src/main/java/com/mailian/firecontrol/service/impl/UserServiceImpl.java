@@ -59,7 +59,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
 
         Set<Integer> precinctIds = new HashSet<>();
         for (UserPrecinct userPrecinct : userPrecincts) {
-            precinctIds.add(userPrecinct.getId());
+            precinctIds.add(userPrecinct.getPrecinctId());
         }
         return new ArrayList<>(precinctIds);
     }
@@ -155,7 +155,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
                 addUserPrecincts(uid,precinctIds);
             }
         }else{
-            result = updateByPrimaryKey(user);
+            result = updateByPrimaryKeySelective(user);
             Integer uid = user.getId();
             if(result>0){
                 updateUserRole(userReq, uid);

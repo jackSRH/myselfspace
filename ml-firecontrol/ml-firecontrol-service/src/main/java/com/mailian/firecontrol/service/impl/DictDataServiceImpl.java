@@ -151,7 +151,7 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictData,DictDataMapper
                 this.updateByPrimaryKeySelective(upDictData);
             }
         }
-        return insertResult>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+        return insertResult>0?ResponseResult.buildOkResult(dictData.getId()):ResponseResult.buildFailResult();
     }
 
 
@@ -175,7 +175,7 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictData,DictDataMapper
         DictData dictData = new DictData();
         BeanUtils.copyProperties(dictDataReq,dictData);
         int updateResult = this.updateByPrimaryKeySelective(dictData);
-        return updateResult>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+        return updateResult>0?ResponseResult.buildOkResult(dictData.getId()):ResponseResult.buildFailResult();
     }
 
     /**

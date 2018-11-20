@@ -4,29 +4,33 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.FaSystemType;
 import com.mailian.firecontrol.common.enums.FacilitiesServiceStatus;
+import com.mailian.firecontrol.common.enums.StructType;
+import com.mailian.firecontrol.dao.auto.mapper.DiagramItemMapper;
+import com.mailian.firecontrol.dao.auto.mapper.DiagramStructMapper;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesMapper;
+import com.mailian.firecontrol.dao.auto.model.DiagramStruct;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.DictDataResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.component.DictDataComponent;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, FacilitiesMapper> implements FacilitiesService {
@@ -34,18 +38,25 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
     private UnitService unitService;
     @Resource
     private ManageManualMapper manageManualMapper;
+    @Resource
+    private DiagramStructMapper diagramStructMapper;
+    @Resource
+    private DiagramItemMapper diagramItemMapper;
+    @Autowired
+    private DictDataComponent dictDataComponent;
 
     @Override
-    public PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq){
+    public PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq, DataScope dataScope){
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Map<String,Object> queryMap = new HashMap<>();
         Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
         queryMap.put("unitId",searchReq.getUnitId());
+        queryMap.put("precinctScope",dataScope);
         List<Facilities> facilitiess =  super.selectByMap(queryMap);
         if(StringUtils.isEmpty(facilitiess)){
-            return new PageBean<>();
+            return new PageBean<>(currentPage,pageSize,0,new ArrayList<>());
         }
 
         Set<Integer> faUnitIds = new HashSet<>();
@@ -62,11 +73,23 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
         FacilitiesListResp facilitiesListResp;
         for(Facilities facilities:facilitiess){
             facilitiesListResp = new FacilitiesListResp();
-            BeanUtils.copyProperties(facilities,facilitiesListResp);
+            facilitiesListResp.setId(facilities.getId());
+            facilitiesListResp.setFaTypeId(facilities.getFaTypeId());
             facilitiesListResp.setUnitName(unitId2Name.get(facilities.getUnitId()));
+            facilitiesListResp.setServiceStatus(facilities.getServiceStatus());
+            facilitiesListResp.setFaNumber(facilities.getFaNumber());
+            facilitiesListResp.setFaName(facilities.getFaName());
+
             facilitiesListResp.setServiceStatusDesc(FacilitiesServiceStatus.getValue(facilities.getServiceStatus()));
-            //TODO 通过设施型号id获取型号描述
-            //facilitiesListResp.setFaTypeDesc("");
+            if(StringUtils.isNotEmpty(facilities.getFaSystemId()) && StringUtils.isNotEmpty(facilities.getFaTypeId())) {
+                String dictType = FaSystemType.getCodeById(facilities.getFaSystemId());
+                if(StringUtils.isNotEmpty(dictType)) {
+                    DictDataResp dictDataResp = dictDataComponent.getDictDataByTypeAndValue(dictType, facilities.getFaTypeId().toString());
+                    if(StringUtils.isNotNull(dictDataResp)) {
+                        facilitiesListResp.setFaTypeDesc(dictDataResp.getDictLabel());
+                    }
+                }
+            }
             facilitiesListResps.add(facilitiesListResp);
         }
         PageBean<FacilitiesListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),facilitiesListResps);
@@ -99,6 +122,28 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
     @Override
     public List<FaNumGySystem> countFaNumGySystem(List<Integer> unitIds){
        return manageManualMapper.countFaNumGySystem(unitIds);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int delFacilitiesById(Integer faId) {
+        //删除已配置数据项
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("facilities_id",faId);
+        queryMap.put("structType",StructType.FACILITY.id);
+        List<DiagramStruct> diagramStructs = diagramStructMapper.selectByMap(queryMap);
+        List<Integer> structIds = new ArrayList<>();
+        for (DiagramStruct diagramStruct : diagramStructs) {
+            structIds.add(diagramStruct.getId());
+        }
+        if(StringUtils.isNotEmpty(structIds)){
+            queryMap.clear();
+            queryMap.put("dsIds",structIds);
+            manageManualMapper.deleteDiagramItemByMap(queryMap);
+            diagramStructMapper.deleteBatchIds(structIds);
+        }
+
+        return deleteByPrimaryKey(faId);
     }
 
 

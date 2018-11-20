@@ -1,30 +1,35 @@
 package com.mailian.firecontrol.api.web.controller.management;
 
+import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.FaSystemType;
 import com.mailian.firecontrol.common.enums.StructType;
+import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
+import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
+import com.mailian.firecontrol.dto.web.response.DictDataResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.FacilitiesService;
+import com.mailian.firecontrol.service.component.DictDataComponent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,6 +41,8 @@ public class FacilitiesController extends BaseController {
     private FacilitiesService facilitiesService;
     @Resource
     private DiagramStructService diagramStructService;
+    @Autowired
+    private DictDataComponent dictDataComponent;
 
     @Log(title = "配置管理",action = "新增或者更新设施")
     @ApiOperation(value = "新增或者更新设施", httpMethod = "POST")
@@ -51,11 +58,16 @@ public class FacilitiesController extends BaseController {
     @Log(title = "配置管理",action = "获取设施列表")
     @ApiOperation(value = "获取设施列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getFacilitiesList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(SearchReq searchReq){
-        if(StringUtils.isEmpty(searchReq.getUnitId())){
-            return error("单位id不能为空");
+    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult();
+            }
+            dataScope = new DataScope("precinct_id",precinctIds);
         }
-        PageBean<FacilitiesListResp> res = facilitiesService.getFacilitiesList(searchReq);
+        PageBean<FacilitiesListResp> res = facilitiesService.getFacilitiesList(searchReq,dataScope);
         return ResponseResult.buildOkResult(res);
     }
 
@@ -72,13 +84,27 @@ public class FacilitiesController extends BaseController {
         }
         FacilitiesInfo facilitiesInfo = new FacilitiesInfo();
         BeanUtils.copyProperties(facilities,facilitiesInfo);
-        //TODO 通过设施型号id获取型号描述
-        //facilitiesInfo.setFaTypeDesc("");
+        if(StringUtils.isNotEmpty(facilities.getFaSystemId()) && StringUtils.isNotEmpty(facilities.getFaTypeId())) {
+            String dictType = FaSystemType.getCodeById(facilities.getFaSystemId());
+            if(StringUtils.isNotEmpty(dictType)) {
+                DictDataResp dictDataResp = dictDataComponent.getDictDataByTypeAndValue(dictType, facilities.getFaTypeId().toString());
+                if(StringUtils.isNotNull(dictDataResp)) {
+                    facilitiesInfo.setFaTypeDesc(dictDataResp.getDictLabel());
+                }
+            }
+        }
 
         Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("facilities_id",faId);
+        queryMap.put("facilitiesId",faId);
         queryMap.put("structType",StructType.FACILITY.id);
         facilitiesInfo.setDiagramStructs(diagramStructService.getDiagramStructByMap(queryMap));
         return ResponseResult.buildOkResult(facilitiesInfo);
+    }
+
+    @ApiOperation(value = "删除设施", httpMethod = "POST")
+    @PostMapping(value = "/delFacilitiesById")
+    public ResponseResult delFacilitiesById(@ApiParam(value = "设施id") @RequestParam(value = "faId") Integer faId){
+        int result = facilitiesService.delFacilitiesById(faId);
+        return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 }

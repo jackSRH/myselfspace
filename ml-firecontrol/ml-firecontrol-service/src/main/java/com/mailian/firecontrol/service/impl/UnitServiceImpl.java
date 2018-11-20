@@ -811,4 +811,38 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         return deviceRespList;
     }
 
+    @Override
+    public List<UnitListResp> getUnitListByPrecinctIds(List<Integer> precinctIds) {
+        DataScope dataScope = new DataScope("precinct_id",precinctIds);
+        Map<String,Object> map = new HashMap<>();
+        map.put("precinctScope",dataScope);
+        List<Unit> unitList = selectByMap(map);
+
+        List<UnitListResp> unitListResps = new ArrayList<>();
+        for (Unit unit : unitList) {
+            UnitListResp unitListResp = new UnitListResp();
+            BeanUtils.copyProperties(unit,unitListResp);
+            unitListResps.add(unitListResp);
+        }
+        return unitListResps;
+    }
+
+    @Override
+    public List<UnitListResp> getUnitListByNameAndScope(String unitName, DataScope dataScope) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("precinctScope",dataScope);
+        if(StringUtils.isNotEmpty(unitName)){
+            map.put("unitNameLike",unitName);
+        }
+        List<Unit> unitList = selectByMap(map);
+
+        List<UnitListResp> unitListResps = new ArrayList<>();
+        for (Unit unit : unitList) {
+            UnitListResp unitListResp = new UnitListResp();
+            BeanUtils.copyProperties(unit,unitListResp);
+            unitListResps.add(unitListResp);
+        }
+        return unitListResps;
+    }
+
 }

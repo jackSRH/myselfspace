@@ -20,12 +20,11 @@ public class DictDataComponent {
 
     /**
      * 根据 字典类型 键值 获取对应字典数据对象
-     * @param dictType 字典类型
      * @param dictValue 字典键值
      * @return
      */
-    public DictDataResp getDictDataByTypeAndValue(DictType dictType, String dictValue){
-        List<DictDataResp> dictDataRespList =  dictDataService.queryDataTreeByType(dictType.code);
+    public DictDataResp getDictDataByTypeAndValue(String code, String dictValue){
+        List<DictDataResp> dictDataRespList =  dictDataService.queryDataTreeByType(code);
 
         for (DictDataResp dictDataResp : dictDataRespList) {
             if(dictDataResp.getDictValue().equals(dictValue)){

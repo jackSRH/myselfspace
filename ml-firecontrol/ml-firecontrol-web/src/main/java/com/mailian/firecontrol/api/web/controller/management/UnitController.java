@@ -22,8 +22,8 @@ import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
-import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
+import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.component.UploadComponent;
@@ -109,6 +109,33 @@ public class UnitController extends BaseController {
         }
         PageBean<UnitListResp> res = unitService.getUnitList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
+    }
+
+
+    @ApiOperation(value = "获取单位列表，根据选择的管辖区", httpMethod = "GET")
+    @RequestMapping(value="/getUnitListByPrecinctIds",method = RequestMethod.GET)
+    public ResponseResult<List<UnitListResp>> getUnitListByPrecinctIds(@ApiParam(value = "管辖区") @RequestParam(value = "precinctIds") List<Integer> precinctIds){
+        if(StringUtils.isEmpty(precinctIds)){
+            return ResponseResult.buildOkResult();
+        }
+        List<UnitListResp> unitListResps = unitService.getUnitListByPrecinctIds(precinctIds);
+        return ResponseResult.buildOkResult(unitListResps);
+    }
+
+    @ApiOperation(value = "获取单位列表,权限范围内", httpMethod = "GET")
+    @RequestMapping(value="/getUnitListByName",method = RequestMethod.GET)
+    public ResponseResult<List<UnitListResp>> getUnitListByName(@CurUser ShiroUser shiroUser,
+                                                                @ApiParam(value = "单位名") @RequestParam(value = "unitName",required = false) String unitName){
+        DataScope dataScope = null;
+        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
+            List<Integer> precinctIds = shiroUser.getPrecinctIds();
+            if(StringUtils.isEmpty(precinctIds)){
+                return ResponseResult.buildOkResult(new PageBean<>());
+            }
+            dataScope = new DataScope("precinct_id", precinctIds);
+        }
+        List<UnitListResp> unitListResps = unitService.getUnitListByNameAndScope(unitName,dataScope);
+        return ResponseResult.buildOkResult(unitListResps);
     }
 
     @Log(title = "配置管理",action = "获取单位详情")
