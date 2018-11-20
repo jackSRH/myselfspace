@@ -11,6 +11,16 @@ public class DiagramItemResp {
     private String itemName;
     @ApiModelProperty(value = "是否显示")
     private Integer display;
+    @ApiModelProperty(value = "类型3遥控，其余为2")
+    private Integer itemType;
+
+    public Integer getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(Integer itemType) {
+        this.itemType = itemType;
+    }
 
     public String getItemId() {
         return itemId;

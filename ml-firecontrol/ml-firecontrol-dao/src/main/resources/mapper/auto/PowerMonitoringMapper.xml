@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mailian.firecontrol.dao.auto.mapper.PowerMonitoringMapper">
+  <resultMap id="BaseResultMap" type="com.mailian.firecontrol.dao.auto.model.PowerMonitoring">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="pm_name" jdbcType="VARCHAR" property="pmName" />
+    <result column="total_load" jdbcType="VARCHAR" property="totalLoad" />
+    <result column="voltage" jdbcType="VARCHAR" property="voltage" />
+    <result column="ele_current" jdbcType="VARCHAR" property="eleCurrent" />
+    <result column="power_factor" jdbcType="VARCHAR" property="powerFactor" />
+    <result column="cable_temp" jdbcType="VARCHAR" property="cableTemp" />
+    <result column="leakage_current" jdbcType="VARCHAR" property="leakageCurrent" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unit_id, pm_name, total_load, voltage, ele_current, power_factor, cable_temp, 
+    leakage_current, create_time, update_time, create_by, update_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_power_monitoring
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_power_monitoring
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mailian.firecontrol.dao.auto.model.PowerMonitoring">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_power_monitoring (unit_id, pm_name, total_load, 
+      voltage, ele_current, power_factor, 
+      cable_temp, leakage_current, create_time, 
+      update_time, create_by, update_by
+      )
+    values (#{unitId,jdbcType=INTEGER}, #{pmName,jdbcType=VARCHAR}, #{totalLoad,jdbcType=VARCHAR}, 
+      #{voltage,jdbcType=VARCHAR}, #{eleCurrent,jdbcType=VARCHAR}, #{powerFactor,jdbcType=VARCHAR}, 
+      #{cableTemp,jdbcType=VARCHAR}, #{leakageCurrent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mailian.firecontrol.dao.auto.model.PowerMonitoring">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_power_monitoring
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        unit_id,
+      </if>
+      <if test="pmName != null">
+        pm_name,
+      </if>
+      <if test="totalLoad != null">
+        total_load,
+      </if>
+      <if test="voltage != null">
+        voltage,
+      </if>
+      <if test="eleCurrent != null">
+        ele_current,
+      </if>
+      <if test="powerFactor != null">
+        power_factor,
+      </if>
+      <if test="cableTemp != null">
+        cable_temp,
+      </if>
+      <if test="leakageCurrent != null">
+        leakage_current,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unitId != null">
+        #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="pmName != null">
+        #{pmName,jdbcType=VARCHAR},
+      </if>
+      <if test="totalLoad != null">
+        #{totalLoad,jdbcType=VARCHAR},
+      </if>
+      <if test="voltage != null">
+        #{voltage,jdbcType=VARCHAR},
+      </if>
+      <if test="eleCurrent != null">
+        #{eleCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="powerFactor != null">
+        #{powerFactor,jdbcType=VARCHAR},
+      </if>
+      <if test="cableTemp != null">
+        #{cableTemp,jdbcType=VARCHAR},
+      </if>
+      <if test="leakageCurrent != null">
+        #{leakageCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mailian.firecontrol.dao.auto.model.PowerMonitoring">
+    update t_power_monitoring
+    <set>
+      <if test="unitId != null">
+        unit_id = #{unitId,jdbcType=INTEGER},
+      </if>
+      <if test="pmName != null">
+        pm_name = #{pmName,jdbcType=VARCHAR},
+      </if>
+      <if test="totalLoad != null">
+        total_load = #{totalLoad,jdbcType=VARCHAR},
+      </if>
+      <if test="voltage != null">
+        voltage = #{voltage,jdbcType=VARCHAR},
+      </if>
+      <if test="eleCurrent != null">
+        ele_current = #{eleCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="powerFactor != null">
+        power_factor = #{powerFactor,jdbcType=VARCHAR},
+      </if>
+      <if test="cableTemp != null">
+        cable_temp = #{cableTemp,jdbcType=VARCHAR},
+      </if>
+      <if test="leakageCurrent != null">
+        leakage_current = #{leakageCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mailian.firecontrol.dao.auto.model.PowerMonitoring">
+    update t_power_monitoring
+    set unit_id = #{unitId,jdbcType=INTEGER},
+      pm_name = #{pmName,jdbcType=VARCHAR},
+      total_load = #{totalLoad,jdbcType=VARCHAR},
+      voltage = #{voltage,jdbcType=VARCHAR},
+      ele_current = #{eleCurrent,jdbcType=VARCHAR},
+      power_factor = #{powerFactor,jdbcType=VARCHAR},
+      cable_temp = #{cableTemp,jdbcType=VARCHAR},
+      leakage_current = #{leakageCurrent,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_power_monitoring
+    <where>
+      <if test="unitId != null">
+         and unit_id = #{unitId,jdbcType=INTEGER}
+      </if>
+      <if test="pmName != null">
+         and pm_name = #{pmName,jdbcType=VARCHAR}
+      </if>
+      <if test="totalLoad != null">
+         and total_load = #{totalLoad,jdbcType=VARCHAR}
+      </if>
+      <if test="voltage != null">
+         and voltage = #{voltage,jdbcType=VARCHAR}
+      </if>
+      <if test="eleCurrent != null">
+         and ele_current = #{eleCurrent,jdbcType=VARCHAR}
+      </if>
+      <if test="powerFactor != null">
+         and power_factor = #{powerFactor,jdbcType=VARCHAR}
+      </if>
+      <if test="cableTemp != null">
+         and cable_temp = #{cableTemp,jdbcType=VARCHAR}
+      </if>
+      <if test="leakageCurrent != null">
+         and leakage_current = #{leakageCurrent,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null">
+         and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+         and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createBy != null">
+         and create_by = #{createBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateBy != null">
+         and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteBatchIds" parameterType="java.util.List">
+    delete from t_power_monitoring
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <select id="selectBatchIds" parameterType="java.util.Collection" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_power_monitoring
+    where id in 
+    <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+      #{item,jdbcType=INTEGER}
+    </foreach>
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into t_power_monitoring (unit_id, pm_name, total_load, 
+      voltage, ele_current, power_factor, 
+      cable_temp, leakage_current, create_time, 
+      update_time, create_by, update_by
+      ) values 
+    <foreach collection="objs" index="index" item="item" separator=",">
+       (#{item.unitId,jdbcType=INTEGER}, #{item.pmName,jdbcType=VARCHAR}, #{item.totalLoad,jdbcType=VARCHAR}, 
+        #{item.voltage,jdbcType=VARCHAR}, #{item.eleCurrent,jdbcType=VARCHAR}, #{item.powerFactor,jdbcType=VARCHAR}, 
+        #{item.cableTemp,jdbcType=VARCHAR}, #{item.leakageCurrent,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+</mapper>

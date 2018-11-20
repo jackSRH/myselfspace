@@ -119,6 +119,7 @@ public class DiagramStructServiceImpl extends BaseServiceImpl<DiagramStruct, Dia
                     diagramItemResp = new DiagramItemResp();
                     diagramItemResp.setItemId(diagramItem.getItemId());
                     diagramItemResp.setDisplay(diagramItem.getDisplay());
+                    diagramItemResp.setItemType(diagramItem.getItemType());
                     deviceItem = deviceItemMap.get(diagramItem.getItemId());
                     if(StringUtils.isNotEmpty(deviceItemMap) && StringUtils.isNotNull(deviceItem)){
                         diagramItemResp.setItemName(deviceItem.getShortname());

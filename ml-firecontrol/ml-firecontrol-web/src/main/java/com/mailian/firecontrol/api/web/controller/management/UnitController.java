@@ -129,8 +129,8 @@ public class UnitController extends BaseController {
 
     @Log(title = "配置管理",action = "获取单位遥控配置列表")
     @ApiOperation(value = "获取单位遥控配置列表", httpMethod = "GET")
-    @RequestMapping(value="/getYcStructs",method = RequestMethod.GET)
-    public ResponseResult<PageBean<DiagramStructResp>> getYcStructs(SearchReq searchReq){
+    @RequestMapping(value="/getYkStructs",method = RequestMethod.GET)
+    public ResponseResult<PageBean<DiagramStructResp>> getYkStructs(SearchReq searchReq){
         Integer unitId = searchReq.getUnitId();
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
