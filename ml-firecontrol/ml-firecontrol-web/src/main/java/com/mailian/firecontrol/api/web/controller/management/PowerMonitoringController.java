@@ -6,11 +6,14 @@ import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.model.PowerMonitoring;
+import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.request.PowerMonitoringReq;
+import com.mailian.firecontrol.dto.web.response.DeviceItemResp;
 import com.mailian.firecontrol.dto.web.response.LoadComparedResp;
 import com.mailian.firecontrol.dto.web.response.PowerMonitoringResp;
 import com.mailian.firecontrol.dto.web.response.VoltageComparedResp;
 import com.mailian.firecontrol.service.PowerMonitoringService;
+import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,8 +29,10 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/management/powerMonitoring")
@@ -37,6 +42,8 @@ public class PowerMonitoringController extends BaseController {
 
     @Resource
     private PowerMonitoringService powerMonitoringService;
+    @Resource
+    private DeviceItemRepository deviceItemRepository;
 
     @Log(title = "配置管理",action = "新增更新用电监测配置")
     @ApiOperation(value = "新增更新用电监测配置", httpMethod = "POST")
@@ -65,10 +72,116 @@ public class PowerMonitoringController extends BaseController {
             return ResponseResult.buildOkResult(powerMonitoringResps);
         }
 
+        List<String> itemIds = new ArrayList<>();
         PowerMonitoringResp powerMonitoringResp;
         for(PowerMonitoring powerMonitoring : powerMonitorings){
             powerMonitoringResp = new PowerMonitoringResp();
             BeanUtils.copyProperties(powerMonitoring,powerMonitoringResp);
+/*            powerMonitoringResp.setTotalLoad(powerMonitoring.getTotalLoad());
+            powerMonitoringResp.setVoltage(powerMonitoring.getVoltage());
+            powerMonitoringResp.setEleCurrent(powerMonitoring.getEleCurrent());
+            powerMonitoringResp.setPowerFactor(powerMonitoring.getPowerFactor());
+            powerMonitoringResp.setCableTemp(powerMonitoring.getCableTemp());
+            powerMonitoringResp.setLeakageCurrent(powerMonitoring.getLeakageCurrent());*/
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getLoadItemIds())){
+                itemIds.addAll(powerMonitoringResp.getLoadItemIds());
+            }
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getVoltageItemIds())){
+                itemIds.addAll(powerMonitoringResp.getVoltageItemIds());
+            }
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getEcItemIds())){
+                itemIds.addAll(powerMonitoringResp.getEcItemIds());
+            }
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getPfItemIds())){
+                itemIds.addAll(powerMonitoringResp.getPfItemIds());
+            }
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getCtItemIds())){
+                itemIds.addAll(powerMonitoringResp.getCtItemIds());
+            }
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getLcItemIds())){
+                itemIds.addAll(powerMonitoringResp.getLcItemIds());
+            }
+        }
+
+        Map<String, DeviceItem> itemId2Item = deviceItemRepository.getDeviceItemInfosByItemIds(itemIds);
+
+        DeviceItemResp itemResp;
+        DeviceItem deviceItem;
+        Map<String,DeviceItemResp> itemId2ItemResp = new HashMap<>();
+        for(Map.Entry<String, DeviceItem> entry : itemId2Item.entrySet()){
+            itemResp = new DeviceItemResp();
+            deviceItem = entry.getValue();
+            itemResp.setId(deviceItem.getId());
+            itemResp.setName(deviceItem.getShortname());
+            itemResp.setShortname(deviceItem.getDisplayname());
+            itemId2ItemResp.put(entry.getKey(),itemResp);
+        }
+
+        List<DeviceItemResp> items;
+        for(PowerMonitoring powerMonitoring : powerMonitorings){
+            powerMonitoringResp = new PowerMonitoringResp();
+            BeanUtils.copyProperties(powerMonitoring,powerMonitoringResp);
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getLoadItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getLoadItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setLoadItemInfos(items);
+            }
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getVoltageItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getVoltageItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setVoltageItemInfos(items);
+            }
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getEcItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getEcItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setEcItemInfos(items);
+            }
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getPfItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getPfItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setPfItemInfos(items);
+            }
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getCtItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getCtItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setCtItemInfos(items);
+            }
+
+            if(StringUtils.isNotEmpty(powerMonitoringResp.getLcItemIds())){
+                items = new ArrayList<>();
+                for(String itemId:powerMonitoringResp.getLcItemIds()){
+                    if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
+                        items.add(itemId2ItemResp.get(itemId));
+                    }
+                }
+                powerMonitoringResp.setLcItemInfos(items);
+            }
             powerMonitoringResps.add(powerMonitoringResp);
         }
         return ResponseResult.buildOkResult(powerMonitoringResps);
