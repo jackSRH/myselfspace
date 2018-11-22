@@ -103,12 +103,18 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         String unitName = searchReq.getUnitName();
         Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
+        List<Unit> units;
+        if(StringUtils.isEmpty(searchReq.getUnitId())) {
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("precinctScope", dataScope);
+            if (StringUtils.isNotEmpty(unitName)) {
+                queryMap.put("unitNameLike", unitName);
+            }
+            units = super.selectByMap(queryMap);
+        }else{
+            units = new ArrayList<>();
+            units.add(selectByPrimaryKey(searchReq.getUnitId()));
         }
-        List<Unit> units = super.selectByMap(queryMap);
         if(StringUtils.isEmpty(units)){
             return new PageBean<>();
         }
@@ -843,6 +849,14 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitListResps.add(unitListResp);
         }
         return unitListResps;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int delUnitById(Integer unitId) {
+        //删除网关单位关联关系
+        unitManualMapper.deleteDeviceByUnitId(unitId);
+        return deleteByPrimaryKey(unitId);
     }
 
 }

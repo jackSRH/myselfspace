@@ -74,13 +74,13 @@ public class DeviceItemController extends BaseController {
     private DeviceSubCache deviceSubCache;
 
     @ApiOperation(value = "通过单位id获取可配置的数据项", httpMethod = "GET")
-    @GetMapping(value = "/getConfigItemsBySid")
-    public ResponseResult<Map<String, Object>> getConfigItemsBySid(@ApiParam(value = "单位id") @RequestParam(value = "sid")  Integer sid)
+    @GetMapping(value = "/getConfigItemsByUnitId")
+    public ResponseResult<Map<String, Object>> getConfigItemsByUnitId(@ApiParam(value = "单位id") @RequestParam(value = "unitId")  Integer unitId)
             throws ExecutionException, InterruptedException {
-        if(StringUtils.isEmpty(sid)){
+        if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
-        return  ResponseResult.buildOkResult(deviceItemOpertionService.getConfigItemsByUnitId(sid));
+        return  ResponseResult.buildOkResult(deviceItemOpertionService.getConfigItemsByUnitId(unitId));
     }
 
     @ApiOperation(value = "通过网关id获取该网关下所有数据项", httpMethod = "GET")

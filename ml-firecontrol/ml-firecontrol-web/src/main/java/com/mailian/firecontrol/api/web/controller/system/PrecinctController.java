@@ -18,7 +18,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wangqiaoqing
@@ -44,6 +46,23 @@ public class PrecinctController {
     @PostMapping(value = "getAllList")
     public ResponseResult<List<PrecinctResp>> getAllList(){
         List<Precinct> precincts = precinctService.selectByMap(null);
+        List<PrecinctResp> precinctRespList = new ArrayList<>();
+        for (Precinct precinct : precincts) {
+            PrecinctResp precinctResp = new PrecinctResp();
+            precinctResp.setId(precinct.getId());
+            precinctResp.setPrecinctName(precinct.getPrecinctName());
+            precinctRespList.add(precinctResp);
+        }
+        return ResponseResult.buildOkResult(precinctRespList);
+    }
+
+
+    @ApiOperation(value = "根据区域获取管辖区", httpMethod = "GET")
+    @GetMapping(value = "getPrecinctByAreaId")
+    public ResponseResult<List<PrecinctResp>> getPrecinctByAreaId(@ApiParam(value = "区域id") @RequestParam(value = "areaId") Integer areaId){
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("areaId",areaId);
+        List<Precinct> precincts = precinctService.selectByMap(queryMap);
         List<PrecinctResp> precinctRespList = new ArrayList<>();
         for (Precinct precinct : precincts) {
             PrecinctResp precinctResp = new PrecinctResp();

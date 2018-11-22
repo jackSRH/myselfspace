@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.dto.web;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,6 +23,7 @@ public class FacilitiesInfo {
     @ApiModelProperty(value = "设施数量")
     private Integer faNumber;
     @ApiModelProperty(value = "投入使用时间")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private Date useDate;
     @ApiModelProperty(value = "生产单位名称")
     private String unitName;
