@@ -702,7 +702,9 @@ public class DeviceItemRepository {
      */
     public void updateRealTime(List<DeviceItemRealTimeData> rtDataList) {
         Map<String,DeviceItemRealTimeData> rtDataMap = new HashMap<>();
+        Date lastUpdatetime = new Date();
         for (DeviceItemRealTimeData deviceItemRealTimeData : rtDataList) {
+            deviceItemRealTimeData.setLastUpdateTime(lastUpdatetime);
             rtDataMap.put(deviceItemRealTimeData.getId(),deviceItemRealTimeData);
         }
 
@@ -726,7 +728,13 @@ public class DeviceItemRepository {
      * @return
      */
     public List<DeviceItemRealTimeData> getRtDataByItemIds(List<String> itemIds){
-        List<DeviceItemRealTimeData> rtDataList = redisUtils.getHashMultiValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,itemIds);
+        List<DeviceItemRealTimeData> rtDataList = new ArrayList<>();
+        List<DeviceItemRealTimeData> rtDatas = redisUtils.getHashMultiValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,itemIds);
+        for (DeviceItemRealTimeData deviceItemRealTimeData : rtDatas) {
+            if(StringUtils.isNotNull(deviceItemRealTimeData)){
+                rtDataList.add(deviceItemRealTimeData);
+            }
+        }
         return rtDataList;
     }
 
