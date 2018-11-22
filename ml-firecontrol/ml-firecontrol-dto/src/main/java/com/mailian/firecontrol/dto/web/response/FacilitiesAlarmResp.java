@@ -9,8 +9,10 @@ import java.util.Date;
 public class FacilitiesAlarmResp {
     @ApiModelProperty(value = "告警id")
     private Integer id;
-    @ApiModelProperty(value = "单位名称")
+    @ApiModelProperty(value = "单位id")
     private Integer unitId;
+    @ApiModelProperty(value = "单位名称")
+    private String unitName;
     @ApiModelProperty(value = "告警时间")
     private Date alarmTime;
     @ApiModelProperty(value = "受理时间")
@@ -33,6 +35,10 @@ public class FacilitiesAlarmResp {
     private String coreHandleUname;
     @ApiModelProperty(value = "消防通信指挥中心接管处理情况")
     private String coreHandleResult;
+    @ApiModelProperty(value = "报警类型")
+    private Integer alarmType;
+    @ApiModelProperty(value = "受理人姓名")
+    private String handleUserName;
 
     public Integer getUnitId() {
         return unitId;
@@ -136,5 +142,29 @@ public class FacilitiesAlarmResp {
 
     public void setHandleUid(Integer handleUid) {
         this.handleUid = handleUid;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
+
+    public Integer getAlarmType() {
+        return alarmType;
+    }
+
+    public void setAlarmType(Integer alarmType) {
+        this.alarmType = alarmType;
+    }
+
+    public String getHandleUserName() {
+        return handleUserName;
+    }
+
+    public void setHandleUserName(String handleUserName) {
+        this.handleUserName = handleUserName;
     }
 }

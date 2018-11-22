@@ -45,6 +45,8 @@ public class FacilitiesAlarmController extends BaseController {
     private AlarmLogService alarmLogService;
     @Autowired
     private PrecinctService precinctService;
+    @Autowired
+    private UserService userService;
 
     @Log(title = "单位监控",action = "查找设施告警列表")
     @ApiOperation(value = "查找设施告警列表", httpMethod = "GET")
@@ -76,6 +78,19 @@ public class FacilitiesAlarmController extends BaseController {
 
         FacilitiesAlarmResp facilitiesAlarmResp = new FacilitiesAlarmResp();
         BeanUtils.copyProperties(facilitiesAlarm,facilitiesAlarmResp);
+
+        if(StringUtils.isNotEmpty(facilitiesAlarm.getUnitId())) {
+            Unit unit = unitService.selectByPrimaryKey(facilitiesAlarm.getUnitId());
+            if (StringUtils.isNotNull(unit)) {
+                facilitiesAlarmResp.setUnitName(unit.getUnitName());
+            }
+        }
+        if(StringUtils.isNotEmpty(facilitiesAlarm.getHandleUid())){
+            User user = userService.selectByPrimaryKey(facilitiesAlarm.getHandleUid());
+            if(StringUtils.isNotNull(user)){
+                facilitiesAlarmResp.setHandleUserName(user.getFullName());
+            }
+        }
         return ResponseResult.buildOkResult(facilitiesAlarmResp);
     }
 
