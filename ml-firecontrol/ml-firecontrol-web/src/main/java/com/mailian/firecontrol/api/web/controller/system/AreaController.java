@@ -2,6 +2,7 @@ package com.mailian.firecontrol.api.web.controller.system;
 
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.util.TreeParser;
 import com.mailian.firecontrol.dto.web.response.AreaResp;
 import com.mailian.firecontrol.service.AreaService;
 import io.swagger.annotations.Api;
@@ -29,7 +30,10 @@ public class AreaController {
     @ApiOperation(value = "获取省份城市区域列表", httpMethod = "GET")
     @GetMapping(value = "getList")
     public ResponseResult<List<AreaResp>> getList(){
-        return ResponseResult.buildOkResult(areaService.selectAll());
+        List<AreaResp> areaResps = areaService.selectAll();
+
+        areaResps = TreeParser.getTreeList("0",areaResps,true);
+        return ResponseResult.buildOkResult(areaResps);
     }
 
 

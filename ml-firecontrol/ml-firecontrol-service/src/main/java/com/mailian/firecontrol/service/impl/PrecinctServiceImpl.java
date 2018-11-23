@@ -81,7 +81,7 @@ public class PrecinctServiceImpl extends BaseServiceImpl<Precinct,PrecinctMapper
 
             for (PrecinctResp resp : precinctRespList) {
                 if(StringUtils.isNotEmpty(resp.getProvinceId())){
-                    resp.setPrecinctName(areaNameMap.get(resp.getProvinceId()));
+                    resp.setProvinceName(areaNameMap.get(resp.getProvinceId()));
                 }
                 if(StringUtils.isNotEmpty(resp.getCityId())){
                     resp.setCityName(areaNameMap.get(resp.getCityId()));

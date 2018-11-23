@@ -2,6 +2,7 @@ package com.mailian.firecontrol.service;
 
 import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.PageBean;
+import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dao.manual.model.FaNumGySystem;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
@@ -15,9 +16,10 @@ public interface FacilitiesService extends BaseService<Facilities> {
     /**
      * 查找设施列表
      * @param searchReq
+     * @param dataScope
      * @return
      */
-    PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq);
+    PageBean<FacilitiesListResp> getFacilitiesList(SearchReq searchReq, DataScope dataScope);
 
     /**
      * 查找设施列表
@@ -33,4 +35,5 @@ public interface FacilitiesService extends BaseService<Facilities> {
      */
     List<FaNumGySystem> countFaNumGySystem(List<Integer> unitIds);
 
+    int delFacilitiesById(Integer faId);
 }

@@ -19,6 +19,8 @@ public class FacilitiesListResp {
     private Integer serviceStatus;
     @ApiModelProperty(value = "服务状态描述")
     private String serviceStatusDesc;
+    @ApiModelProperty(value = "设施名称")
+    private String faName;
 
     public Integer getId() {
         return id;
@@ -74,5 +76,13 @@ public class FacilitiesListResp {
 
     public void setFaTypeDesc(String faTypeDesc) {
         this.faTypeDesc = faTypeDesc;
+    }
+
+    public String getFaName() {
+        return faName;
+    }
+
+    public void setFaName(String faName) {
+        this.faName = faName;
     }
 }

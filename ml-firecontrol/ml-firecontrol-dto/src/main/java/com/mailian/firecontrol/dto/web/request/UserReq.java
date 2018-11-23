@@ -40,6 +40,8 @@ public class UserReq extends BasePage {
     @ApiModelProperty(value = "用户id")
     private Integer id;
 
+    @ApiModelProperty(value = "单位")
+    private Integer unitId;
 
     public String getUserName() {
         return userName;
@@ -95,5 +97,13 @@ public class UserReq extends BasePage {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 }

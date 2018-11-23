@@ -103,12 +103,18 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         String unitName = searchReq.getUnitName();
         Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
+        List<Unit> units;
+        if(StringUtils.isEmpty(searchReq.getUnitId())) {
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("precinctScope", dataScope);
+            if (StringUtils.isNotEmpty(unitName)) {
+                queryMap.put("unitNameLike", unitName);
+            }
+            units = super.selectByMap(queryMap);
+        }else{
+            units = new ArrayList<>();
+            units.add(selectByPrimaryKey(searchReq.getUnitId()));
         }
-        List<Unit> units = super.selectByMap(queryMap);
         if(StringUtils.isEmpty(units)){
             return new PageBean<>();
         }
@@ -809,6 +815,48 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             deviceRespList.add(deviceResp);
         }
         return deviceRespList;
+    }
+
+    @Override
+    public List<UnitListResp> getUnitListByPrecinctIds(List<Integer> precinctIds) {
+        DataScope dataScope = new DataScope("precinct_id",precinctIds);
+        Map<String,Object> map = new HashMap<>();
+        map.put("precinctScope",dataScope);
+        List<Unit> unitList = selectByMap(map);
+
+        List<UnitListResp> unitListResps = new ArrayList<>();
+        for (Unit unit : unitList) {
+            UnitListResp unitListResp = new UnitListResp();
+            BeanUtils.copyProperties(unit,unitListResp);
+            unitListResps.add(unitListResp);
+        }
+        return unitListResps;
+    }
+
+    @Override
+    public List<UnitListResp> getUnitListByNameAndScope(String unitName, DataScope dataScope) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("precinctScope",dataScope);
+        if(StringUtils.isNotEmpty(unitName)){
+            map.put("unitNameLike",unitName);
+        }
+        List<Unit> unitList = selectByMap(map);
+
+        List<UnitListResp> unitListResps = new ArrayList<>();
+        for (Unit unit : unitList) {
+            UnitListResp unitListResp = new UnitListResp();
+            BeanUtils.copyProperties(unit,unitListResp);
+            unitListResps.add(unitListResp);
+        }
+        return unitListResps;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int delUnitById(Integer unitId) {
+        //删除网关单位关联关系
+        unitManualMapper.deleteDeviceByUnitId(unitId);
+        return deleteByPrimaryKey(unitId);
     }
 
 }

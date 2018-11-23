@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.dto.web;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -36,6 +37,7 @@ public class UnitInfo {
     @ApiModelProperty(value = "联系电话")
     private String contactPhone;
     @ApiModelProperty(value = "接入时间")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private Date joinTime;
     @ApiModelProperty(value = "物品存储")
     private String items;

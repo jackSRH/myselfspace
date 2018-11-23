@@ -22,19 +22,29 @@ public class TreeParser {
     public static <E extends TreeEntity<E>> List<E> getTreeList(String topId, List<E> entityList, boolean needSort) {
         List<E> resultList=new ArrayList<>();
 
+        Map<String,List<E>> entityMap = new HashMap<>();
         //获取顶层元素集合
         String parentId;
+        List<E> entitys;
         for (E entity : entityList) {
             parentId=entity.getParentIdStr();
             if(parentId==null||topId.equals(parentId)){
                 resultList.add(entity);
+            }
+            parentId = StringUtils.nvl(parentId,"0");
+            if(entityMap.containsKey(parentId)) {
+                entityMap.get(parentId).add(entity);
+            }else{
+                entitys = new ArrayList<>();
+                entityMap.put(parentId,entitys);
+                entitys.add(entity);
             }
         }
 
         Map<String,Object> childResultMap;
         //获取每个顶层元素的子数据集合
         for (E entity : resultList) {
-            childResultMap = getSubList(entity.getIdStr(), entityList,needSort);
+            childResultMap = getSubList(entity.getIdStr(), entityMap,needSort);
             entity.setChildList((List<E>) childResultMap.get("list"));
             entity.setChildBizCount((Integer) childResultMap.get("count"));
         }
@@ -50,6 +60,61 @@ public class TreeParser {
 
         return resultList;
     }
+
+    /**
+     * 获取子数据集合
+     * @param id
+     * @return
+     * @author wangqiaoqing
+     */
+    private  static  <E extends TreeEntity<E>>  Map<String,Object> getSubList(String id, Map<String,List<E>> entityMap,boolean needSort) {
+        List<E> childList=new ArrayList<>();
+        Map<String,Object> result = new HashMap<>();
+        String parentId;
+        Integer childCount = 0;
+
+        List<E> entityList = entityMap.get(id);
+        if(StringUtils.isNotEmpty(entityList)) {
+            //子集的直接子对象
+            for (E entity : entityList) {
+                parentId = entity.getParentIdStr();
+                if (id.equals(parentId)) {
+                    childCount = childCount + (StringUtils.isEmpty(entity.getBizCount()) ? 0 : entity.getBizCount());
+                    childList.add(entity);
+                }
+            }
+        }
+        entityMap.remove(id);
+
+        Map<String,Object> childResultMap;
+        //子集的间接子对象
+        for (E entity : childList) {
+            childResultMap = getSubList(entity.getIdStr(), entityMap,needSort);
+            entity.setChildList((List<E>) childResultMap.get("list"));
+            entity.setChildBizCount((Integer) childResultMap.get("count"));
+        }
+
+        //递归退出条件
+        if(childList.size()==0){
+            result.put("list",null);
+            result.put("count",0);
+            return result;
+        }
+
+        if(needSort){
+            Collections.sort(childList, new Comparator<E>() {
+                @Override
+                public int compare(E o1, E o2) {
+                    return o1.getSortNo() - o2.getSortNo();
+                }
+            });
+        }
+
+        result.put("list",childList);
+        result.put("count",childCount);
+        return result;
+    }
+
 
     /**
      * 获取子数据集合

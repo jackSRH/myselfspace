@@ -8,6 +8,12 @@
             <if test="dsId != null">
                 and ds_id = #{dsId,jdbcType=INTEGER}
             </if>
+            <if test="dsIds != null and dsIds.size() > 0">
+                and ds_id in
+                <foreach close=")" collection="dsIds" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
         </where>
     </delete>
 

@@ -137,6 +137,7 @@ public class MenuResp extends BaseInfo implements TreeEntity<MenuResp> {
         this.childMenu = childMenu;
     }
 
+    @JsonView(value = ViewManager.SimpleView.class)
     public Integer getVisible() {
         return visible;
     }
@@ -145,6 +146,7 @@ public class MenuResp extends BaseInfo implements TreeEntity<MenuResp> {
         this.visible = visible;
     }
 
+    @JsonView(value = ViewManager.SimpleView.class)
     public String getPerms() {
         return perms;
     }

@@ -112,4 +112,9 @@ public interface UnitService extends BaseService<Unit> {
     List<DeviceResp> getDeviceByUnitId(Integer unitId);
 
 
+    List<UnitListResp> getUnitListByPrecinctIds(List<Integer> precinctIds);
+
+    List<UnitListResp> getUnitListByNameAndScope(String unitName, DataScope dataScope);
+
+    int delUnitById(Integer unitId);
 }

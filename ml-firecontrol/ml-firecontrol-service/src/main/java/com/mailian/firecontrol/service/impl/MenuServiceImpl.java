@@ -178,7 +178,7 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu,MenuMapper> implements
         List<MenuResp> menuResps = new ArrayList<>();
         for (Menu menuDb : menus) {
             MenuResp menuRespDb = new MenuResp();
-            BeanUtils.copyProperties(menuDb,menuResp);
+            BeanUtils.copyProperties(menuDb,menuRespDb);
             menuResps.add(menuRespDb);
         }
 
