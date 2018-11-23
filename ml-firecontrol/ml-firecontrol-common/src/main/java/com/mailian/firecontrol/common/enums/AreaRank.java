@@ -6,7 +6,7 @@ package com.mailian.firecontrol.common.enums;
  * @Description:
  */
 public enum AreaRank {
-    PROVINCE(0,"省份"),CITY(1,"城市"),AREA(2,"区域"),OTHER(99,"其它");
+    PROVINCE(0,"省份"),CITY(1,"城市"),AREA(2,"区域"),PRECINCT(97,"管辖区"),UNIT(98,"单位"),OTHER(99,"其它");
 
     public Integer id;
     public String desc;

@@ -50,23 +50,9 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
     @Override
     public PageBean<FacilitiesAlarmListResp> getFacilitiesAlarmList(DataScope dataScope, SearchReq searchReq){
-        String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
-            List<Unit> units = unitService.selectByMap(queryMap);
-            if(StringUtils.isEmpty(units)){
-                return new PageBean<>();
-            }
-            List<Integer> unitIds = new ArrayList<>();
-            for(Unit unit : units){
-                unitIds.add(unit.getId());
-            }
-            queryMap.clear();
-            queryMap.put("unitIds",unitIds);
-        }
-
+        queryMap.put("unitId",searchReq.getUnitId());
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -109,22 +95,9 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
     @Override
     public PageBean<FireAlarmListResp> getFireAlarmList(DataScope dataScope, SearchReq searchReq){
-        String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
-            List<Unit> units = unitService.selectByMap(queryMap);
-            if(StringUtils.isEmpty(units)){
-                return new PageBean<>();
-            }
-            List<Integer> unitIds = new ArrayList<>();
-            for(Unit unit : units){
-                unitIds.add(unit.getId());
-            }
-            queryMap.clear();
-            queryMap.put("unitIds",unitIds);
-        }
+        queryMap.put("unitId",searchReq.getUnitId());
 
         Date startDate = searchReq.getStartDate();
         Date endDate = searchReq.getEndDate();
@@ -176,19 +149,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
-            List<Unit> units = unitService.selectByMap(queryMap);
-            if(StringUtils.isEmpty(units)){
-                return new PageBean<>();
-            }
-            List<Integer> unitIds = new ArrayList<>();
-            for(Unit unit : units){
-                unitIds.add(unit.getId());
-            }
-            queryMap.clear();
-            queryMap.put("unitIds",unitIds);
-        }
+        queryMap.put("unitId",searchReq.getUnitId());
 
         queryMap.put("alarmType",AlarmType.ALARM.id);
         Integer currentPage = searchReq.getCurrentPage();

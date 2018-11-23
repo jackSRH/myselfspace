@@ -205,7 +205,7 @@ public class BigscreenController extends BaseController {
     @RequestMapping(value="/getUnitMapDataByUnit",method = RequestMethod.GET)
     public ResponseResult<UnitMapResp> getUnitMapDataByUnit(@CurUser ShiroUser shiroUser,
                                                                     @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
-        if(StringUtils.isNotEmpty(unitId)){
+        if(StringUtils.isEmpty(unitId)){
             unitId = shiroUser.getUnitId();
         }
 
@@ -213,7 +213,7 @@ public class BigscreenController extends BaseController {
         /*设置摄像头*/
         List<CameraListResp> cameraListResps = unitCameraService.getListByUnitId(unitId);
         unitMapResp.setCameraListResps(cameraListResps);
-        return ResponseResult.buildOkResult(cameraListResps);
+        return ResponseResult.buildOkResult(unitMapResp);
     }
 
     @ApiOperation(value = "获取单位走势(单位)", httpMethod = "GET")

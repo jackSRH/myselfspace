@@ -129,7 +129,7 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
             areaResp = new AreaResp();
             areaResp.setId(unit.getId());
             areaResp.setAreaName(unit.getUnitName());
-            areaResp.setAreaRank(AreaRank.OTHER.id);
+            areaResp.setAreaRank(AreaRank.UNIT.id);
             areaResp.setOrderNum(i);
             areaResp.setParentId(unit.getPrecinctId());
             areaResp.setDisStr(disStr);
@@ -151,7 +151,7 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
             areaResp = new AreaResp();
             areaResp.setId(precinct.getId());
             areaResp.setAreaName(precinct.getPrecinctName());
-            areaResp.setAreaRank(AreaRank.OTHER.id);
+            areaResp.setAreaRank(AreaRank.PRECINCT.id);
             areaResp.setOrderNum(i);
             areaResp.setParentId(precinct.getAreaId());
             areaResp.setDisStr("P");
