@@ -662,3 +662,26 @@ create table `t_alarm_log` (
   primary key (`id`),
   key (alarm_id)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '警情处理日志表';
+
+
+-- ----------------------------
+-- 29、用电监测配置表
+-- ----------------------------
+drop table if exists `t_power_monitoring`;
+CREATE TABLE `t_power_monitoring` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unit_id` int(11) NOT NULL COMMENT '单位id',
+  `pm_name` varchar(32) DEFAULT NULL COMMENT '名称',
+  `total_load` varchar(128) DEFAULT NULL COMMENT '总负荷',
+  `voltage` varchar(128) DEFAULT NULL COMMENT '电压',
+  `ele_current` varchar(128) DEFAULT NULL COMMENT '电流',
+  `power_factor` varchar(128) DEFAULT NULL COMMENT '功率因素',
+  `cable_temp` varchar(128) DEFAULT NULL COMMENT '线缆温度',
+  `leakage_current` varchar(128) DEFAULT NULL COMMENT '漏电电流',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `create_by` varchar(32) DEFAULT NULL COMMENT '创建者',
+  `update_by` varchar(32) DEFAULT NULL COMMENT '更新者',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用电监测配置表';
+
