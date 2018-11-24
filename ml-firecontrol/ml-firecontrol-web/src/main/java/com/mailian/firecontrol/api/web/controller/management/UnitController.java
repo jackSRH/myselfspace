@@ -242,7 +242,7 @@ public class UnitController extends BaseController {
             if(StringUtils.isEmpty(precinctIds)){
                 return ResponseResult.buildOkResult(new PageBean<>());
             }
-            dataScope = new DataScope("precinct_id", precinctIds);
+            dataScope = new DataScope("precinct_id", precinctIds,"s",false);
         }
 
         PageBean<List<UnitSwitchResp>> res = unitService.getUnitSwitchList(dataScope,searchReq);
