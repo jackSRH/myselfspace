@@ -45,7 +45,7 @@ public class CommonController {
     public ResponseResult checkLoginPassword(@CurUser ShiroUser shiroUser, @ApiParam(value = "密码") @RequestParam(value = "password") String password) {
         String userPassword = shiroUser.getPassword();
         if(MD5Util.md5(password).equals(userPassword)){
-            return ResponseResult.buildOkResult();
+            return ResponseResult.buildOkResult("success");
         }
         return ResponseResult.buildFailResult();
     }

@@ -12,22 +12,13 @@ import com.mailian.core.enums.Status;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
+import com.mailian.core.util.PageUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
-import com.mailian.firecontrol.common.enums.AlarmType;
-import com.mailian.firecontrol.common.enums.DiaItemType;
-import com.mailian.firecontrol.common.enums.FaMisreportType;
-import com.mailian.firecontrol.common.enums.ItemBtype;
-import com.mailian.firecontrol.common.enums.StructType;
-import com.mailian.firecontrol.common.enums.UnitSuperviseLevel;
-import com.mailian.firecontrol.common.enums.UnitType;
+import com.mailian.firecontrol.common.enums.*;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
-import com.mailian.firecontrol.dao.auto.model.Area;
-import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
-import com.mailian.firecontrol.dao.auto.model.Precinct;
-import com.mailian.firecontrol.dao.auto.model.Unit;
-import com.mailian.firecontrol.dao.auto.model.UnitDevice;
+import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.ManageManualMapper;
 import com.mailian.firecontrol.dao.manual.mapper.UnitManualMapper;
 import com.mailian.firecontrol.dto.CountDataInfo;
@@ -42,14 +33,7 @@ import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
-import com.mailian.firecontrol.dto.web.response.AreaUnitMapResp;
-import com.mailian.firecontrol.dto.web.response.DeviceResp;
-import com.mailian.firecontrol.dto.web.response.PieData;
-import com.mailian.firecontrol.dto.web.response.PieResp;
-import com.mailian.firecontrol.dto.web.response.UnitListResp;
-import com.mailian.firecontrol.dto.web.response.UnitMapResp;
-import com.mailian.firecontrol.dto.web.response.UnitRealtimeDataResp;
-import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
+import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.DeviceItemOpertionService;
 import com.mailian.firecontrol.service.UnitDeviceService;
@@ -65,13 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implements UnitService {
@@ -595,25 +573,9 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Override
     public PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope,SearchReq searchReq){
-        String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            queryMap.put("unitNameLike",unitName);
-        }
-        List<Unit> units = super.selectByMap(queryMap);
-        if(StringUtils.isEmpty(units)){
-            return new PageBean<>();
-        }
-
-        List<Integer> unitIds = new ArrayList<>();
-        Map<Integer,String> unitId2Name = new HashMap<>();
-        for(Unit unit :units){
-            unitIds.add(unit.getId());
-            unitId2Name.put(unit.getId(),unit.getUnitName());
-        }
-        queryMap.clear();
-        queryMap.put("unitIds",unitIds);
+        queryMap.put("unitId",searchReq.getUnitId());
         queryMap.put("type",StructType.REMOTE.id);
         List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
         if(StringUtils.isEmpty(diagramItems)){
@@ -623,11 +585,21 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Map<Integer,List<DiagramItemDto>> unitId2DiagramItems = new HashMap<>();
         List<DiagramItemDto> tempDiagramItems;
         Integer unitId;
+        Set<Integer> unitIds = new HashSet<>();
         for(DiagramItemDto diagramItem : diagramItems){
             unitId = diagramItem.getUnitId();
+            unitIds.add(unitId);
             tempDiagramItems = unitId2DiagramItems.containsKey(unitId)?unitId2DiagramItems.get(unitId):new ArrayList<>();
             tempDiagramItems.add(diagramItem);
             unitId2DiagramItems.put(unitId,tempDiagramItems);
+        }
+
+        Map<Integer,String> unitId2Name = new HashMap<>();
+        if(StringUtils.isNotEmpty(unitIds)) {
+            List<Unit> unitList = selectBatchIds(unitIds);
+            for (Unit unit : unitList) {
+                unitId2Name.put(unit.getId(), unit.getUnitName());
+            }
         }
 
         List<List<UnitSwitchResp>> unitSwitchList = new ArrayList<>();
@@ -659,13 +631,16 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                         unitSwitchResp.setSwitchStatus(status);
                         unitSwitchResp.setSwitchName(ykItem.getStructName());
                         unitSwitchResp.setUnitName(unitId2Name.get(entry.getKey()));
+                        unitSwitchResp.setItemId(ykItem.getItemId());
                         unitSwitchResps.add(unitSwitchResp);
                     }
                 }
                 unitSwitchList.add(unitSwitchResps);
             }
         }
-        PageBean<List<UnitSwitchResp>> pageBean = new PageBean<>(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList.size(),unitSwitchList);
+
+        List<List<UnitSwitchResp>> resultList = PageUtil.pagedList(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList);
+        PageBean<List<UnitSwitchResp>> pageBean = new PageBean<>(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList.size(),resultList);
         return pageBean;
     }
 

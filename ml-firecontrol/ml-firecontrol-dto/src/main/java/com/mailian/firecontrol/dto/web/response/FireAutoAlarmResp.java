@@ -25,6 +25,10 @@ public class FireAutoAlarmResp {
     private String alarmContent;
     @ApiModelProperty(value = "受理时间")
     private Date handleTime;
+    @ApiModelProperty(value = "处理结果")
+    private String handleResult;
+    @ApiModelProperty(value = "处理时间")
+    private Date handleEndTime;
 
 
     public Integer getId() {
@@ -97,5 +101,21 @@ public class FireAutoAlarmResp {
 
     public void setHandleTime(Date handleTime) {
         this.handleTime = handleTime;
+    }
+
+    public String getHandleResult() {
+        return handleResult;
+    }
+
+    public void setHandleResult(String handleResult) {
+        this.handleResult = handleResult;
+    }
+
+    public Date getHandleEndTime() {
+        return handleEndTime;
+    }
+
+    public void setHandleEndTime(Date handleEndTime) {
+        this.handleEndTime = handleEndTime;
     }
 }

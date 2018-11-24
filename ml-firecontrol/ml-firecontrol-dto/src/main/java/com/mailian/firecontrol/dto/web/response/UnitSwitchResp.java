@@ -16,6 +16,8 @@ public class UnitSwitchResp {
     private String switchStatus;
     @ApiModelProperty(value = "可变更遥控数据值")
     private List<SelectDto> selects;
+    @ApiModelProperty(value = "数据项id")
+    private String itemId;
 
     public String getUnitName() {
         return unitName;
@@ -47,5 +49,13 @@ public class UnitSwitchResp {
 
     public void setSelects(List<SelectDto> selects) {
         this.selects = selects;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 }
