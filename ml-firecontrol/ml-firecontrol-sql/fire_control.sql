@@ -660,5 +660,5 @@ create table `t_alarm_log` (
   `create_time` 		datetime 		DEFAULT NULL 				COMMENT '创建时间',
   `create_by` 			varchar(32) 	DEFAULT NULL 				COMMENT '创建者',
   primary key (`id`),
-  unique key (alarm_id)
+  key (alarm_id)
 ) engine=innodb auto_increment=1 default charset=utf8 comment = '警情处理日志表';

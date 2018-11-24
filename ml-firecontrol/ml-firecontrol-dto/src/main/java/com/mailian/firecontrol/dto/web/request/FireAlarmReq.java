@@ -1,26 +1,19 @@
-package com.mailian.firecontrol.dto.web.response;
+package com.mailian.firecontrol.dto.web.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-
-@ApiModel(description = "火灾告警详情")
-public class FireAlarmResp {
+/**
+ * @Auther: wangqiaoqing
+ * @Date: 2018/11/24
+ * @Description:
+ */
+@ApiModel(description = "火灾信息管理")
+public class FireAlarmReq {
     @ApiModelProperty(value = "告警id")
     private Integer id;
-    @ApiModelProperty(value = "单位id")
-    private String unitId;
-    @ApiModelProperty(value = "单位名称")
-    private String unitName;
-    @ApiModelProperty(value = "起火位置")
-    private String structAddress;
-    @ApiModelProperty(value = "起火时间")
-    private Date alarmTime;
     @ApiModelProperty(value = "起火原因")
     private String alarmReason;
-    @ApiModelProperty(value = "告警方式")
-    private Integer alarmWay;
     @ApiModelProperty(value = "起火面积")
     private String alarmArea;
     @ApiModelProperty(value = "死亡人数")
@@ -32,22 +25,6 @@ public class FireAlarmResp {
     @ApiModelProperty(value = "补救概况")
     private String emedialMeasures;
 
-    public String getUnitId() {
-        return unitId;
-    }
-
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
-    }
-
-    public String getEmedialMeasures() {
-        return emedialMeasures;
-    }
-
-    public void setEmedialMeasures(String emedialMeasures) {
-        this.emedialMeasures = emedialMeasures;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -56,28 +33,12 @@ public class FireAlarmResp {
         this.id = id;
     }
 
-    public Date getAlarmTime() {
-        return alarmTime;
-    }
-
-    public void setAlarmTime(Date alarmTime) {
-        this.alarmTime = alarmTime;
-    }
-
     public String getAlarmReason() {
         return alarmReason;
     }
 
     public void setAlarmReason(String alarmReason) {
         this.alarmReason = alarmReason;
-    }
-
-    public Integer getAlarmWay() {
-        return alarmWay;
-    }
-
-    public void setAlarmWay(Integer alarmWay) {
-        this.alarmWay = alarmWay;
     }
 
     public String getAlarmArea() {
@@ -112,19 +73,11 @@ public class FireAlarmResp {
         this.propertyLoss = propertyLoss;
     }
 
-    public String getStructAddress() {
-        return structAddress;
+    public String getEmedialMeasures() {
+        return emedialMeasures;
     }
 
-    public void setStructAddress(String structAddress) {
-        this.structAddress = structAddress;
-    }
-
-    public String getUnitName() {
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
+    public void setEmedialMeasures(String emedialMeasures) {
+        this.emedialMeasures = emedialMeasures;
     }
 }

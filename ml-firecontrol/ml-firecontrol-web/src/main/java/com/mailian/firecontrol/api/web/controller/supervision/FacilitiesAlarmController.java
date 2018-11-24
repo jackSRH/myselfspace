@@ -15,6 +15,7 @@ import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.AlarmHandleReq;
+import com.mailian.firecontrol.dto.web.request.FireAlarmReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.*;
@@ -124,6 +125,13 @@ public class FacilitiesAlarmController extends BaseController {
 
         FireAlarmResp fireAlarmResp = new FireAlarmResp();
         BeanUtils.copyProperties(facilitiesAlarm,fireAlarmResp);
+
+        if(StringUtils.isNotEmpty(facilitiesAlarm.getUnitId())) {
+            Unit unit = unitService.selectByPrimaryKey(facilitiesAlarm.getUnitId());
+            if (StringUtils.isNotNull(unit)) {
+                fireAlarmResp.setUnitName(unit.getUnitName());
+            }
+        }
         return ResponseResult.buildOkResult(fireAlarmResp);
     }
 
@@ -173,6 +181,26 @@ public class FacilitiesAlarmController extends BaseController {
         }
         return ResponseResult.buildOkResult(fireAutoAlarmResp);
     }
+
+    @ApiOperation(value = "保存火灾信息",httpMethod = "POST")
+    @PostMapping(value = "/saveFireAlarmInfo")
+    public ResponseResult saveFireAlarmInfo(@RequestBody FireAlarmReq fireAlarmReq){
+        if(StringUtils.isEmpty(fireAlarmReq.getId())){
+            return error("火灾id不能为空");
+        }
+
+        FacilitiesAlarm facilitiesAlarm = new FacilitiesAlarm();
+        facilitiesAlarm.setId(fireAlarmReq.getId());
+        facilitiesAlarm.setAlarmReason(fireAlarmReq.getAlarmReason());
+        facilitiesAlarm.setAlarmArea(fireAlarmReq.getAlarmArea());
+        facilitiesAlarm.setDieNum(fireAlarmReq.getDieNum());
+        facilitiesAlarm.setInjured(fireAlarmReq.getInjured());
+        facilitiesAlarm.setPropertyLoss(fireAlarmReq.getPropertyLoss());
+        facilitiesAlarm.setEmedialMeasures(fireAlarmReq.getEmedialMeasures());
+        int result = facilitiesAlarmService.updateByPrimaryKeySelective(facilitiesAlarm);
+        return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+    }
+
 
     @Log(title = "单位监控",action = "设置火灾自动报警处理信息")
     @ApiOperation(value = "设置火灾自动报警处理信息", httpMethod = "POST")
