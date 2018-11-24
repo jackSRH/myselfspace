@@ -7,7 +7,7 @@ import java.util.List;
 
 @ApiModel(description = "大屏单位走势列表")
 public class BgUnitTrendListResp {
-    @ApiModelProperty(value = "类型")
+    @ApiModelProperty(value = "类型 4：电压，5：电流，31：漏电，32：温度")
     private Integer btype;
     @ApiModelProperty(value = "数值")
     private List<BgUnitTrendResp> bgUnitTrends;

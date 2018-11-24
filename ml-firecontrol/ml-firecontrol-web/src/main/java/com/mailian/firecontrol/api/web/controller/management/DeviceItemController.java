@@ -653,6 +653,16 @@ public class DeviceItemController extends BaseController {
         return ResponseResult.buildOkResult(ItemBtypeList);
     }
 
-
+    @ApiOperation(value = "通过网关id获取RTU ", httpMethod = "GET")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "deviceCode", value = "网关id", required = true, paramType = "query", dataType = "String"),
+    })
+    @RequestMapping(value = "/getSubByDeviceCode", method = RequestMethod.GET)
+    public ResponseResult<Map<Integer,Map<String, List<DeviceSub>>>> getSubByDeviceCode(String deviceCode) {
+        if(StringUtils.isEmpty(deviceCode)){
+            return error("网关id不能为空");
+        }
+        return ResponseResult.buildOkResult(deviceItemRepository.getSubByDeviceCode(deviceCode));
+    }
 
 }

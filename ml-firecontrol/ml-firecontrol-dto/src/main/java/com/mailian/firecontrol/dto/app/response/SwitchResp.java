@@ -15,12 +15,23 @@ import java.util.List;
 @ApiModel(description = "开关信息")
 public class SwitchResp implements Serializable {
     private static final long serialVersionUID = -2840205108716032925L;
+
+    @ApiModelProperty(value = "遥控数据项id")
+    private String ykItemId;
     @ApiModelProperty(value = "开关名称")
     private String switchName;
     @ApiModelProperty(value = "当前状态")
     private String status;
     @ApiModelProperty(value = "可变更遥控数据值")
     private List<SelectDto> selects;
+
+    public String getYkItemId() {
+        return ykItemId;
+    }
+
+    public void setYkItemId(String ykItemId) {
+        this.ykItemId = ykItemId;
+    }
 
     public String getSwitchName() {
         return switchName;

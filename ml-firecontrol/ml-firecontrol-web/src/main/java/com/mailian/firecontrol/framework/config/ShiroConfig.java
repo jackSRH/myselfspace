@@ -74,6 +74,11 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/app/login/ajaxLogin", "anon");
         filterChainDefinitionMap.put("/app/login/ajaxUserLogin", "anon");
 
+        /* 不拦截导入导出接口*/
+        filterChainDefinitionMap.put("/management/deviceItem/exportItemByName", "anon");
+        filterChainDefinitionMap.put("/management/deviceItem/exportItem", "anon");
+        filterChainDefinitionMap.put("/management/deviceItem/importItem", "anon");
+
         filterChainDefinitionMap.put("/app/versionmanage/downLoadApp", "anon");
 
         filterChainDefinitionMap.put("/**", "authc");

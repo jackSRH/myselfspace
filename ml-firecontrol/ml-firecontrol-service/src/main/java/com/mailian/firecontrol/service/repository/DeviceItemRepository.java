@@ -754,4 +754,34 @@ public class DeviceItemRepository {
         }
         return rtDataMap;
     }
+
+    public  Map<Integer, Map<String, List<DeviceSub>>> getSubByDeviceCode(String deviceCode){
+        Map<Integer, Map<String, List<DeviceSub>>> data = new HashMap<>();
+        Map<String,List<DeviceSub>> code2Sub = deviceSubCache.getSubsByCodes(Arrays.asList(deviceCode));
+        if(StringUtils.isEmpty(code2Sub)){
+            return data;
+        }
+
+        Map<String,  List<DeviceSub>> model2Subs;
+        List<DeviceSub> deviceSubs;
+        List<DeviceSub> subs = code2Sub.get(deviceCode);
+        for(DeviceSub sub : subs) {
+            Integer comId = sub.getComid();
+            String modelName = sub.getMname();
+            if(data.containsKey(comId)){
+                deviceSubs = data.get(comId).containsKey(modelName)?data.get(comId)
+                        .get(modelName):new ArrayList<>();
+                deviceSubs.add(sub);
+                data.get(comId).put(modelName, deviceSubs);
+            }else {
+                deviceSubs = new ArrayList<>();
+                deviceSubs.add(sub);
+                model2Subs = new HashMap<>();
+                model2Subs.put(modelName, deviceSubs);
+                data.put(comId, model2Subs);
+            }
+        }
+        return data;
+    }
+
 }

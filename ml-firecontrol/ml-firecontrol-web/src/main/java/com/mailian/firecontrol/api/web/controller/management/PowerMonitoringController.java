@@ -77,12 +77,6 @@ public class PowerMonitoringController extends BaseController {
         for(PowerMonitoring powerMonitoring : powerMonitorings){
             powerMonitoringResp = new PowerMonitoringResp();
             BeanUtils.copyProperties(powerMonitoring,powerMonitoringResp);
-/*            powerMonitoringResp.setTotalLoad(powerMonitoring.getTotalLoad());
-            powerMonitoringResp.setVoltage(powerMonitoring.getVoltage());
-            powerMonitoringResp.setEleCurrent(powerMonitoring.getEleCurrent());
-            powerMonitoringResp.setPowerFactor(powerMonitoring.getPowerFactor());
-            powerMonitoringResp.setCableTemp(powerMonitoring.getCableTemp());
-            powerMonitoringResp.setLeakageCurrent(powerMonitoring.getLeakageCurrent());*/
 
             if(StringUtils.isNotEmpty(powerMonitoringResp.getLoadItemIds())){
                 itemIds.addAll(powerMonitoringResp.getLoadItemIds());
@@ -138,6 +132,7 @@ public class PowerMonitoringController extends BaseController {
                 for(String itemId:powerMonitoringResp.getVoltageItemIds()){
                     if(StringUtils.isNotNull(itemId2ItemResp.get(itemId))){
                         items.add(itemId2ItemResp.get(itemId));
+
                     }
                 }
                 powerMonitoringResp.setVoltageItemInfos(items);

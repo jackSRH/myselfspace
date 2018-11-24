@@ -308,11 +308,15 @@ public class BigscreenController extends BaseController {
             itemTypeMap.put(itemId,btype);
         }
 
+        if(StringUtils.isEmpty(needFindItemIds)){
+            return ResponseResult.buildOkResult(bgUnitTrendListResps);
+        }
         List<DeviceItemHistoryData> historyDatas = deviceItemRepository.getItemDataByItemIdAndTime(
                 CollectionUtil.join(needFindItemIds,","),DateUtil.toString(startDate) ,DateUtil.toString(endDate),itemCycle);
         if(StringUtils.isEmpty(historyDatas)){
             return ResponseResult.buildOkResult(bgUnitTrendListResps);
         }
+
         for(DeviceItemHistoryData historyData :historyDatas){
             if(1 != historyData.getCtg()){
                 continue;
@@ -474,7 +478,7 @@ public class BigscreenController extends BaseController {
     @RequestMapping(value="/getUnitRealtimeData",method = RequestMethod.GET)
     public ResponseResult<UnitRealtimeDataResp> getUnitRealtimeData(@CurUser ShiroUser shiroUser,
                                                             @ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
-        if(StringUtils.isNotEmpty(unitId)){
+        if(StringUtils.isEmpty(unitId)){
             unitId = shiroUser.getUnitId();
         }
         return ResponseResult.buildOkResult(unitService.getUnitRealtimeData(unitId));

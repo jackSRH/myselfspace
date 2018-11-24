@@ -585,6 +585,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                     switchResp.setSelects(selectDtos);
                     switchResp.setStatus(status);
                     switchResp.setSwitchName(ykItem.getStructName());
+                    switchResp.setYkItemId(ykItem.getItemId());
                     switchResps.add(switchResp);
                 }
             }
