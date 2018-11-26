@@ -17,6 +17,16 @@ public class CurAlarmResp {
     private String alarmContent;
     @ApiModelProperty(value = "告警状态")
     private Integer alarmStatus;
+    @ApiModelProperty(value = "距离现在告警了多少小时")
+    private Integer alarmDuration;
+
+    public Integer getAlarmDuration() {
+        return alarmDuration;
+    }
+
+    public void setAlarmDuration(Integer alarmDuration) {
+        this.alarmDuration = alarmDuration;
+    }
 
     public Integer getId() {
         return id;
