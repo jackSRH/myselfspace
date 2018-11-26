@@ -1,6 +1,5 @@
 package com.mailian.firecontrol.dto.web.response;
 
-import com.mailian.firecontrol.common.util.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

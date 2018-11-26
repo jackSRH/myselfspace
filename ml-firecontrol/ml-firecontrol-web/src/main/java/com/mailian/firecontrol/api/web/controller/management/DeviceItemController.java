@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.api.web.controller.management;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.ResponseResult;
@@ -10,38 +11,17 @@ import com.mailian.firecontrol.common.enums.ItemStype;
 import com.mailian.firecontrol.common.util.ComputeUtil;
 import com.mailian.firecontrol.common.util.ExcelUtil;
 import com.mailian.firecontrol.common.util.ParseXlsUtils;
-import com.mailian.firecontrol.common.util.StringUtil;
-import com.mailian.firecontrol.dto.push.DeviceItem;
-import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
-import com.mailian.firecontrol.dto.push.DeviceSub;
-import com.mailian.firecontrol.dto.push.YcTran;
-import com.mailian.firecontrol.dto.push.YkTran;
-import com.mailian.firecontrol.dto.push.YxTran;
-import com.mailian.firecontrol.dto.web.request.DeviceItemInfo;
-import com.mailian.firecontrol.dto.web.request.YcCalcInfo;
-import com.mailian.firecontrol.dto.web.request.YcStoreInfo;
-import com.mailian.firecontrol.dto.web.request.YcTranInfo;
-import com.mailian.firecontrol.dto.web.request.YkTranInfo;
-import com.mailian.firecontrol.dto.web.request.YxCalcInfo;
-import com.mailian.firecontrol.dto.web.request.YxTranInfo;
+import com.mailian.firecontrol.dto.push.*;
+import com.mailian.firecontrol.dto.web.request.*;
 import com.mailian.firecontrol.dto.web.response.ItemBtypeResp;
 import com.mailian.firecontrol.service.DeviceItemOpertionService;
 import com.mailian.firecontrol.service.ExcelService;
 import com.mailian.firecontrol.service.cache.DeviceSubCache;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -50,12 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -374,7 +349,7 @@ public class DeviceItemController extends BaseController {
                 ycTran.setDisplayname(item.getDisplayname());
                 ycTrans.add(ycTran);
             }
-            deviceItemRepository.setYcTranInfos(ycTrans,StringUtil.listTurnString(deviceSubIds));
+            deviceItemRepository.setYcTranInfos(ycTrans,ArrayUtil.join(deviceSubIds,","));
         }
 
         //更新遥信数据
@@ -393,7 +368,7 @@ public class DeviceItemController extends BaseController {
                 yxTran.setDesc1(item.getDesc1());
                 yxTrans.add(yxTran);
             }
-            deviceItemRepository.setYxTranInfos(yxTrans, StringUtil.listTurnString(deviceSubIds));
+            deviceItemRepository.setYxTranInfos(yxTrans, ArrayUtil.join(deviceSubIds,","));
         }
 
         //更新遥控数据
@@ -409,7 +384,7 @@ public class DeviceItemController extends BaseController {
                 ykTran.setDisplayname(item.getDisplayname());
                 ykTrans.add(ykTran);
             }
-            deviceItemRepository.setYkTranInfos(ykTrans,StringUtil.listTurnString(deviceSubIds));
+            deviceItemRepository.setYkTranInfos(ykTrans,ArrayUtil.join(deviceSubIds,","));
         }
         return  ResponseResult.buildOkResult();
     }

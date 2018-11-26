@@ -79,6 +79,7 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
             facilitiesListResp.setServiceStatus(facilities.getServiceStatus());
             facilitiesListResp.setFaNumber(facilities.getFaNumber());
             facilitiesListResp.setFaName(facilities.getFaName());
+            facilitiesListResp.setUnitId(facilities.getUnitId());
 
             facilitiesListResp.setServiceStatusDesc(FacilitiesServiceStatus.getValue(facilities.getServiceStatus()));
             if(StringUtils.isNotEmpty(facilities.getFaSystemId()) && StringUtils.isNotEmpty(facilities.getFaTypeId())) {

@@ -62,13 +62,20 @@ public class DataScopeInterceptor implements Interceptor {
                         originalSql = originalSql.substring(0,limitIndex);
                     }
 
+                    String orderbySql = "";
+                    if(originalSql.contains(" order by ")){
+                        int orderbyIndex = originalSql.lastIndexOf(" order by ");
+                        orderbySql = originalSql.substring(orderbyIndex);
+                        originalSql = originalSql.substring(0,orderbyIndex);
+                    }
+
                     if(originalSql.contains(" where ")) {
                         originalSql = originalSql + " and " + scopeName + " in (" + join + ")";
                     }else{
                         originalSql = originalSql + " where " + scopeName + " in (" + join + ")";
                     }
 
-                    originalSql = originalSql + limitSql;
+                    originalSql = originalSql + orderbySql + limitSql;
                 }
 
                 metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);

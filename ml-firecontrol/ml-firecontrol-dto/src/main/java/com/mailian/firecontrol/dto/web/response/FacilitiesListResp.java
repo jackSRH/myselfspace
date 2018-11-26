@@ -11,6 +11,8 @@ public class FacilitiesListResp {
     private Integer faTypeId;
     @ApiModelProperty(value = "设施型号描述")
     private String faTypeDesc;
+    @ApiModelProperty(value = "所属单位")
+    private Integer unitId;
     @ApiModelProperty(value = "所属单位名称")
     private String unitName;
     @ApiModelProperty(value = "设施数量")
@@ -84,5 +86,13 @@ public class FacilitiesListResp {
 
     public void setFaName(String faName) {
         this.faName = faName;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Integer unitId) {
+        this.unitId = unitId;
     }
 }
