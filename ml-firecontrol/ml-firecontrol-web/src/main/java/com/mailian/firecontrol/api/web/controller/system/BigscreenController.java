@@ -228,7 +228,7 @@ public class BigscreenController extends BaseController {
         Integer itemCycle = null;
         Date now = new Date();
         Date startDate = DateUtil.getStartDate(StringUtils.nvl(bgSearchReq.getStartDate(),now));
-        Date endDate = DateUtil.getEndDate(StringUtils.nvl(bgSearchReq.getEndDate(),now));
+        Date endDate = StringUtils.nvl(bgSearchReq.getEndDate(),now);
 
         //获取时间点
         List<DayTime> dates;
@@ -552,4 +552,17 @@ public class BigscreenController extends BaseController {
     public ResponseResult<AlarmRemindInfo> getNewAlarmByUnit(@ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
         return ResponseResult.buildOkResult(remindCache.getFristRemindByUnit(unitId));
     }
+
+    @ApiOperation(value = "获取单位摄像头", httpMethod = "GET")
+    @RequestMapping(value="/getCamerasByUnitId",method = RequestMethod.GET)
+    public ResponseResult<List<CameraListResp>> getCamerasByUnitId(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
+        if(StringUtils.isEmpty(unitId)) {
+            return error("单位id不能为空");
+        }
+
+        List<CameraListResp> cameraListResps =  unitCameraService.getListByUnitId(unitId);
+        return ResponseResult.buildOkResult(cameraListResps);
+    }
+
+
 }

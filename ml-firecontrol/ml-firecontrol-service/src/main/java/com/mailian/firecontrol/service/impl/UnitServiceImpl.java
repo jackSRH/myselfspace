@@ -75,25 +75,25 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private DeviceItemRepository deviceItemRepository;
 
     @Override
-    public PageBean<UnitListResp> getUnitList(DataScope dataScope,SearchReq searchReq) {
+    public PageBean<UnitListResp> getUnitList(DataScope dataScope, SearchReq searchReq) {
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         String unitName = searchReq.getUnitName();
-        Page page = PageHelper.startPage(currentPage,pageSize);
+        Page page = PageHelper.startPage(currentPage, pageSize);
         page.setOrderBy("update_time desc");
         List<Unit> units;
-        if(StringUtils.isEmpty(searchReq.getUnitId())) {
+        if (StringUtils.isEmpty(searchReq.getUnitId())) {
             Map<String, Object> queryMap = new HashMap<>();
             queryMap.put("precinctScope", dataScope);
             if (StringUtils.isNotEmpty(unitName)) {
                 queryMap.put("unitNameLike", unitName);
             }
             units = super.selectByMap(queryMap);
-        }else{
+        } else {
             units = new ArrayList<>();
             units.add(selectByPrimaryKey(searchReq.getUnitId()));
         }
-        if(StringUtils.isEmpty(units)){
+        if (StringUtils.isEmpty(units)) {
             return new PageBean<>();
         }
 
@@ -101,87 +101,87 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Set<Integer> precinctIds = new HashSet<>();
         //查找地址信息
         Set<Integer> areaIds = new HashSet<>();
-        for(Unit unit:units){
+        for (Unit unit : units) {
             Integer areaId = unit.getAreaId();
             Integer provinceId = unit.getProvinceId();
             Integer cityId = unit.getCityId();
-            if(StringUtils.isNotEmpty(areaId)){
+            if (StringUtils.isNotEmpty(areaId)) {
                 areaIds.add(areaId);
             }
-            if(StringUtils.isNotEmpty(provinceId)){
+            if (StringUtils.isNotEmpty(provinceId)) {
                 areaIds.add(provinceId);
             }
-            if(StringUtils.isNotEmpty(cityId)){
+            if (StringUtils.isNotEmpty(cityId)) {
                 areaIds.add(cityId);
             }
             precinctIds.add(unit.getPrecinctId());
         }
         List<Precinct> precincts = precinctMapper.selectBatchIds(precinctIds);
-        Map<Integer,String> precinetId2Name = new HashMap<>();
-        for(Precinct precinct : precincts){
-            precinetId2Name.put(precinct.getId(),precinct.getPrecinctName());
+        Map<Integer, String> precinetId2Name = new HashMap<>();
+        for (Precinct precinct : precincts) {
+            precinetId2Name.put(precinct.getId(), precinct.getPrecinctName());
         }
         List<Area> areas = areaService.selectBatchIds(areaIds);
-        Map<Integer,String> areaId2Name = new HashMap<>();
-        for(Area area : areas){
-            areaId2Name.put(area.getId(),area.getAreaName());
+        Map<Integer, String> areaId2Name = new HashMap<>();
+        for (Area area : areas) {
+            areaId2Name.put(area.getId(), area.getAreaName());
         }
 
         List<UnitListResp> unitListResps = new ArrayList<>();
         UnitListResp unitListResp;
         StringBuffer areaInfo = new StringBuffer();
-        Integer areaId = 0 ,provinceId = 0,cityId = 0 ;
-        for(Unit unit:units){
+        Integer areaId = 0, provinceId = 0, cityId = 0;
+        for (Unit unit : units) {
             unitListResp = new UnitListResp();
-            BeanUtils.copyProperties(unit,unitListResp);
+            BeanUtils.copyProperties(unit, unitListResp);
             unitListResp.setPrecinct(precinetId2Name.get(unit.getPrecinctId()));
 
             areaId = unit.getAreaId();
             provinceId = unit.getProvinceId();
             cityId = unit.getCityId();
             areaInfo.setLength(0);
-            if(StringUtils.isNotEmpty(provinceId) && areaId2Name.containsKey(provinceId)){
+            if (StringUtils.isNotEmpty(provinceId) && areaId2Name.containsKey(provinceId)) {
                 areaInfo.append(areaId2Name.get(provinceId));
             }
-            if(StringUtils.isNotEmpty(cityId) && areaId2Name.containsKey(cityId)){
+            if (StringUtils.isNotEmpty(cityId) && areaId2Name.containsKey(cityId)) {
                 areaInfo.append(areaId2Name.get(cityId));
             }
-            if(StringUtils.isNotEmpty(areaId) && areaId2Name.containsKey(areaId)){
+            if (StringUtils.isNotEmpty(areaId) && areaId2Name.containsKey(areaId)) {
                 areaInfo.append(areaId2Name.get(areaId));
             }
             unitListResp.setAreaInfo(areaInfo.toString());
             unitListResp.setUnitTypeDesc(UnitType.getValue(unit.getUnitType()));
             unitListResp.setSuperviseLevelDesc(UnitSuperviseLevel.getValue(unit.getSuperviseLevel()));
 
-            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
-            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+            Integer onlineStatus = unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if (StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)) {
                 unitListResp.setOnlineStatus(BooleanEnum.YES.id);
             }
             unitListResps.add(unitListResp);
         }
 
-        PageBean<UnitListResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),unitListResps);
+        PageBean<UnitListResp> pageBean = new PageBean<>(currentPage, pageSize, (int) page.getTotal(), unitListResps);
         return pageBean;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean insertOrUpdate(UnitInfo unitInfo){
+    public Boolean insertOrUpdate(UnitInfo unitInfo) {
         Unit unit = new Unit();
-        BeanUtils.copyProperties(unitInfo,unit);
+        BeanUtils.copyProperties(unitInfo, unit);
 
         List<String> deviceIds = unitInfo.getDeviceIds();
-        if(StringUtils.isEmpty(unit.getId())){
+        if (StringUtils.isEmpty(unit.getId())) {
             unit.setStatus(Status.NORMAL.id);
 
             int result = super.insert(unit);
-            if(result>0) {
+            if (result > 0) {
                 Integer unitId = unit.getId();
-                addUnitDevices(unitId,deviceIds);
+                addUnitDevices(unitId, deviceIds);
             }
             return result > 0;
-        }else {
-            updateUnitDevice(unitInfo,unitInfo.getId());
+        } else {
+            updateUnitDevice(unitInfo, unitInfo.getId());
 
             return super.updateByPrimaryKeySelective(unit) > 0;
         }
@@ -190,16 +190,17 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     /**
      * 更新单位网关关系
+     *
      * @param unitInfo
      * @param unitId
      */
     private void updateUnitDevice(UnitInfo unitInfo, Integer unitId) {
         List<String> deviceIds = unitInfo.getDeviceIds();
-        if(StringUtils.isEmpty(deviceIds)){
+        if (StringUtils.isEmpty(deviceIds)) {
             unitManualMapper.deleteDeviceByUnitId(unitId);
-        }else{
-            Map<String,Object> map = new HashMap<>();
-            map.put("unitId",unitId);
+        } else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("unitId", unitId);
             List<UnitDevice> unitDeviceList = unitDeviceService.selectByMap(map);
 
             String oldDeviceId;
@@ -208,34 +209,35 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             for (UnitDevice unitDevice : unitDeviceList) {
                 oldDeviceId = unitDevice.getDeviceId();
                 boolean result = deviceIds.remove(oldDeviceId);
-                if(!result){
+                if (!result) {
                     delUnitDeviceIds.add(unitDevice.getId());
                     removeDeviceIds.add(unitDevice.getDeviceId());
                 }
             }
-            if(StringUtils.isNotEmpty(delUnitDeviceIds)){
+            if (StringUtils.isNotEmpty(delUnitDeviceIds)) {
                 unitDeviceService.deleteBatchIds(delUnitDeviceIds);
                 unitDeviceCache.removeUnitDevice(removeDeviceIds.toArray(new String[]{}));
             }
-            addUnitDevices(unitId,deviceIds);
+            addUnitDevices(unitId, deviceIds);
         }
 
     }
 
     /**
      * 添加单位网关关系
+     *
      * @param unitId
      * @param deviceIds
      */
     private void addUnitDevices(Integer unitId, List<String> deviceIds) {
-        if(StringUtils.isEmpty(deviceIds)){
+        if (StringUtils.isEmpty(deviceIds)) {
             return;
         }
         List<UnitDevice> unitDevicesDb = unitDeviceService.selectByDeviceIds(deviceIds);
         List<UnitDevice> upList = new ArrayList<>();
         for (UnitDevice unitDevice : unitDevicesDb) {
-            if(deviceIds.contains(unitDevice.getDeviceId())){
-                if(unitDevice.getUnitId().equals(unitId)) {
+            if (deviceIds.contains(unitDevice.getDeviceId())) {
+                if (unitDevice.getUnitId().equals(unitId)) {
                     UnitDevice upUnitDevice = new UnitDevice();
                     upUnitDevice.setId(unitDevice.getId());
                     upUnitDevice.setUnitId(unitId);
@@ -252,11 +254,11 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitDevice = new UnitDevice();
             unitDevice.setUnitId(unitId);
             unitDevice.setDeviceId(deviceId);
-            setUserNameAndTime(unitDevice,true);
+            setUserNameAndTime(unitDevice, true);
             unitDeviceList.add(unitDevice);
         }
         unitDeviceService.insertBatch(unitDeviceList);
-        if(StringUtils.isNotEmpty(upList)){
+        if (StringUtils.isNotEmpty(upList)) {
             unitDeviceService.updateByList(upList);
         }
 
@@ -269,24 +271,24 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     public List<DeviceResp> getUnallotDevice(Integer unitId) {
         List<DeviceResp> deviceRespList = new ArrayList<>();
         List<Device> devices = deviceRepository.getDevicesByCodes(null);
-        if(StringUtils.isEmpty(devices)){
+        if (StringUtils.isEmpty(devices)) {
             return deviceRespList;
         }
 
-        Map<String,Device> deviceMap = deviceCache.addDevices(devices);
+        Map<String, Device> deviceMap = deviceCache.addDevices(devices);
         List<String> deviceIds = unitManualMapper.selectDevicesExcludeUnitId(unitId);
 
-        if(StringUtils.isNotNull(deviceIds)) {
+        if (StringUtils.isNotNull(deviceIds)) {
             for (String deviceId : deviceIds) {
                 deviceMap.remove(deviceId);
             }
         }
 
-        if(StringUtils.isNotEmpty(deviceMap)){
+        if (StringUtils.isNotEmpty(deviceMap)) {
             DeviceResp deviceResp;
             for (Map.Entry<String, Device> deviceEntry : deviceMap.entrySet()) {
                 deviceResp = new DeviceResp();
-                BeanUtils.copyProperties(deviceEntry.getValue(),deviceResp);
+                BeanUtils.copyProperties(deviceEntry.getValue(), deviceResp);
                 deviceRespList.add(deviceResp);
             }
         }
@@ -294,21 +296,21 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     }
 
     @Override
-    public PieResp getUnitSpreadByAreaAndScope(Integer areaId,DataScope dataScope) {
-        Map<String,Object> queryMap = new HashMap<>();
+    public PieResp getUnitSpreadByAreaAndScope(Integer areaId, DataScope dataScope) {
+        Map<String, Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
 
-        queryMap.put("precinctScope",dataScope);
+        queryMap.put("precinctScope", dataScope);
         List<Unit> unitList = selectByMap(queryMap);
 
-        Map<Integer,PieData> pieDataMap = new HashMap<>();
+        Map<Integer, PieData> pieDataMap = new HashMap<>();
         PieResp pieResp = BuildDefaultResultUtil.buildDefaultPieResp(pieDataMap);
 
         for (Unit unit : unitList) {
             Integer unitType = unit.getUnitType();
-            if(pieDataMap.containsKey(unitType)){
+            if (pieDataMap.containsKey(unitType)) {
                 PieData pieData = pieDataMap.get(unitType);
-                pieData.setValue(pieData.getValue()+1);
+                pieData.setValue(pieData.getValue() + 1);
             }
         }
 
@@ -318,11 +320,11 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Override
     public AreaUnitMapResp getUnitMapDataByAreaAndScope(Integer areaId, Integer unitType, DataScope dataScope) {
-        Map<String,Object> queryMap = new HashMap<>();
+        Map<String, Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
 
-        queryMap.put("unitType",unitType);
-        queryMap.put("precinctScope",dataScope);
+        queryMap.put("unitType", unitType);
+        queryMap.put("precinctScope", dataScope);
         List<Unit> unitList = selectByMap(queryMap);
 
         AreaUnitMapResp areaUnitMapResp = new AreaUnitMapResp();
@@ -331,12 +333,12 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Integer onlineCount = 0;
         for (Unit unit : unitList) {
             UnitInfo unitInfo = new UnitInfo();
-            BeanUtils.copyProperties(unit,unitInfo);
+            BeanUtils.copyProperties(unit, unitInfo);
             unitInfos.add(unitInfo);
             unitIdList.add(unit.getId());
 
-            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
-            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+            Integer onlineStatus = unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if (StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)) {
                 onlineCount++;
             }
         }
@@ -349,27 +351,28 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     /**
      * 获取管辖区单位统计数据
+     *
      * @param unitIdList
      * @param onlineCount
      * @return
      */
     private CountDataInfo getCountDataInfo(List<Integer> unitIdList, Integer onlineCount) {
         Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put("unitIds",unitIdList);
+        queryMap.put("unitIds", unitIdList);
         Date now = new Date();
         Date startTime = DateUtil.getStartDate(now);
         Date endTime = DateUtil.getEndDate(now);
-        queryMap.put("startDate",startTime);
-        queryMap.put("endDate",endTime);
+        queryMap.put("startDate", startTime);
+        queryMap.put("endDate", endTime);
         List<FacilitiesAlarm> facilitiesAlarmList = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         Integer alarmCount = 0;
         Integer earlyWarningCount = 0;
         for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
             Integer alarmType = facilitiesAlarm.getAlarmType();
-            if(StringUtils.isNotNull(alarmType) && AlarmType.ALARM.id.equals(alarmType)){
+            if (StringUtils.isNotNull(alarmType) && AlarmType.ALARM.id.equals(alarmType)) {
                 alarmCount++;
             }
-            if(StringUtils.isNotNull(alarmType) && AlarmType.EARLY_WARNING.id.equals(alarmType)){
+            if (StringUtils.isNotNull(alarmType) && AlarmType.EARLY_WARNING.id.equals(alarmType)) {
                 earlyWarningCount++;
             }
         }
@@ -379,20 +382,20 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         countDataInfo.setAlarmCount(alarmCount);
         countDataInfo.setEarlyWarningCount(earlyWarningCount);
         countDataInfo.setOnlineRate(0);
-        if(unitCount != 0) {
-            countDataInfo.setOnlineRate((int) BigDecimalUtil.mul(BigDecimalUtil.div(onlineCount, unitCount,2),100));
+        if (unitCount != 0) {
+            countDataInfo.setOnlineRate((int) BigDecimalUtil.mul(BigDecimalUtil.div(onlineCount, unitCount, 2), 100));
         }
         countDataInfo.setUnitCount(unitCount);
         return countDataInfo;
     }
 
     @Override
-    public List<AppUnitResp> selectByNameAndPageScope(String name, BasePage basePage,DataScope dataScope) {
-        PageHelper.startPage(basePage.getCurrentPage(),basePage.getPageSize());
+    public List<AppUnitResp> selectByNameAndPageScope(String name, BasePage basePage, DataScope dataScope) {
+        PageHelper.startPage(basePage.getCurrentPage(), basePage.getPageSize());
 
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitNameLike",name);
-        queryMap.put("precinctScope",dataScope);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("unitNameLike", name);
+        queryMap.put("precinctScope", dataScope);
 
         List<Unit> unitList = selectByMap(queryMap);
 
@@ -409,8 +412,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     @Override
     public AppUnitDetailResp getAppUnitDetailById(Integer unitId) {
         Unit unit = selectByPrimaryKey(unitId);
-        if(StringUtils.isNull(unit)){
-            throw new RequestException(ResponseCode.FAIL.code,"单位不存在");
+        if (StringUtils.isNull(unit)) {
+            throw new RequestException(ResponseCode.FAIL.code, "单位不存在");
         }
 
         AppUnitDetailResp appUnitDetailResp = new AppUnitDetailResp();
@@ -426,7 +429,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         /*获取管辖区信息*/
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
-        if(StringUtils.isNotNull(precinct)){
+        if (StringUtils.isNotNull(precinct)) {
             appUnitDetailResp.setPrecinctName(precinct.getPrecinctName());
             appUnitDetailResp.setDutyName(precinct.getDutyName());
             appUnitDetailResp.setDutyPhone(precinct.getDutyPhone());
@@ -436,12 +439,12 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
         int leakageAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.EARLY_WARNING.id);
         appUnitDetailResp.setSomkeStatus(Status.NORMAL.id);
-        if(somkeAlarmCount>0){
+        if (somkeAlarmCount > 0) {
             appUnitDetailResp.setSomkeStatus(Status.DISABLE.id);
         }
 
         appUnitDetailResp.setLeakageStatus(Status.NORMAL.id);
-        if(leakageAlarmCount>0){
+        if (leakageAlarmCount > 0) {
             appUnitDetailResp.setLeakageStatus(Status.DISABLE.id);
         }
 
@@ -467,6 +470,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     /**
      * 设置实时数据
+     *
      * @param unitId
      * @param voltages
      * @param electriccurrents
@@ -475,57 +479,57 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
      */
     private void setItemData(Integer unitId, List<ItemDataResp> voltages, List<ItemDataResp> electriccurrents, List<ItemDataResp> cableTemperatures, List<ItemDataResp> leakages) {
         List<String> deviceIds = getDevicesByUnitId(unitId);
-        if(StringUtils.isEmpty(deviceIds)){
+        if (StringUtils.isEmpty(deviceIds)) {
             return;
         }
 
         //获取单位下所有数据项
         List<DeviceItem> items = new ArrayList<>();
-        Map<String,List<DeviceItem>> deviceItemMap =  deviceItemRepository.getDeviceItemInfosByCodes(deviceIds);
-        if(StringUtils.isNotEmpty(deviceItemMap)){
+        Map<String, List<DeviceItem>> deviceItemMap = deviceItemRepository.getDeviceItemInfosByCodes(deviceIds);
+        if (StringUtils.isNotEmpty(deviceItemMap)) {
             for (List<DeviceItem> deviceItems : deviceItemMap.values()) {
                 items.addAll(deviceItems);
             }
         }
         Map<String, List<DeviceItem>> deviceCalcItemMap = deviceItemRepository.getCalcItemsByDeviceCodes(deviceIds);
-        if(StringUtils.isNotEmpty(deviceCalcItemMap)){
+        if (StringUtils.isNotEmpty(deviceCalcItemMap)) {
             for (List<DeviceItem> deviceItems : deviceCalcItemMap.values()) {
                 items.addAll(deviceItems);
             }
         }
-        if(StringUtils.isEmpty(items)){
+        if (StringUtils.isEmpty(items)) {
             return;
         }
 
         //查找类型和数据项的关系
         List<String> needFindItemIds = new ArrayList<>();
         Integer btype;
-        for(DeviceItem deviceItem : items){
+        for (DeviceItem deviceItem : items) {
             btype = deviceItem.getBtype();
-            if(!CommonConstant.UNIT_TREND_TYPES.contains(btype)){
+            if (!CommonConstant.UNIT_TREND_TYPES.contains(btype)) {
                 continue;
             }
             needFindItemIds.add(deviceItem.getId());
         }
 
         Map<String, DeviceItemRealTimeData> realTimeDataMap = deviceItemRepository.getDeviceItemRealTimeDatasByItemIds(needFindItemIds);
-        for(DeviceItem deviceItem : items){
+        for (DeviceItem deviceItem : items) {
             ItemDataResp itemDataResp = new ItemDataResp();
             itemDataResp.setDisplayname(deviceItem.getDisplayname());
             itemDataResp.setUnit(deviceItem.getUnit());
             itemDataResp.setVal(CommonConstant.ITEM_INITIAL_VALUE);
-            if(realTimeDataMap.containsKey(deviceItem.getId())){
+            if (realTimeDataMap.containsKey(deviceItem.getId())) {
                 itemDataResp.setVal(realTimeDataMap.get(deviceItem.getId()).getVal());
-                if(ItemBtype.VOLTAGE.id.equals(deviceItem.getBtype())){
+                if (ItemBtype.VOLTAGE.id.equals(deviceItem.getBtype())) {
                     voltages.add(itemDataResp);
                 }
-                if(ItemBtype.LEAKAGE.id.equals(deviceItem.getBtype())){
+                if (ItemBtype.LEAKAGE.id.equals(deviceItem.getBtype())) {
                     leakages.add(itemDataResp);
                 }
-                if(ItemBtype.CABLE_TEMPERATURE.id.equals(deviceItem.getBtype())){
+                if (ItemBtype.CABLE_TEMPERATURE.id.equals(deviceItem.getBtype())) {
                     cableTemperatures.add(itemDataResp);
                 }
-                if(ItemBtype.ELECTRICCURRENT.id.equals(deviceItem.getBtype())){
+                if (ItemBtype.ELECTRICCURRENT.id.equals(deviceItem.getBtype())) {
                     electriccurrents.add(itemDataResp);
                 }
             }
@@ -534,29 +538,29 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     private List<SwitchResp> getSwitchResps(Integer unitId) {
         //找到对应遥控数据项
-        Map<String,Object> map = new HashMap<>();
-        map.put("unitId",unitId);
-        map.put("type",StructType.REMOTE.id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("unitId", unitId);
+        map.put("type", StructType.REMOTE.id);
         List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(map);
-        Map<Integer,Map<Integer,DiagramItemDto>> dsIdItemMap = new HashMap<>();
+        Map<Integer, Map<Integer, DiagramItemDto>> dsIdItemMap = new HashMap<>();
         for (DiagramItemDto diagramItem : diagramItems) {
-            if(dsIdItemMap.containsKey(diagramItem.getDsId())){
-                dsIdItemMap.get(diagramItem.getDsId()).put(diagramItem.getItemType(),diagramItem);
-            }else{
-                Map<Integer,DiagramItemDto> typeItemMap = new HashMap<>();
-                typeItemMap.put(diagramItem.getItemType(),diagramItem);
-                dsIdItemMap.put(diagramItem.getDsId(),typeItemMap);
+            if (dsIdItemMap.containsKey(diagramItem.getDsId())) {
+                dsIdItemMap.get(diagramItem.getDsId()).put(diagramItem.getItemType(), diagramItem);
+            } else {
+                Map<Integer, DiagramItemDto> typeItemMap = new HashMap<>();
+                typeItemMap.put(diagramItem.getItemType(), diagramItem);
+                dsIdItemMap.put(diagramItem.getDsId(), typeItemMap);
             }
         }
 
         List<SwitchResp> switchResps = new ArrayList<>();
-        if(StringUtils.isNotEmpty(dsIdItemMap)){
+        if (StringUtils.isNotEmpty(dsIdItemMap)) {
             for (Map<Integer, DiagramItemDto> typeItemMap : dsIdItemMap.values()) {
                 DiagramItemDto ykItem = typeItemMap.get(DiaItemType.TELECONTROL.id);
                 DiagramItemDto switchItem = typeItemMap.get(DiaItemType.ALARM.id);
 
-                if(StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
-                    String status = deviceItemOpertionService.getYaokongStatus(ykItem.getItemId(),switchItem.getItemId());
+                if (StringUtils.isNotNull(ykItem) && StringUtils.isNotNull(switchItem)) {
+                    String status = deviceItemOpertionService.getYaokongStatus(ykItem.getItemId(), switchItem.getItemId());
                     List<SelectDto> selectDtos = deviceItemOpertionService.getYaokongEnumList(ykItem.getItemId());
 
                     SwitchResp switchResp = new SwitchResp();
@@ -572,30 +576,30 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     }
 
     @Override
-    public PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope,SearchReq searchReq){
-        Map<String,Object> queryMap = new HashMap<>();
+    public PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope, SearchReq searchReq) {
+        Map<String, Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        queryMap.put("unitId",searchReq.getUnitId());
-        queryMap.put("type",StructType.REMOTE.id);
+        queryMap.put("unitId", searchReq.getUnitId());
+        queryMap.put("type", StructType.REMOTE.id);
         List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
-        if(StringUtils.isEmpty(diagramItems)){
+        if (StringUtils.isEmpty(diagramItems)) {
             return new PageBean<>();
         }
 
-        Map<Integer,List<DiagramItemDto>> unitId2DiagramItems = new HashMap<>();
+        Map<Integer, List<DiagramItemDto>> unitId2DiagramItems = new HashMap<>();
         List<DiagramItemDto> tempDiagramItems;
         Integer unitId;
         Set<Integer> unitIds = new HashSet<>();
-        for(DiagramItemDto diagramItem : diagramItems){
+        for (DiagramItemDto diagramItem : diagramItems) {
             unitId = diagramItem.getUnitId();
             unitIds.add(unitId);
-            tempDiagramItems = unitId2DiagramItems.containsKey(unitId)?unitId2DiagramItems.get(unitId):new ArrayList<>();
+            tempDiagramItems = unitId2DiagramItems.containsKey(unitId) ? unitId2DiagramItems.get(unitId) : new ArrayList<>();
             tempDiagramItems.add(diagramItem);
-            unitId2DiagramItems.put(unitId,tempDiagramItems);
+            unitId2DiagramItems.put(unitId, tempDiagramItems);
         }
 
-        Map<Integer,String> unitId2Name = new HashMap<>();
-        if(StringUtils.isNotEmpty(unitIds)) {
+        Map<Integer, String> unitId2Name = new HashMap<>();
+        if (StringUtils.isNotEmpty(unitIds)) {
             List<Unit> unitList = selectBatchIds(unitIds);
             for (Unit unit : unitList) {
                 unitId2Name.put(unit.getId(), unit.getUnitName());
@@ -603,7 +607,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
 
         List<List<UnitSwitchResp>> unitSwitchList = new ArrayList<>();
-        for(Map.Entry<Integer,List<DiagramItemDto>> entry : unitId2DiagramItems.entrySet()) {
+        for (Map.Entry<Integer, List<DiagramItemDto>> entry : unitId2DiagramItems.entrySet()) {
             Map<Integer, Map<Integer, DiagramItemDto>> dsIdItemMap = new HashMap<>();
             for (DiagramItemDto diagramItem : diagramItems) {
                 if (dsIdItemMap.containsKey(diagramItem.getDsId())) {
@@ -639,8 +643,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             }
         }
 
-        List<List<UnitSwitchResp>> resultList = PageUtil.pagedList(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList);
-        PageBean<List<UnitSwitchResp>> pageBean = new PageBean<>(searchReq.getCurrentPage(),searchReq.getPageSize(),unitSwitchList.size(),resultList);
+        List<List<UnitSwitchResp>> resultList = PageUtil.pagedList(searchReq.getCurrentPage(), searchReq.getPageSize(), unitSwitchList);
+        PageBean<List<UnitSwitchResp>> pageBean = new PageBean<>(searchReq.getCurrentPage(), searchReq.getPageSize(), unitSwitchList.size(), resultList);
         return pageBean;
     }
 
@@ -654,8 +658,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         UnitMapResp unitMapResp = new UnitMapResp();
 
         Unit unit = selectByPrimaryKey(unitId);
-        if(StringUtils.isNull(unit)){
-            throw new RequestException(ResponseCode.FAIL.code,"单位不存在");
+        if (StringUtils.isNull(unit)) {
+            throw new RequestException(ResponseCode.FAIL.code, "单位不存在");
         }
         UnitInfo unitInfo = new UnitInfo();
         unitInfo.setId(unitId);
@@ -678,33 +682,33 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
         /*获取管辖区信息*/
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
-        if(StringUtils.isNotNull(precinct)){
+        if (StringUtils.isNotNull(precinct)) {
             unitInfo.setPrecinctName(precinct.getPrecinctName());
             unitInfo.setDutyName(precinct.getDutyName());
             unitInfo.setDutyPhone(precinct.getDutyPhone());
         }
         unitMapResp.setUnitInfo(unitInfo);
 
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitId",unitId);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("unitId", unitId);
         Date now = new Date();
         Date startTime = DateUtil.getStartDate(now);
         Date endTime = DateUtil.getEndDate(now);
-        queryMap.put("startDate",startTime);
-        queryMap.put("endDate",endTime);
-        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
-        List<Map<String,Object>> alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
+        queryMap.put("startDate", startTime);
+        queryMap.put("endDate", endTime);
+        queryMap.put("misreport", FaMisreportType.EFFECTIVE.id);
+        List<Map<String, Object>> alarmResultList = manageManualMapper.countFaTypeNumByMap(queryMap);
         Integer allCount = 0;
         for (Map<String, Object> alarmCountMap : alarmResultList) {
             Object alarmTypeObj = alarmCountMap.get("alarmType");
-            if(StringUtils.isNotNull(alarmTypeObj)){
+            if (StringUtils.isNotNull(alarmTypeObj)) {
                 Integer alramType = Integer.parseInt(alarmTypeObj.toString());
                 Integer alarmNum = Integer.parseInt(alarmCountMap.get("alarmNum").toString());
-                if(AlarmType.ALARM.id.equals(alramType)){
+                if (AlarmType.ALARM.id.equals(alramType)) {
                     unitMapResp.setAlarmCount(alarmNum);
                     allCount = allCount + alarmNum;
                 }
-                if(AlarmType.EARLY_WARNING.id.equals(alramType)){
+                if (AlarmType.EARLY_WARNING.id.equals(alramType)) {
                     unitMapResp.setEarlyWarningCount(alarmNum);
                     allCount = allCount + alarmNum;
                 }
@@ -725,7 +729,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         /*获取当前烟感、漏电状态*/
         int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
         unitRealtimeDataResp.setSomkeStatus(Status.NORMAL.id);
-        if(somkeAlarmCount>0){
+        if (somkeAlarmCount > 0) {
             unitRealtimeDataResp.setSomkeStatus(Status.DISABLE.id);
         }
 
@@ -749,45 +753,45 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Override
     public CountDataInfo getUnitTotalByScope(DataScope dataScope) {
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("precinctScope",dataScope);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("precinctScope", dataScope);
         List<Unit> unitList = selectByMap(queryMap);
 
         List<Integer> unitIdList = new ArrayList<>();
         Integer onlineCount = 0;
         for (Unit unit : unitList) {
             unitIdList.add(unit.getId());
-            Integer onlineStatus =  unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
-            if(StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)){
+            Integer onlineStatus = unitDeviceCache.getUnitOnlineStatus(unit.getId().toString());
+            if (StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)) {
                 onlineCount++;
             }
         }
-        return getCountDataInfo(unitIdList,onlineCount);
+        return getCountDataInfo(unitIdList, onlineCount);
     }
 
     @Override
-    public List<DeviceResp> getDeviceByUnitId(Integer unitId){
+    public List<DeviceResp> getDeviceByUnitId(Integer unitId) {
         List<DeviceResp> deviceRespList = new ArrayList<>();
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("unitId",unitId);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("unitId", unitId);
         List<UnitDevice> unitDevices = unitDeviceService.selectByMap(queryMap);
-        if(StringUtils.isEmpty(unitDevices)){
+        if (StringUtils.isEmpty(unitDevices)) {
             return deviceRespList;
         }
 
-        List<String> deviceIds= new ArrayList<>();
-        for(UnitDevice unitDevice:unitDevices){
+        List<String> deviceIds = new ArrayList<>();
+        for (UnitDevice unitDevice : unitDevices) {
             deviceIds.add(unitDevice.getDeviceId());
         }
         List<Device> devices = deviceRepository.getDevicesByCodes(deviceIds);
-        if(StringUtils.isEmpty(devices)){
-            return  deviceRespList;
+        if (StringUtils.isEmpty(devices)) {
+            return deviceRespList;
         }
 
         DeviceResp deviceResp;
-        for(Device device: devices) {
+        for (Device device : devices) {
             deviceResp = new DeviceResp();
-            BeanUtils.copyProperties(device,deviceResp);
+            BeanUtils.copyProperties(device, deviceResp);
             deviceRespList.add(deviceResp);
         }
         return deviceRespList;
@@ -795,15 +799,15 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Override
     public List<UnitListResp> getUnitListByPrecinctIds(List<Integer> precinctIds) {
-        DataScope dataScope = new DataScope("precinct_id",precinctIds);
-        Map<String,Object> map = new HashMap<>();
-        map.put("precinctScope",dataScope);
+        DataScope dataScope = new DataScope("precinct_id", precinctIds);
+        Map<String, Object> map = new HashMap<>();
+        map.put("precinctScope", dataScope);
         List<Unit> unitList = selectByMap(map);
 
         List<UnitListResp> unitListResps = new ArrayList<>();
         for (Unit unit : unitList) {
             UnitListResp unitListResp = new UnitListResp();
-            BeanUtils.copyProperties(unit,unitListResp);
+            BeanUtils.copyProperties(unit, unitListResp);
             unitListResps.add(unitListResp);
         }
         return unitListResps;
@@ -811,17 +815,17 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Override
     public List<UnitListResp> getUnitListByNameAndScope(String unitName, DataScope dataScope) {
-        Map<String,Object> map = new HashMap<>();
-        map.put("precinctScope",dataScope);
-        if(StringUtils.isNotEmpty(unitName)){
-            map.put("unitNameLike",unitName);
+        Map<String, Object> map = new HashMap<>();
+        map.put("precinctScope", dataScope);
+        if (StringUtils.isNotEmpty(unitName)) {
+            map.put("unitNameLike", unitName);
         }
         List<Unit> unitList = selectByMap(map);
 
         List<UnitListResp> unitListResps = new ArrayList<>();
         for (Unit unit : unitList) {
             UnitListResp unitListResp = new UnitListResp();
-            BeanUtils.copyProperties(unit,unitListResp);
+            BeanUtils.copyProperties(unit, unitListResp);
             unitListResps.add(unitListResp);
         }
         return unitListResps;
