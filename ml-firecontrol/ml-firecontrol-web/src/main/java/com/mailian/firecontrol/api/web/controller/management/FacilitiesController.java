@@ -9,7 +9,6 @@ import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.FaSystemType;
-import com.mailian.firecontrol.common.enums.StructType;
 import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
 import com.mailian.firecontrol.dto.ShiroUser;
@@ -28,9 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/management/facilities")
@@ -93,11 +90,6 @@ public class FacilitiesController extends BaseController {
                 }
             }
         }
-
-        Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("facilitiesId",faId);
-        queryMap.put("structType",StructType.FACILITY.id);
-        facilitiesInfo.setDiagramStructs(diagramStructService.getDiagramStructByMap(queryMap));
         return ResponseResult.buildOkResult(facilitiesInfo);
     }
 
