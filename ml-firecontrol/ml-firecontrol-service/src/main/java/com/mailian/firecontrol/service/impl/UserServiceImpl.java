@@ -9,7 +9,6 @@ import com.mailian.core.enums.Status;
 import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.MD5Util;
 import com.mailian.core.util.StringUtils;
-import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.dao.auto.mapper.UserMapper;
 import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
@@ -143,7 +142,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
         BeanUtils.copyProperties(userReq,user);
         if(StringUtils.isEmpty(userReq.getId())){
             user.setStatus(StringUtils.nvl(user.getStatus(),Status.NORMAL.id));
-            user.setPassword(MD5Util.md5(CommonConstant.DEFAULT_PASSWORD));
+            user.setPassword(MD5Util.md5(user.getPassword()));
             result = insert(user);
 
             if(result>0){
@@ -155,6 +154,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
                 addUserPrecincts(uid,precinctIds);
             }
         }else{
+            user.setPassword(null);
             result = updateByPrimaryKeySelective(user);
             Integer uid = user.getId();
             if(result>0){

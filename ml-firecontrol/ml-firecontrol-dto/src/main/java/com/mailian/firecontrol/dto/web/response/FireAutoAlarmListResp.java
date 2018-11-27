@@ -16,7 +16,7 @@ public class FireAutoAlarmListResp {
     @ApiModelProperty(value = "设施名称")
     private String facilitiesName;
     @ApiModelProperty(value = "是否误报")
-    private String misreport;
+    private Integer misreport;
     @ApiModelProperty(value = "当前状态")
     private String curStatus;
     @ApiModelProperty(value = "告警时间")
@@ -54,11 +54,11 @@ public class FireAutoAlarmListResp {
         this.facilitiesName = facilitiesName;
     }
 
-    public String getMisreport() {
+    public Integer getMisreport() {
         return misreport;
     }
 
-    public void setMisreport(String misreport) {
+    public void setMisreport(Integer misreport) {
         this.misreport = misreport;
     }
 

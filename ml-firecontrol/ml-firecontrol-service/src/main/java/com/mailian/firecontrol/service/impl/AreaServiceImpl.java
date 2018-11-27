@@ -94,24 +94,58 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
     public List<AreaResp> selectAreaAndUnitList(String areaName, DataScope dataScope) {
         AreaService areaService = (AreaService) AopContext.currentProxy();
         List<AreaResp> areaResps = areaService.selectAll();
-
+        Map<Integer,AreaResp> areaRespMap = new HashMap<>();
+        for (AreaResp areaResp : areaResps) {
+            areaRespMap.put(areaResp.getId(),areaResp);
+        }
+        
+        List<AreaResp> newAreaList = new ArrayList<>();
         if(StringUtils.isNotNull(dataScope)){
             List<Precinct> precincts = precinctMapper.selectBatchIds(dataScope.getDataIds());
-            appendPrecincts(areaResps, precincts);
+            appendPrecinctsExclude(newAreaList, precincts,areaRespMap);
 
             //添加对应单位
             Map<String,Object> queryMap = new HashMap<>();
             queryMap.put("precinctScope",dataScope);
             List<Unit> units = unitMapper.selectByMap(queryMap);
-            appendUnits(areaResps,units);
-            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName,dataScope.getDataIds());
+            appendUnits(newAreaList,units);
+            return TreeParser.getTreeListByFilter("0",newAreaList,true,areaName,dataScope.getDataIds());
         }else{
             List<Precinct> precincts = precinctMapper.selectByMap(null);
-            appendPrecincts(areaResps, precincts);
+            appendPrecinctsExclude(newAreaList, precincts,areaRespMap);
 
             List<Unit> units = unitMapper.selectByMap(null);
-            appendUnits(areaResps,units);
-            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
+            appendUnits(newAreaList,units);
+            return TreeParser.getTreeListByFilter("0",newAreaList,true,areaName);
+        }
+    }
+
+    private void appendPrecinctsExclude(List<AreaResp> newAreaList, List<Precinct> precincts, Map<Integer,AreaResp> areaRespMap) {
+        AreaResp areaResp;
+        int i=1;
+        for (Precinct precinct : precincts) {
+            areaResp = new AreaResp();
+            areaResp.setId(precinct.getId());
+            areaResp.setAreaName(precinct.getPrecinctName());
+            areaResp.setAreaRank(AreaRank.PRECINCT.id);
+            areaResp.setOrderNum(i);
+            areaResp.setParentId(precinct.getAreaId());
+            areaResp.setDisStr("P");
+            if(areaRespMap.containsKey(precinct.getAreaId())){
+                newAreaList.add(areaRespMap.get(precinct.getAreaId()));
+                areaRespMap.remove(precinct.getAreaId());
+            }
+
+            if(areaRespMap.containsKey(precinct.getProvinceId())){
+                newAreaList.add(areaRespMap.get(precinct.getProvinceId()));
+                areaRespMap.remove(precinct.getProvinceId());
+            }
+            if(areaRespMap.containsKey(precinct.getCityId())){
+                newAreaList.add(areaRespMap.get(precinct.getCityId()));
+                areaRespMap.remove(precinct.getCityId());
+            }
+            newAreaList.add(areaResp);
+            i++;
         }
     }
 

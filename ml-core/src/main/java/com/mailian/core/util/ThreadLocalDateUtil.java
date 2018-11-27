@@ -30,7 +30,7 @@ public class ThreadLocalDateUtil {
         DateFormat timeFormat = threadTimeLocal.get();
         if(timeFormat==null){
             timeFormat = new SimpleDateFormat(date_format_time);
-            threadLocal.set(timeFormat);
+            threadTimeLocal.set(timeFormat);
         }
         return timeFormat;
     }

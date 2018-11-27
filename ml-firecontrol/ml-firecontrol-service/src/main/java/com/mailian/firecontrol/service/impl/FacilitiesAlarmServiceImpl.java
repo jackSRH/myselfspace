@@ -202,7 +202,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             BeanUtils.copyProperties(facilitiesAlarm,fireAutoAlarmListResp);
             fireAutoAlarmListResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
             fireAutoAlarmListResp.setCurStatus(AlarmHandleStatus.getValue(facilitiesAlarm.getHandleStatus()));
-            fireAutoAlarmListResp.setMisreport(FaMisreportType.getValue(facilitiesAlarm.getMisreport()));
+            fireAutoAlarmListResp.setMisreport(facilitiesAlarm.getMisreport());
             fireAutoAlarmListResp.setFacilitiesName(faId2Name.get(facilitiesAlarm.getFacilitiesId()));
             fireAutoAlarmListResp.setAlarmType(AlarmType.ALARM.desc);
             fireAutoAlarmListResps.add(fireAutoAlarmListResp);
