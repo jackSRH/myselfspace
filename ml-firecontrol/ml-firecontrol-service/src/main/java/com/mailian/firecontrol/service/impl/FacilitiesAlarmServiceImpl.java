@@ -25,7 +25,6 @@ import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.RemindCache;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
-import net.minidev.asm.ConvertDate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -496,7 +495,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         alarmLogComplete.setOptRole(roleName);
         alarmLogComplete.setOptTime(now);
         alarmLogComplete.setOptType(OptType.COMPLETE_ALARM.id);
-        addLogs.add(alarmLog);
+        addLogs.add(alarmLogComplete);
         alarmLogService.insertBatch(addLogs);
 
         remindCache.removeRemind(alarmDb.getAlarmId());
