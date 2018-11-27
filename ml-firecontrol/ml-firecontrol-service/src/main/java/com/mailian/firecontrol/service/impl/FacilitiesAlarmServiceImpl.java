@@ -9,6 +9,7 @@ import com.mailian.core.util.BigDecimalUtil;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.*;
+import com.mailian.firecontrol.common.util.DateUtils;
 import com.mailian.firecontrol.dao.auto.mapper.FacilitiesAlarmMapper;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
 import com.mailian.firecontrol.dao.auto.model.AlarmLog;
@@ -24,6 +25,7 @@ import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.RemindCache;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
+import net.minidev.asm.ConvertDate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -353,13 +355,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     @Override
     public AlarmNumResp getAlarmNumByAreaAndScope(Integer areaId, DataScope dataScope) {
         AlarmNumResp alarmNumResp = new AlarmNumResp();
-
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
 
-        Date now = new Date();
-        Date startTime = DateUtil.getStartDate(now);
-        Date endTime = DateUtil.getEndDate(now);
+        Date endTime = new Date();
+        Date startTime = DateUtil.getStartDate(DateUtil.getDateBeforeMonth(endTime,1));
         queryMap.put("precinctScope",dataScope);
         queryMap.put("startDate",startTime);
         queryMap.put("endDate",endTime);
@@ -459,6 +459,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             curAlarmResp.setAlarmStatus(facilitiesAlarm.getAlarmStatus());
             curAlarmResp.setAlarmTime(facilitiesAlarm.getAlarmTime());
             curAlarmResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
+            curAlarmResp.setAlarmDuration(DateUtils.getHourFromNow(facilitiesAlarm.getAlarmTime()));
             curAlarmResps.add(curAlarmResp);
         }
         return curAlarmResps;

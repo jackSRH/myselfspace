@@ -31,9 +31,7 @@ public class BuildDefaultResultUtil {
             PieData pieData = new PieData();
             pieData.setName(unitType.value);
             pieData.setValue(0);
-            if(StringUtils.isNotEmpty(pieDataMap)) {
-                pieDataMap.put(unitType.id, pieData);
-            }
+            pieDataMap.put(unitType.id, pieData);
             pieDataList.add(pieData);
         }
 
