@@ -12,11 +12,13 @@ import com.mailian.core.util.TreeParser;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.app.AppInfo;
 import com.mailian.firecontrol.dto.push.Alarm;
+import com.mailian.firecontrol.dto.push.DeviceItemRealTimeData;
 import com.mailian.firecontrol.dto.web.response.MenuResp;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
 import com.mailian.firecontrol.service.AlarmOpertionService;
 import com.mailian.firecontrol.service.AppService;
 import com.mailian.firecontrol.service.MenuService;
+import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,7 +51,6 @@ public class LoginController {
     private AppService appService;
     @Autowired
     private AlarmOpertionService alarmOpertionService;
-
 
     @Log(title = "系统",action = "登录")
     @ApiOperation(value = "登录", httpMethod = "POST")

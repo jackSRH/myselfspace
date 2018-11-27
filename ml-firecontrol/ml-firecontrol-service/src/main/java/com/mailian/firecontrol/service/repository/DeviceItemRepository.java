@@ -783,5 +783,4 @@ public class DeviceItemRepository {
         }
         return data;
     }
-
 }

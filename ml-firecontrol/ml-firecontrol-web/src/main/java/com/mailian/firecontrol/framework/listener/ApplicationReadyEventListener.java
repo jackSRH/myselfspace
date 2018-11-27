@@ -1,7 +1,10 @@
 package com.mailian.firecontrol.framework.listener;
 
 import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.dao.auto.model.UnitDevice;
 import com.mailian.firecontrol.framework.util.MqttTopicUtil;
+import com.mailian.firecontrol.service.UnitDeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -18,22 +21,21 @@ import java.util.Set;
 @Component
 public class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 
-    /*@Autowired
-    private DeviceRelationService deviceRelationService;*/
+    @Autowired
+    private UnitDeviceService unitDeviceService;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        /*List<DeviceRelation> deviceRelations =  deviceRelationService.selectByMap(null);
+        List<UnitDevice> unitDevices = unitDeviceService.selectByMap(null);
         Set<String> deviceIds = new HashSet<>();
-        for (DeviceRelation deviceRelation : deviceRelations) {
-            deviceIds.add(deviceRelation.getDid());
+        for (UnitDevice unitDevice : unitDevices) {
+            deviceIds.add(unitDevice.getDeviceId());
         }
 
         if(StringUtils.isNotEmpty(deviceIds)){
-            for (String deviceId : deviceIds) {
-                //订阅网关状态
+            for(String deviceId : deviceIds){
                 MqttTopicUtil.addDefaultTopic(deviceId);
             }
-        }*/
+        }
     }
 }

@@ -73,24 +73,27 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
             return status;
         }
 
-        int val = 0;
-        if(ItemStype.TRANSPORTYC.id.intValue() == statusItem.getStype() || ItemStype.OPERATIONYC.id.intValue() == statusItem.getStype()){
-            if(realTimeData.getVal() < 50){
-                val = 1;
-            }
-        }else{
-            val = Integer.valueOf(realTimeData.getVal().toString());
-        }
-
+        int stype = statusItem.getStype();
         String ykDesc = yaokongItem.getDesc();
-        String[] allType = ykDesc.split(CommonConstant.SPLIT_STR);
-        for (String typeStr : allType) {
-            String[] type = typeStr.split(":");
-            if(type.length == 2) {
-                status = val == 1?statusItem.getDesc1():statusItem.getDesc0();
+        String[] allType = ykDesc.split(";");
+        for(int i = 0; i<allType.length - 1; i++) {
+            String[] type = allType[i].split(":");
+            if(stype == ItemStype.TRANSPORTYX.id || stype == ItemStype.OPERATIONYX.id) {
+                if(type.length == 2) {
+                    status = realTimeData.getVal() == 1?statusItem.getDesc1():statusItem.getDesc0();
+                }else {
+                    if(Integer.valueOf(type[0]) == realTimeData.getVal().intValue()) {
+                        status = type[3];
+                    }
+                }
             }else {
-                if(Integer.valueOf(type[0]) == val) {
-                    status = type[3];
+                int rtData = realTimeData.getVal() < 50?0:1;
+                if(type.length == 2) {
+                    status = rtData == 1?"合":"分";
+                }else {
+                    if(Integer.valueOf(type[0]) == rtData) {
+                        status = type[3];
+                    }
                 }
             }
         }

@@ -19,6 +19,8 @@ public class CurAlarmResp {
     private Integer alarmStatus;
     @ApiModelProperty(value = "距离现在告警了多少小时")
     private Integer alarmDuration;
+    @ApiModelProperty(value = "告警类型 1:告警，2：预警")
+    private Integer alarmType;
 
     public Integer getAlarmDuration() {
         return alarmDuration;
@@ -65,5 +67,14 @@ public class CurAlarmResp {
 
     public void setAlarmContent(String alarmContent) {
         this.alarmContent = alarmContent;
+    }
+
+
+    public Integer getAlarmType() {
+        return alarmType;
+    }
+
+    public void setAlarmType(Integer alarmType) {
+        this.alarmType = alarmType;
     }
 }
