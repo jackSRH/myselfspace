@@ -700,7 +700,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         unitInfo.setLng(unit.getLng());
         unitInfo.setLat(unit.getLat());
         unitInfo.setUnitPic(unit.getUnitPic());
-
+        unitInfo.setUnitTypeDesc(UnitType.getValue(unit.getUnitType()));
         /*获取管辖区信息*/
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
         if (StringUtils.isNotNull(precinct)) {

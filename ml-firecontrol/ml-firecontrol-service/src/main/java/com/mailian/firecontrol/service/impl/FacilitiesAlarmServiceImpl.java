@@ -430,7 +430,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             queryMap.put("precinctIds",dataScope.getDataIds());
         }
         queryMap.put("alarmType",AlarmType.ALARM.id);
-        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
+//        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
         queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
         List<CurAlarmResp> curAlarmResps = new ArrayList<>();
