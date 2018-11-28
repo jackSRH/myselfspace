@@ -55,15 +55,18 @@ public class DeviceSubCache {
      */
     public Map<String,List<DeviceSub>> getSubsByCodes(List<String> deviceCodes){
         Map<String,List<DeviceSub>> codeSubMap = redisUtils.entries(CommonConstant.DEVICE_CODE_TO_DEVICE_SUB);
-        List<String> needFindCodes = new ArrayList<String>();
-        if(StringUtils.isNotNull(codeSubMap)){
-            for (String deviceCode : deviceCodes) {
-                if(!codeSubMap.containsKey(deviceCode)){
-                    needFindCodes.add(deviceCode);
-                }
+        Map<String,List<DeviceSub>> code2Subs = new HashMap<>();
+        if(StringUtils.isEmpty(codeSubMap)){
+            return code2Subs;
+        }
+
+        List<String> needFindCodes = new ArrayList<>();
+        for(String code :deviceCodes){
+            if (codeSubMap.containsKey(code)){
+                code2Subs.put(code,codeSubMap.get(code));
+            }else{
+                needFindCodes.add(code);
             }
-        }else{
-            codeSubMap = new HashMap<>();
         }
 
         //如果通过code在缓存中获取为null,则通过codes调接口获取
@@ -71,10 +74,10 @@ public class DeviceSubCache {
             List<DeviceSub> apiDeviceSubList = deviceSubRepository.getDeviceSubsByCodes(needFindCodes);
             Map<String,List<DeviceSub>> apiDeviceSubMap = updateDeviceSubs(apiDeviceSubList);
             if(StringUtils.isNotEmpty(apiDeviceSubMap)){
-                codeSubMap.putAll(apiDeviceSubMap);
+                code2Subs.putAll(apiDeviceSubMap);
             }
         }
-        return codeSubMap;
+        return code2Subs;
     }
 
     /**

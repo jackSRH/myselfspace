@@ -232,7 +232,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     //发送短信
                     dealSmsAndEmail(unitRedisInfo, alarm, alarmItemName, eqAlarmContent, sendSms, sendEmail);
                     //推送或者删除app消息
-                    pushAlarmInfoToApp(alarm.getAlarmid(), alarmSTime, eqAlarmContent, alarm.getEtime(), unitRedisInfo.getPrecinctId(),unitRedisInfo.getId());
+                    pushAlarmInfoToApp(alarm.getAlarmid(), alarmSTime, eqAlarmContent, etime, unitRedisInfo.getPrecinctId(),unitRedisInfo.getId());
                 }
 
                 facilitiesAlarm.setProvinceId(unitRedisInfo.getProvinceId());
