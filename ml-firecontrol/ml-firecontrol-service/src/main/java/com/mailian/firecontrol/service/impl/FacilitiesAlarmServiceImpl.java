@@ -343,10 +343,10 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     private void setRingRatio(AlarmAnalysisResp.NumInfo alarmNumInfo) {
         if(alarmNumInfo.getyAn()!=0){
             double ringRatio = BigDecimalUtil.div(BigDecimalUtil.sub(alarmNumInfo.gettAn(),alarmNumInfo.getyAn()),alarmNumInfo.getyAn());
-            alarmNumInfo.setRingRatio((int)ringRatio*100);
+            alarmNumInfo.setRingRatio((int)(ringRatio*100));
         }else{
             double ringRatio = BigDecimalUtil.div(BigDecimalUtil.sub(alarmNumInfo.gettAn(),alarmNumInfo.getyAn()),1);
-            alarmNumInfo.setRingRatio((int)ringRatio*100);
+            alarmNumInfo.setRingRatio((int)(ringRatio*100));
         }
     }
 
