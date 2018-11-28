@@ -66,8 +66,9 @@ public class NoticeCache {
                     String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,unitUid);
                     try {
                         umengPushRepository.sendUserAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
+                        log.error("用户端消息推送成功,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser);
                     } catch (Exception e) {
-                        log.error("消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
+                        log.error("用户端消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
                     }
                 }
             }
@@ -76,7 +77,7 @@ public class NoticeCache {
             List<Integer> uidList = systemManualMapper.selectUidsByPrecinctId(noticeInfo.getPrecinctId());
             List<Integer> adminUidList = systemManualMapper.selectAdminUserIds();
             for (Integer adminUid : adminUidList) {
-                if(!adminUidList.contains(adminUid)){
+                if(!uidList.contains(adminUid)){
                     uidList.add(adminUid);
                 }
             }
@@ -85,8 +86,9 @@ public class NoticeCache {
                 String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,uid);
                 try {
                     umengPushRepository.sendManagerAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
+                    log.error("管理端消息推送成功,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser);
                 } catch (Exception e) {
-                    log.error("消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
+                    log.error("管理端消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
                 }
             }
         }else{
@@ -96,14 +98,16 @@ public class NoticeCache {
             if(StringUtils.isNotEmpty(user.getUnitId())) {
                 try {
                     umengPushRepository.sendUserAndroidCustomizedcast(toUser, NoticeType.getValue(noticeInfo.getType().intValue()).value, noticeInfo.getType().intValue(), noticeInfo.getContent());
+                    log.error("用户端消息推送成功,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser);
                 } catch (Exception e) {
-                    log.error("消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
+                    log.error("用户端消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
                 }
             }else{
                 try {
                     umengPushRepository.sendManagerAndroidCustomizedcast(toUser, NoticeType.getValue(noticeInfo.getType().intValue()).value, noticeInfo.getType().intValue(), noticeInfo.getContent());
+                    log.error("管理端消息推送成功,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser);
                 } catch (Exception e) {
-                    log.error("消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
+                    log.error("管理端消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
                 }
             }
         }
