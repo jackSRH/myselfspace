@@ -336,6 +336,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         for (Unit unit : unitList) {
             UnitInfo unitInfo = new UnitInfo();
             BeanUtils.copyProperties(unit, unitInfo);
+            unitInfo.setUnitTypeDesc(UnitType.getValue(unitInfo.getUnitType()));
             unitInfos.add(unitInfo);
             unitIdList.add(unit.getId());
 
