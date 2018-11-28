@@ -87,4 +87,10 @@
     <select id="selectUidsByPrecinctId" resultType="java.lang.Integer">
         select distinct uid from t_user_precinct where precinct_id=#{precinctId,jdbcType=INTEGER}
     </select>
+    <select id="selectAdminUserIds" resultType="java.lang.Integer">
+        select ur.user_id from t_sys_user_role ur,t_sys_role r where r.id=ur.role_id and r.role_key='admin'
+    </select>
+    <select id="selectUidsByUnitId" resultType="java.lang.Integer">
+        select id from t_user where unit_id=#{unitId,jdbcType=INTEGER}
+    </select>
 </mapper>

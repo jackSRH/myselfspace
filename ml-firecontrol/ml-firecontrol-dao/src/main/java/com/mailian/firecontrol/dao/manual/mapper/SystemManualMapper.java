@@ -25,4 +25,8 @@ public interface SystemManualMapper {
     int countPrecinctByNameAndAreaId(@Param(value = "precinctName") String precinctName,@Param(value = "areaId") Integer areaId);
 
     List<Integer> selectUidsByPrecinctId(@Param(value = "precinctId") Integer precinctId);
+
+    List<Integer> selectAdminUserIds();
+
+    List<Integer> selectUidsByUnitId(@Param(value = "unitId") Integer unitId);
 }

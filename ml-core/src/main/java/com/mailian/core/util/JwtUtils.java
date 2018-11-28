@@ -61,9 +61,18 @@ public class JwtUtils {
                 .claim("username",userName)
                 .claim("password",password)
                 .compact();
+        setTokenToRedis(userName,token);
+        return token;
+    }
+
+    /**
+     *
+     * @param userName
+     * @param token
+     */
+    public void setTokenToRedis(String userName,String token){
         String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
         redisUtils.set(redisKey,token,CoreCommonConstant.REFRESH_TOKEN_TIME);
-        return token;
     }
 
     public Claims getClaimByToken(String token) {
@@ -87,7 +96,7 @@ public class JwtUtils {
      * @return
      */
     public boolean isRefreshToken(Claims claims){
-        return (System.currentTimeMillis() - claims.getIssuedAt().getTime())/(1000 * 60) > 30;
+        return (System.currentTimeMillis() - claims.getIssuedAt().getTime())/(1000 * 60) > 10;
     }
 
     /**

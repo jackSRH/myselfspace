@@ -331,6 +331,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         List<UnitInfo> unitInfos = new ArrayList<>();
         List<Integer> unitIdList = new ArrayList<>();
         Integer onlineCount = 0;
+
+        Set<Integer> precinctIdSet = new HashSet<>();
         for (Unit unit : unitList) {
             UnitInfo unitInfo = new UnitInfo();
             BeanUtils.copyProperties(unit, unitInfo);
@@ -341,7 +343,25 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             if (StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)) {
                 onlineCount++;
             }
+
+            precinctIdSet.add(unit.getPrecinctId());
         }
+
+        if(StringUtils.isNotEmpty(precinctIdSet)){
+           List<Precinct> precincts = precinctMapper.selectBatchIds(precinctIdSet);
+           Map<Integer,Precinct> precinctNameMap = new HashMap<>();
+            for (Precinct precinct : precincts) {
+                precinctNameMap.put(precinct.getId(),precinct);
+            }
+            for (UnitInfo unitInfo : unitInfos) {
+                if(precinctNameMap.containsKey(unitInfo.getPrecinctId())){
+                    Precinct precinct = precinctNameMap.get(unitInfo.getPrecinctId());
+                    unitInfo.setDutyName(precinct.getDutyName());
+                    unitInfo.setDutyPhone(precinct.getDutyPhone());
+                }
+            }
+        }
+
         areaUnitMapResp.setUnitInfos(unitInfos);
 
         CountDataInfo countDataInfo = getCountDataInfo(unitIdList, onlineCount);

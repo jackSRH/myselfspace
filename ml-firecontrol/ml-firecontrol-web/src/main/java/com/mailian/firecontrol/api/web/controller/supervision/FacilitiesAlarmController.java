@@ -228,15 +228,15 @@ public class FacilitiesAlarmController extends BaseController {
         Integer handleStatus = StringUtils.nvl(alarmDb.getHandleStatus(),AlarmHandleStatus.UNTREATED.id);
         if(AlarmHandleStatus.UNTREATED.id.equals(handleStatus) || AlarmHandleStatus.RESPONSE.id.equals(handleStatus)){
             if(AlarmMisreport.MISREPORT.id.equals(alarmHandleReq.getMisreport())){
-                facilitiesAlarmService.misreportAlarm(alarmDb,shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
+                facilitiesAlarmService.misreportAlarm(alarmDb,shiroUser.getId(),shiroUser.getFullName(),roleName,alarmId);
             }else if(AlarmMisreport.EFFECTIVE.id.equals(alarmHandleReq.getMisreport())){
                 Precinct precinct = precinctService.selectByPrimaryKey(alarmDb.getPrecinctId());
-                facilitiesAlarmService.effectiveAlarm(alarmDb,shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus()),alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
+                facilitiesAlarmService.effectiveAlarm(alarmDb,shiroUser.getId(),shiroUser.getFullName(),precinct.getDutyName(),roleName,alarmId,BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus()),alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
             }
         }
 
         if(AlarmHandleStatus.UNDER_WAY.id.equals(handleStatus) && BooleanEnum.YES.id.equals(alarmHandleReq.getHandleStatus())){
-            facilitiesAlarmService.completeAlarm(shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId,alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
+            facilitiesAlarmService.completeAlarm(shiroUser.getId(),shiroUser.getFullName(),roleName,alarmId,alarmHandleReq.getHandleEndTime(),alarmHandleReq.getHandleResult());
         }
         return ResponseResult.buildOkResult();
     }

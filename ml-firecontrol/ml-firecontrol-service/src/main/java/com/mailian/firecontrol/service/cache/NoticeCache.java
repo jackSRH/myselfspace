@@ -10,6 +10,8 @@ import com.mailian.core.util.RedisUtils;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.NoticeType;
+import com.mailian.firecontrol.dao.auto.mapper.UserMapper;
+import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
 import com.mailian.firecontrol.dto.app.NoticeInfo;
 import org.slf4j.Logger;
@@ -41,6 +43,8 @@ public class NoticeCache {
     private SystemManualMapper systemManualMapper;
     @Autowired
     private SystemConfig systemConfig;
+    @Resource
+    private UserMapper userMapper;
 
     /**
      * 添加消息
@@ -54,26 +58,53 @@ public class NoticeCache {
 
         /* 调用第三方推送通知APP */
         if(StringUtils.isNull(noticeInfo.getUid())){
-            /* 获取所有该管辖区用户 */
-            List<Integer> uidList = systemManualMapper.selectUidsByPrecinctId(noticeInfo.getPrecinctId());
-
-            if(StringUtils.isNotEmpty(uidList)){
-                for (Integer uid : uidList) {
-                    String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,uid);
+            /* 获取该单位的用户*/
+            List<Integer> unitUids = new ArrayList<>();
+            if(StringUtils.isNotEmpty(noticeInfo.getUnitId())){
+                unitUids = systemManualMapper.selectUidsByUnitId(noticeInfo.getUnitId());
+                for (Integer unitUid : unitUids) {
+                    String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,unitUid);
                     try {
-                        umengPushRepository.sendAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
+                        umengPushRepository.sendUserAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
                     } catch (Exception e) {
                         log.error("消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
                     }
                 }
             }
 
+            /* 获取所有该管辖区用户 */
+            List<Integer> uidList = systemManualMapper.selectUidsByPrecinctId(noticeInfo.getPrecinctId());
+            List<Integer> adminUidList = systemManualMapper.selectAdminUserIds();
+            for (Integer adminUid : adminUidList) {
+                if(!adminUidList.contains(adminUid)){
+                    uidList.add(adminUid);
+                }
+            }
+            uidList.removeAll(unitUids);
+            for (Integer uid : uidList) {
+                String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,uid);
+                try {
+                    umengPushRepository.sendManagerAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
+                } catch (Exception e) {
+                    log.error("消息推送失败,消息内容:{},目标键:{}",JSON.toJSONString(noticeInfo),toUser,e);
+                }
+            }
         }else{
-            String toUser = String.format(CommonConstant.USRE_KEY,systemConfig.serverIdCard,noticeInfo.getUid());
-            try {
-                umengPushRepository.sendAndroidCustomizedcast(toUser,NoticeType.getValue(noticeInfo.getType().intValue()).value,noticeInfo.getType().intValue(),noticeInfo.getContent());
-            } catch (Exception e) {
-                log.error("消息推送失败,消息内容:{},目标邮箱:{}",JSON.toJSONString(noticeInfo),toUser,e);
+            User user = userMapper.selectByPrimaryKey(noticeInfo.getUid());
+
+            String toUser = String.format(CommonConstant.USRE_KEY, systemConfig.serverIdCard, noticeInfo.getUid());
+            if(StringUtils.isNotEmpty(user.getUnitId())) {
+                try {
+                    umengPushRepository.sendUserAndroidCustomizedcast(toUser, NoticeType.getValue(noticeInfo.getType().intValue()).value, noticeInfo.getType().intValue(), noticeInfo.getContent());
+                } catch (Exception e) {
+                    log.error("消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
+                }
+            }else{
+                try {
+                    umengPushRepository.sendManagerAndroidCustomizedcast(toUser, NoticeType.getValue(noticeInfo.getType().intValue()).value, noticeInfo.getType().intValue(), noticeInfo.getContent());
+                } catch (Exception e) {
+                    log.error("消息推送失败,消息内容:{},目标邮箱:{}", JSON.toJSONString(noticeInfo), toUser, e);
+                }
             }
         }
 
