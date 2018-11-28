@@ -59,6 +59,8 @@ public class UnitInfo {
     private String dutyName;
     @ApiModelProperty(value = "负责人电话")
     private String dutyPhone;
+    @ApiModelProperty(value = "单位类型 1:餐饮、2:购物、3:住宿、4:公共娱乐、5:医疗、6:教学、7:休闲健身、8:生产加工、9:易燃易爆危险品")
+    private String unitTypeDesc;
 
     public BigDecimal getLng() {
         return lng;
@@ -251,4 +253,14 @@ public class UnitInfo {
     public void setDutyPhone(String dutyPhone) {
         this.dutyPhone = dutyPhone;
     }
+
+
+    public String getUnitTypeDesc() {
+        return unitTypeDesc;
+    }
+
+    public void setUnitTypeDesc(String unitTypeDesc) {
+        this.unitTypeDesc = unitTypeDesc;
+    }
+
 }

@@ -336,6 +336,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         for (Unit unit : unitList) {
             UnitInfo unitInfo = new UnitInfo();
             BeanUtils.copyProperties(unit, unitInfo);
+            unitInfo.setUnitTypeDesc(UnitType.getValue(unitInfo.getUnitType()));
             unitInfos.add(unitInfo);
             unitIdList.add(unit.getId());
 
@@ -702,7 +703,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         unitInfo.setLng(unit.getLng());
         unitInfo.setLat(unit.getLat());
         unitInfo.setUnitPic(unit.getUnitPic());
-
+        unitInfo.setUnitTypeDesc(UnitType.getValue(unit.getUnitType()));
         /*获取管辖区信息*/
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
         if (StringUtils.isNotNull(precinct)) {

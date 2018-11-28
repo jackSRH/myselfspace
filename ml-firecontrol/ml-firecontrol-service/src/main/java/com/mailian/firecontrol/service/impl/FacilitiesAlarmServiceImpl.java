@@ -430,7 +430,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             queryMap.put("precinctIds",dataScope.getDataIds());
         }
         queryMap.put("alarmType",AlarmType.ALARM.id);
-        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
+//        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
         queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
         List<CurAlarmResp> curAlarmResps = new ArrayList<>();
@@ -460,6 +460,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             curAlarmResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
             curAlarmResp.setAlarmType(facilitiesAlarm.getAlarmType());
             curAlarmResp.setAlarmDuration(DateUtils.getHourFromNow(facilitiesAlarm.getAlarmTime()));
+            curAlarmResp.setAlarmStatusDesc(AlarmHandleStatus.getValue(facilitiesAlarm.getHandleStatus()));
             curAlarmResps.add(curAlarmResp);
         }
         return curAlarmResps;
@@ -533,6 +534,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         if(isComplete){
             upAlarm.setHandleEndTime(StringUtils.nvl(handleEndTime,new Date()));
             upAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+            upAlarm.setHandleEndTime(now);
             upAlarm.setHandleResult(handleResult);
             upAlarm.setHandleUid(uid);
 

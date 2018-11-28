@@ -225,6 +225,7 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                 if(StringUtils.isNotEmpty(etime)){
                     facilitiesAlarm.setAlarmEndTime(ThreadLocalDateUtil.parse(etime));
                     facilitiesAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+                    facilitiesAlarm.setHandleEndTime(new Date());
                     facilitiesAlarm.setHandleTime(new Date());
                 }else{
                     facilitiesAlarm.setHandleStatus(AlarmHandleStatus.UNTREATED.id);
@@ -284,9 +285,10 @@ public class AlarmOpertionServiceImpl implements AlarmOpertionService {
                     upFacilitiesAlarm = new FacilitiesAlarm();
                     upFacilitiesAlarm.setId(facilitiesAlarm.getId());
                     upFacilitiesAlarm.setAlarmStatus(AlarmStatus.ALARMED.id);
-                    if(AlarmHandleStatus.UNTREATED.id.equals(facilitiesAlarm.getHandleStatus())){
-                        upFacilitiesAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
-                    }
+//                    if(AlarmHandleStatus.UNTREATED.id.equals(facilitiesAlarm.getHandleStatus())){
+                    upFacilitiesAlarm.setHandleStatus(AlarmHandleStatus.COMPLETED.id);
+                    upFacilitiesAlarm.setHandleEndTime(new Date());
+//                    }
                     upFacilitiesAlarm.setAlarmEndTime(ThreadLocalDateUtil.parse(etime));
                     upFacilitiesAlarm.setHashCode(alarm.getHashCode());
                     upFacilitiesAlarm.setUpdateTime(new Date());
