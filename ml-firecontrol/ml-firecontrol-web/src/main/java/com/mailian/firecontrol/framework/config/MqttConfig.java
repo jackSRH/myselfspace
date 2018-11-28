@@ -116,11 +116,11 @@ public class MqttConfig {
                 if(messageHeaders.containsKey(MqttHeaders.RECEIVED_TOPIC)) {
                     String topic = StringUtils.nvl(messageHeaders.get(MqttHeaders.RECEIVED_TOPIC),"").toString();
                     String messageId = message.getHeaders().getId().toString();
-                    log.debug("消息id:{},处理消息开始:{}",messageId,data);
+                    //log.debug("消息id:{},处理消息开始:{}",messageId,data);
                     long startTime = System.currentTimeMillis();
                     int result = messageBaseHandler.doDispatch(topic,data);
                     long times = System.currentTimeMillis() - startTime;
-                    log.debug("消息id:{}，处理完成结果:{}!耗时:{}",messageId,result>0?"成功":"失败",times);
+                    //log.debug("消息id:{}，处理完成结果:{}!耗时:{}",messageId,result>0?"成功":"失败",times);
                 }
             }
 
