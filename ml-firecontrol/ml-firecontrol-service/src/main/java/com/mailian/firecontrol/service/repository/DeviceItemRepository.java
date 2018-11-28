@@ -377,18 +377,18 @@ public class DeviceItemRepository {
      */
     public Map<String,List<DeviceItem>> getDeviceItemInfosBySubIds(List<String> deviceSubIds){
         Map<String,List<DeviceItem>> deviceItemMap = redisUtils.entries(CommonConstant.DEVICE_SUB_ITEM);
-        List<String> needFindSubId = new ArrayList<>();
+        Map<String,List<DeviceItem>> subId2Items = new HashMap<>();
+        if(StringUtils.isEmpty(deviceItemMap)){
+            return subId2Items;
+        }
 
-        if(StringUtils.isNotNull(deviceItemMap)) {
-            for (String deviceSubId : deviceSubIds) {
-                if(!deviceItemMap.containsKey(deviceSubId)){
-                    List<DeviceItem> deviceItems = deviceItemMap.get(deviceSubId);
-                    setItemsVal(deviceItems);
-                    needFindSubId.add(deviceSubId);
-                }
+        List<String> needFindSubId = new ArrayList<>();
+        for(String subId:deviceSubIds){
+            if(deviceItemMap.containsKey(subId)){
+                subId2Items.put(subId,deviceItemMap.get(subId));
+            }else{
+                needFindSubId.add(subId);
             }
-        }else{
-            deviceItemMap = new HashMap<>();
         }
 
         if(StringUtils.isNotEmpty(needFindSubId)) {
@@ -396,10 +396,10 @@ public class DeviceItemRepository {
             setItemsVal(apiDeviceItemList);
             Map<String,List<DeviceItem>> deviceItemMapResult = updateDeviceItemInfosOfSub(apiDeviceItemList);
             if(StringUtils.isNotEmpty(deviceItemMapResult)){
-                deviceItemMap.putAll(deviceItemMapResult);
+                subId2Items.putAll(deviceItemMapResult);
             }
         }
-        return deviceItemMap;
+        return subId2Items;
     }
 
     /**
@@ -408,7 +408,7 @@ public class DeviceItemRepository {
      * @return
      */
     public Map<String,List<DeviceItem>> getDeviceItemInfosByCodes(List<String> deviceCodes){
-        Map<String,List<DeviceItem>> code2Infos = new HashMap<String,List<DeviceItem>>();
+        Map<String,List<DeviceItem>> code2Infos = new HashMap<>();
         Map<String, List<DeviceSub>> codeSubMap = deviceSubCache.getSubsByCodes(deviceCodes);
         List<DeviceItem> infos;
         List<String> subIds;
@@ -435,23 +435,23 @@ public class DeviceItemRepository {
      * @return
      */
     public Map<String, List<DeviceItemRealTimeData>> getDeviceItemRealTimeDataByCodes(List<String> deviceCodes){
-        Map<String, List<DeviceItemRealTimeData>> code2Datas = new HashMap<String, List<DeviceItemRealTimeData>>();
+        Map<String, List<DeviceItemRealTimeData>> code2Datas = new HashMap<>();
         List<DeviceItemRealTimeData> realTimeDatas;
         List<String> subIds;
 
         Map<String, List<DeviceSub>> code2Subs = deviceSubCache.getSubsByCodes(deviceCodes);
         if(StringUtils.isEmpty(code2Subs)){
-            code2Subs = new HashMap<String, List<DeviceSub>>();
+            code2Subs = new HashMap<>();
         }
         for(Map.Entry<String, List<DeviceSub>> entry : code2Subs.entrySet()) {
-            subIds = new ArrayList<String>();
-            realTimeDatas = new ArrayList<DeviceItemRealTimeData>();
+            subIds = new ArrayList<>();
+            realTimeDatas = new ArrayList<>();
 
             for(DeviceSub sub : entry.getValue()) {
                 subIds.add(sub.getRtuidcb());
             }
 
-            List<String> itemIds = new ArrayList<String>();
+            List<String> itemIds = new ArrayList<>();
             Map<String, List<DeviceItem>> subId2Items = getDeviceItemInfosBySubIds(subIds);
             for(Map.Entry<String, List<DeviceItem>> en: subId2Items.entrySet()) {
                 for(DeviceItem item : en.getValue()) {
@@ -561,7 +561,7 @@ public class DeviceItemRepository {
      * @return
      */
     public Map<String, List<DeviceItem>> getCalcItemsByDeviceCodes(List<String> deviceCodes){
-        List<String> needFindCodes = new ArrayList<String>();
+        List<String> needFindCodes = new ArrayList<>();
         Map<String, List<DeviceItem>> calcItemMap = redisUtils.entries(CommonConstant.DEVICE_CODE_CALC_ITEM);
         if(StringUtils.isNull(calcItemMap)){
             calcItemMap = new HashMap<>();
