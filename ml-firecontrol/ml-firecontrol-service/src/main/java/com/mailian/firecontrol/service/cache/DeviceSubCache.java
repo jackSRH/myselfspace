@@ -55,12 +55,12 @@ public class DeviceSubCache {
      */
     public Map<String,List<DeviceSub>> getSubsByCodes(List<String> deviceCodes){
         Map<String,List<DeviceSub>> codeSubMap = redisUtils.entries(CommonConstant.DEVICE_CODE_TO_DEVICE_SUB);
-        Map<String,List<DeviceSub>> code2Subs = new HashMap<>();
         if(StringUtils.isEmpty(codeSubMap)){
             codeSubMap = new HashMap<>();
         }
 
         List<String> needFindCodes = new ArrayList<>();
+        Map<String,List<DeviceSub>> code2Subs = new HashMap<>();
         for(String code :deviceCodes){
             if (codeSubMap.containsKey(code)){
                 code2Subs.put(code,codeSubMap.get(code));

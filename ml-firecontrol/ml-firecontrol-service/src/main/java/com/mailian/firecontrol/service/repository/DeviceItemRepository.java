@@ -377,11 +377,11 @@ public class DeviceItemRepository {
      */
     public Map<String,List<DeviceItem>> getDeviceItemInfosBySubIds(List<String> deviceSubIds){
         Map<String,List<DeviceItem>> deviceItemMap = redisUtils.entries(CommonConstant.DEVICE_SUB_ITEM);
-        Map<String,List<DeviceItem>> subId2Items = new HashMap<>();
         if(StringUtils.isEmpty(deviceItemMap)){
             deviceItemMap = new HashMap<>();
         }
 
+        Map<String,List<DeviceItem>> subId2Items = new HashMap<>();
         List<String> needFindSubId = new ArrayList<>();
         for(String subId:deviceSubIds){
             if(deviceItemMap.containsKey(subId)){
