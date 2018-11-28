@@ -506,6 +506,7 @@ public class BigscreenController extends BaseController {
             resp.setOptContent(alarmLog.getOptContent());
             resp.setOptName(alarmLog.getOptName());
             resp.setOptType(alarmLog.getOptType());
+            resp.setOptTypeDesc(OptType.getDescById(alarmLog.getOptType()));
             resp.setRoleName(alarmLog.getOptRole());
             respList.add(resp);
         }
@@ -513,6 +514,7 @@ public class BigscreenController extends BaseController {
         ProgressDetailResp createResp = new ProgressDetailResp();
         createResp.setOptTime(facilitiesAlarm.getAlarmTime());
         createResp.setOptType(OptType.ALARM.id);
+        createResp.setOptTypeDesc(OptType.ALARM.desc);
         respList.add(createResp);
         return ResponseResult.buildOkResult(respList);
     }
@@ -549,7 +551,7 @@ public class BigscreenController extends BaseController {
 
     @ApiOperation(value = "最新报警（单位）", httpMethod = "GET")
     @RequestMapping(value="/getNewAlarmByUnit",method = RequestMethod.GET)
-    public ResponseResult<AlarmRemindInfo> getNewAlarmByUnit(@ApiParam(value = "单位id") @RequestParam(value = "unitId",required = false) Integer unitId){
+    public ResponseResult<AlarmRemindInfo> getNewAlarmByUnit(@ApiParam(value = "单位id") @RequestParam(value = "unitId") Integer unitId){
         return ResponseResult.buildOkResult(remindCache.getFristRemindByUnit(unitId));
     }
 

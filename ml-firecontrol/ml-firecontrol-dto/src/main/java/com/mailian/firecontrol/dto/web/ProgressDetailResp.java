@@ -22,6 +22,8 @@ public class ProgressDetailResp implements Serializable {
     private Date optTime;
     @ApiModelProperty(value = "操作类型 0:告警  1:响应告警  2:确定告警  3:处理告警中 4:告警已处理")
     private Integer optType;
+    @ApiModelProperty(value = "操作类型描述")
+    private String optTypeDesc;
     @ApiModelProperty(value = "操作内容")
     private String optContent;
 
@@ -63,5 +65,13 @@ public class ProgressDetailResp implements Serializable {
 
     public void setOptContent(String optContent) {
         this.optContent = optContent;
+    }
+
+    public String getOptTypeDesc() {
+        return optTypeDesc;
+    }
+
+    public void setOptTypeDesc(String optTypeDesc) {
+        this.optTypeDesc = optTypeDesc;
     }
 }

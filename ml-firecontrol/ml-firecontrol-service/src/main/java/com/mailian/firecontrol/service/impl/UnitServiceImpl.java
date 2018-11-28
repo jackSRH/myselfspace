@@ -377,23 +377,26 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
      * @return
      */
     private CountDataInfo getCountDataInfo(List<Integer> unitIdList, Integer onlineCount) {
-        Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put("unitIds", unitIdList);
-        Date now = new Date();
-        Date startTime = DateUtil.getStartDate(now);
-        Date endTime = DateUtil.getEndDate(now);
-        queryMap.put("startDate", startTime);
-        queryMap.put("endDate", endTime);
-        List<FacilitiesAlarm> facilitiesAlarmList = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
         Integer alarmCount = 0;
         Integer earlyWarningCount = 0;
-        for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
-            Integer alarmType = facilitiesAlarm.getAlarmType();
-            if (StringUtils.isNotNull(alarmType) && AlarmType.ALARM.id.equals(alarmType)) {
-                alarmCount++;
-            }
-            if (StringUtils.isNotNull(alarmType) && AlarmType.EARLY_WARNING.id.equals(alarmType)) {
-                earlyWarningCount++;
+        if(StringUtils.isNotEmpty(unitIdList)) {
+            Map<String, Object> queryMap = new HashMap<>();
+            queryMap.put("unitIds", unitIdList);
+            Date now = new Date();
+            Date startTime = DateUtil.getStartDate(now);
+            Date endTime = DateUtil.getEndDate(now);
+            queryMap.put("startDate", startTime);
+            queryMap.put("endDate", endTime);
+            queryMap.put("misreport", FaMisreportType.EFFECTIVE.id);
+            List<FacilitiesAlarm> facilitiesAlarmList = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
+            for (FacilitiesAlarm facilitiesAlarm : facilitiesAlarmList) {
+                Integer alarmType = facilitiesAlarm.getAlarmType();
+                if (StringUtils.isNotNull(alarmType) && AlarmType.ALARM.id.equals(alarmType)) {
+                    alarmCount++;
+                }
+                if (StringUtils.isNotNull(alarmType) && AlarmType.EARLY_WARNING.id.equals(alarmType)) {
+                    earlyWarningCount++;
+                }
             }
         }
 
