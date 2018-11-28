@@ -379,7 +379,7 @@ public class DeviceItemRepository {
         Map<String,List<DeviceItem>> deviceItemMap = redisUtils.entries(CommonConstant.DEVICE_SUB_ITEM);
         Map<String,List<DeviceItem>> subId2Items = new HashMap<>();
         if(StringUtils.isEmpty(deviceItemMap)){
-            return subId2Items;
+            deviceItemMap = new HashMap<>();
         }
 
         List<String> needFindSubId = new ArrayList<>();
@@ -526,6 +526,8 @@ public class DeviceItemRepository {
      */
     public Map<String, DeviceItem> getDeviceItemInfosByItemIds(List<String> itemIds){
         Map<String,DeviceItem> idDeviceItemMap = redisUtils.entries(CommonConstant.ID_ITEM);
+
+        Map<String,DeviceItem> resultMap = new HashMap<>();
         if(StringUtils.isEmpty(idDeviceItemMap)){
             idDeviceItemMap = new HashMap<>();
         }
@@ -538,6 +540,7 @@ public class DeviceItemRepository {
                 DeviceItemRealTimeData rtData = rtDataMap.get(itemId);
                 Float val = null == rtData?CommonConstant.ITEM_INITIAL_VALUE:rtData.getVal();
                 itemInfo.setVal(val);
+                resultMap.put(itemId,itemInfo);
             }else {
                 needFindIds.add(itemId);
             }
@@ -548,11 +551,11 @@ public class DeviceItemRepository {
             List<DeviceItem> deviceItems = getItemInfosByItemIds(CollectionUtil.join(needFindIds,","));
             setItemsVal(deviceItems);
             Map<String,DeviceItem> deviceItemMap = updateId2ItemInfo(deviceItems);
-            if(StringUtils.isNotEmpty(idDeviceItemMap)){
-                idDeviceItemMap.putAll(deviceItemMap);
+            if(StringUtils.isNotEmpty(deviceItemMap)){
+                resultMap.putAll(deviceItemMap);
             }
         }
-        return idDeviceItemMap;
+        return resultMap;
     }
 
     /**
@@ -563,6 +566,8 @@ public class DeviceItemRepository {
     public Map<String, List<DeviceItem>> getCalcItemsByDeviceCodes(List<String> deviceCodes){
         List<String> needFindCodes = new ArrayList<>();
         Map<String, List<DeviceItem>> calcItemMap = redisUtils.entries(CommonConstant.DEVICE_CODE_CALC_ITEM);
+
+        Map<String, List<DeviceItem>> resultMap = new HashMap<>();
         if(StringUtils.isNull(calcItemMap)){
             calcItemMap = new HashMap<>();
         }
@@ -572,6 +577,7 @@ public class DeviceItemRepository {
                 needFindCodes.add(code);
             }else {
                 setItemsVal(calcItems);
+                resultMap.put(code,calcItems);
             }
         }
 
@@ -581,10 +587,10 @@ public class DeviceItemRepository {
 
             Map<String, List<DeviceItem>> calcItemResultMap = updateCalcItem(calcItems);
             if(StringUtils.isNotEmpty(calcItemResultMap)){
-                calcItemMap.putAll(calcItemResultMap);
+                resultMap.putAll(calcItemResultMap);
             }
         }
-        return calcItemMap;
+        return resultMap;
     }
 
     /**

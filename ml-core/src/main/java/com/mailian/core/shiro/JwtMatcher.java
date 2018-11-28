@@ -39,15 +39,18 @@ public class JwtMatcher implements CredentialsMatcher {
         String token = (String) jwtToken.getPrincipal();
         Claims claims = jwtUtils.getClaimByToken(token);
         String userName = jwtUtils.getUserName(claims);
+        String claimPassword = jwtUtils.getPassword(claims);
+        String password = authenticationInfo.getCredentials().toString();
+
         String redisKey = RedisKeys.getSysConfigKey(systemConfig.serverIdCard,CoreCommonConstant.REDIS_TOKEN_KEY+userName);
+        if(StringUtils.isEmpty(password) || !password.equals(claimPassword)){
+            redisUtils.delete(redisKey);
+            throw new AuthenticationException("密码错误"); // 令牌错误
+        }
+
         String redisToken = redisUtils.get(redisKey);
         if(StringUtils.isEmpty(redisToken)){
             throw new AuthenticationException("token失效"); // token失效
-        }
-        String claimPassword = jwtUtils.getPassword(claims);
-        String password = authenticationInfo.getCredentials().toString();
-        if(StringUtils.isEmpty(password) || !password.equals(claimPassword)){
-            throw new AuthenticationException("密码错误"); // 令牌错误
         }
 
         if(!token.equals(redisToken)){

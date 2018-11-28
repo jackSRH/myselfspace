@@ -260,11 +260,11 @@ public class AppUnitController extends BaseController {
             }
             //误报
             if(FaMisreportType.MISREPORT.id.equals(misreport)){
-                facilitiesAlarmService.misreportAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getUserName(),roleName,alarmId);
+                facilitiesAlarmService.misreportAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getFullName(),roleName,alarmId);
             }
             //有效
             if(FaMisreportType.EFFECTIVE.id.equals(misreport)){
-                facilitiesAlarmService.effectiveAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getUserName(),precinct.getDutyName(),roleName,alarmId,false,null,null);
+                facilitiesAlarmService.effectiveAlarm(facilitiesAlarm,shiroUser.getId(),shiroUser.getFullName(),precinct.getDutyName(),roleName,alarmId,false,null,null);
             }
         }
         return ResponseResult.buildOkResult();

@@ -57,7 +57,7 @@ public class DeviceSubCache {
         Map<String,List<DeviceSub>> codeSubMap = redisUtils.entries(CommonConstant.DEVICE_CODE_TO_DEVICE_SUB);
         Map<String,List<DeviceSub>> code2Subs = new HashMap<>();
         if(StringUtils.isEmpty(codeSubMap)){
-            return code2Subs;
+            codeSubMap = new HashMap<>();
         }
 
         List<String> needFindCodes = new ArrayList<>();
