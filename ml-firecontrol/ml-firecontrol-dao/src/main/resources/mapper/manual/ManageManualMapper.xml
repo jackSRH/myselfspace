@@ -44,7 +44,7 @@
                 and <![CDATA[ alarm_time <= #{endAlarmTime,jdbcType=TIMESTAMP} ]]>
             </if>
             <if test="provinceId != null">
-                and province_id = #{alarmType,jdbcType=INTEGER}
+                and province_id = #{provinceId,jdbcType=INTEGER}
             </if>
             <if test="cityId != null">
                 and city_id = #{cityId,jdbcType=INTEGER}
