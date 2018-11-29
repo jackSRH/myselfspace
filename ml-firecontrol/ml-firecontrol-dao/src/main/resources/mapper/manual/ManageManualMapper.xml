@@ -52,6 +52,9 @@
             <if test="areaId != null">
                 and area_id = #{areaId,jdbcType=INTEGER}
             </if>
+            <if test="handleStatus != null">
+                and handle_status = #{handleStatus,jdbcType=INTEGER}
+            </if>
             <if test="precinctId != null">
                 and precinct_id = #{precinctId,jdbcType=INTEGER}
             </if>
