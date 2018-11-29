@@ -22,12 +22,15 @@ public class UnitRealtimeDataResp {
     private List<ItemDataResp> cableTemperatures;
     @ApiModelProperty(value = "漏电电流")
     private List<ItemDataResp> leakages;
-
-    @ApiModelProperty(value = "烟感状态 0:正常 1:报警")
-    private Integer somkeStatus;
-
+/*    @ApiModelProperty(value = "烟感状态 0:正常 1:报警")
+    private Integer somkeStatus;*/
     @ApiModelProperty(value = "开关状态集合")
     private List<SwitchResp> switchResps;
+
+    @ApiModelProperty(value = "告警设备名称名称，为空则无告警")
+    private List<String> alarmFaNames;
+
+
 
     public List<ItemDataResp> getVoltages() {
         return voltages;
@@ -61,13 +64,13 @@ public class UnitRealtimeDataResp {
         this.leakages = leakages;
     }
 
-    public Integer getSomkeStatus() {
+/*    public Integer getSomkeStatus() {
         return somkeStatus;
     }
 
     public void setSomkeStatus(Integer somkeStatus) {
         this.somkeStatus = somkeStatus;
-    }
+    }*/
 
     public List<SwitchResp> getSwitchResps() {
         return switchResps;
@@ -75,5 +78,13 @@ public class UnitRealtimeDataResp {
 
     public void setSwitchResps(List<SwitchResp> switchResps) {
         this.switchResps = switchResps;
+    }
+
+    public List<String> getAlarmFaNames() {
+        return alarmFaNames;
+    }
+
+    public void setAlarmFaNames(List<String> alarmFaNames) {
+        this.alarmFaNames = alarmFaNames;
     }
 }

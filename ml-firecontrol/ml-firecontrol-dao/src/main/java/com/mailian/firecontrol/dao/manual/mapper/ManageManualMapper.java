@@ -21,7 +21,7 @@ public interface ManageManualMapper {
 
     int updateFaAlarmBatch(@Param(value = "alarmList") List<FacilitiesAlarm> upFacilitiesAlarmList);
 
-    int countUnfinishAlarmNumByType(Integer alaramType);
+    int countUnfinishAlarmNumByMap(Map<String,Object> queryMap);
 
     List<FaNumGySystem> countFaNumGySystem(@Param(value = "unitIds") List<Integer> unitIds);
 

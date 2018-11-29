@@ -55,6 +55,12 @@
             <if test="handleStatus != null">
                 and handle_status = #{handleStatus,jdbcType=INTEGER}
             </if>
+            <if test="handleStatuses != null">
+                and handle_status in
+                <foreach close=")" collection="handleStatuses" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
             <if test="precinctId != null">
                 and precinct_id = #{precinctId,jdbcType=INTEGER}
             </if>
@@ -73,8 +79,14 @@
 		from t_diagram_item t right join t_diagram_struct p
 		on t.ds_id = p.id where t.item_id = #{itemId,jdbcType=VARCHAR} and p.unit_id=#{unitId,jdbcType=INTEGER} limit 1
     </select>
-    <select id="countUnfinishAlarmNumByType" resultType="java.lang.Integer">
-        select count(1) from t_facilities_alarm where alarm_type = #{alaramType,jdbcType=INTEGER} and handle_status != 3
+    <select id="countUnfinishAlarmNumByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(1) from t_facilities_alarm where handle_status != 3
+        <if test="alarmType != null">
+            and alarm_type = #{alaramType,jdbcType=INTEGER}
+        </if>
+        <if test="unitId != null">
+            and unit_id = #{unitId,jdbcType=INTEGER}
+        </if>
     </select>
 
     <update id="updateFaAlarmBatch" parameterType="java.util.List">
