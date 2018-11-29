@@ -64,29 +64,59 @@ public class AlarmJob {
         List<FacilitiesAlarm> alarms = facilitiesAlarmService.selectFacilitiesAlarmByMap(queryMap);
         List<AlarmRemindInfo> remindInfos = new ArrayList<>();
         if(StringUtils.isNotEmpty(alarms)){
-            FacilitiesAlarm facilitiesAlarm = alarms.get(0);
-            AlarmRemindInfo alarmRemindInfo = new AlarmRemindInfo();
-            alarmRemindInfo.setAlarmId(facilitiesAlarm.getAlarmId());
-            alarmRemindInfo.setAddress(facilitiesAlarm.getStructAddress());
-            alarmRemindInfo.setAlarmContent(facilitiesAlarm.getAlarmContent());
-            alarmRemindInfo.setAlarmTime(facilitiesAlarm.getAlarmTime());
-
-            alarmRemindInfo.setProvinceId(facilitiesAlarm.getProvinceId());
-            alarmRemindInfo.setCityId(facilitiesAlarm.getCityId());
-            alarmRemindInfo.setAreaId(facilitiesAlarm.getAreaId());
-            alarmRemindInfo.setPrecinctId(facilitiesAlarm.getPrecinctId());
-            alarmRemindInfo.setUnitId(facilitiesAlarm.getUnitId());
-
-            if(StringUtils.isNotEmpty(facilitiesAlarm.getUnitId())){
-                Unit unit = unitService.selectByPrimaryKey(facilitiesAlarm.getUnitId());
-                Precinct precinct = precinctService.selectByPrimaryKey(unit.getPrecinctId());
-                alarmRemindInfo.setUnitName(unit.getUnitName());
-                alarmRemindInfo.setDutyName(precinct.getDutyName());
-                alarmRemindInfo.setDutyPhone(precinct.getDutyPhone());
-                alarmRemindInfo.setLng(unit.getLng());
-                alarmRemindInfo.setLat(unit.getLat());
+            Map<Integer,Unit> unitMap = new HashMap<>();
+            Map<Integer,Precinct> precinctMap = new HashMap<>();
+            for (FacilitiesAlarm alarm : alarms) {
+                if(StringUtils.isNotEmpty(alarm.getUnitId())) {
+                    unitMap.put(alarm.getUnitId(), null);
+                }
+                if(StringUtils.isNotEmpty(alarm.getPrecinctId())){
+                    precinctMap.put(alarm.getPrecinctId(),null);
+                }
             }
-            remindInfos.add(alarmRemindInfo);
+            if(StringUtils.isNotEmpty(unitMap)){
+                List<Unit> unitList = unitService.selectBatchIds(unitMap.keySet());
+                for (Unit unit : unitList) {
+                    unitMap.put(unit.getId(),unit);
+                }
+            }
+            if(StringUtils.isNotEmpty(precinctMap)){
+                List<Precinct> precincts = precinctService.selectBatchIds(precinctMap.keySet());
+                for (Precinct precinct : precincts) {
+                    precinctMap.put(precinct.getId(),precinct);
+                }
+            }
+
+
+            for (FacilitiesAlarm facilitiesAlarm : alarms) {
+                AlarmRemindInfo alarmRemindInfo = new AlarmRemindInfo();
+                alarmRemindInfo.setAlarmId(facilitiesAlarm.getAlarmId());
+                alarmRemindInfo.setAddress(facilitiesAlarm.getStructAddress());
+                alarmRemindInfo.setAlarmContent(facilitiesAlarm.getAlarmContent());
+                alarmRemindInfo.setAlarmTime(facilitiesAlarm.getAlarmTime());
+
+                alarmRemindInfo.setProvinceId(facilitiesAlarm.getProvinceId());
+                alarmRemindInfo.setCityId(facilitiesAlarm.getCityId());
+                alarmRemindInfo.setAreaId(facilitiesAlarm.getAreaId());
+                alarmRemindInfo.setPrecinctId(facilitiesAlarm.getPrecinctId());
+                alarmRemindInfo.setUnitId(facilitiesAlarm.getUnitId());
+
+                if (StringUtils.isNotEmpty(facilitiesAlarm.getUnitId())) {
+                    Unit unit = unitMap.get(facilitiesAlarm.getUnitId());
+                    Precinct precinct = precinctMap.get(facilitiesAlarm.getPrecinctId());
+                    if (StringUtils.isNotNull(unit)) {
+                        alarmRemindInfo.setUnitName(unit.getUnitName());
+                        alarmRemindInfo.setLng(unit.getLng());
+                        alarmRemindInfo.setLat(unit.getLat());
+                    }
+
+                    if (StringUtils.isNotNull(precinct)) {
+                        alarmRemindInfo.setDutyPhone(precinct.getDutyPhone());
+                        alarmRemindInfo.setDutyName(precinct.getDutyName());
+                    }
+                }
+                remindInfos.add(alarmRemindInfo);
+            }
         }
 
         if(StringUtils.isNotEmpty(remindInfos)) {
