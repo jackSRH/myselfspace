@@ -74,6 +74,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     @Autowired
     private DeviceItemRepository deviceItemRepository;
 
+
+
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope, SearchReq searchReq) {
         Integer currentPage = searchReq.getCurrentPage();
@@ -332,11 +334,21 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         List<Integer> unitIdList = new ArrayList<>();
         Integer onlineCount = 0;
 
+        List<Integer> unitIds = new ArrayList<>();
         Set<Integer> precinctIdSet = new HashSet<>();
+        for(Unit unit : unitList){
+            unitIds.add(unit.getId());
+            precinctIdSet.add(unit.getPrecinctId());
+        }
+
+        //获取单位状态
+        Map<Integer,Integer> unitId2Status = getStatusByUnitIds(unitIds);
+
         for (Unit unit : unitList) {
             UnitInfo unitInfo = new UnitInfo();
             BeanUtils.copyProperties(unit, unitInfo);
             unitInfo.setUnitTypeDesc(UnitType.getValue(unitInfo.getUnitType()));
+            unitInfo.setUnitStatus(unitId2Status.get(unit.getId()));
             unitInfos.add(unitInfo);
             unitIdList.add(unit.getId());
 
@@ -344,8 +356,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             if (StringUtils.isNotNull(onlineStatus) && Status.NORMAL.id.equals(onlineStatus)) {
                 onlineCount++;
             }
-
-            precinctIdSet.add(unit.getPrecinctId());
         }
 
         if(StringUtils.isNotEmpty(precinctIdSet)){
@@ -708,6 +718,10 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitInfo.setDutyName(precinct.getDutyName());
             unitInfo.setDutyPhone(precinct.getDutyPhone());
         }
+
+        /*单位状态*/
+        Map<Integer,Integer> unitId2Status = getStatusByUnitIds(Arrays.asList(unitId));
+        unitInfo.setUnitStatus(unitId2Status.get(unitId));
         unitMapResp.setUnitInfo(unitInfo);
 
         Map<String, Object> queryMap = new HashMap<>();
@@ -858,6 +872,56 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         //删除网关单位关联关系
         unitManualMapper.deleteDeviceByUnitId(unitId);
         return deleteByPrimaryKey(unitId);
+    }
+
+
+    @Override
+    public  Map<Integer,Integer> getStatusByUnitIds(List<Integer> unitIds){
+        Map<Integer,Integer> unitId2Status = new HashMap<>();
+        for(Integer unitId: unitIds){
+            unitId2Status.put(unitId,UnitStatus.OFFLINE.id);
+        }
+
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitIds",unitIds);
+        queryMap.put("alarmStatus",new DataScope("handle_status", Arrays.asList(AlarmHandleStatus.UNTREATED.id,AlarmHandleStatus.RESPONSE.id,AlarmHandleStatus.UNDER_WAY.id)));
+        List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
+
+        Integer unitId;
+        Set<Integer> alarmUnitIds = new HashSet<>();
+        Map<Integer,Integer> unitId2AlarmLevel = new HashMap<>();
+        if(StringUtils.isNotEmpty(facilitiesAlarms)){
+            for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
+                unitId = facilitiesAlarm.getUnitId();
+                if(alarmUnitIds.contains(unitId)){
+                    continue;
+                }
+                if(AlarmType.ALARM.id.equals(facilitiesAlarm.getAlarmType())){
+                    alarmUnitIds.add(unitId);
+                    unitId2AlarmLevel.put(unitId,UnitStatus.ALARM.id);
+                }
+                if(unitId2AlarmLevel.containsKey(unitId)){
+                    continue;
+                }
+                unitId2AlarmLevel.put(unitId,UnitStatus.EARLYWARNING.id);
+            }
+        }
+
+        Integer unitStatus;
+        for(Map.Entry<Integer,Integer> entry : unitId2Status.entrySet()){
+            unitId = entry.getKey();
+            unitStatus =  unitDeviceCache.getUnitOnlineStatus(unitId.toString());
+            if(StringUtils.isNull(unitStatus) || unitStatus.equals(UnitStatus.OFFLINE.id)) {
+                continue;
+            }
+
+            if(unitId2AlarmLevel.containsKey(unitId)){
+                unitId2Status.put(unitId,unitId2AlarmLevel.get(unitId));
+            }else{
+                unitId2Status.put(unitId,UnitStatus.ONLINE.id);
+            }
+        }
+        return unitId2Status;
     }
 
 }
