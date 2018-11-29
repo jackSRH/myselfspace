@@ -138,28 +138,28 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
             deviceIds.add(unitDevice.getDeviceId());
         }
         Map<String, List<DeviceItem>> code2CalcImtes = deviceItemRepository.getCalcItemsByDeviceCodes(deviceIds);
-        if(StringUtils.isEmpty(code2CalcImtes)){
-            return data;
-        }
 
         //获取计算库数据
         List<DeviceConfigItemResp> operationYaoce = new ArrayList<>();
         List<DeviceConfigItemResp> operationYaoxin = new ArrayList<>();
         DeviceConfigItemResp deviceConfigItemResp;
-        for(Map.Entry<String, List<DeviceItem>> entry : code2CalcImtes.entrySet()) {
-            deviceConfigItemResp = new DeviceConfigItemResp();
-            for(DeviceItem calcItem : entry.getValue()) {
-                int stype = calcItem.getStype().intValue();
-                if(ItemStype.OPERATIONYC.id.intValue() == stype) {
-                    deviceConfigItemResp.setId(calcItem.getId());
-                    deviceConfigItemResp.setDisplayname(calcItem.getDisplayname());
-                    deviceConfigItemResp.setShortname(calcItem.getShortname());
-                    operationYaoce.add(deviceConfigItemResp);
-                }else if(ItemStype.OPERATIONYX.id.intValue() == stype) {
-                    deviceConfigItemResp.setId(calcItem.getId());
-                    deviceConfigItemResp.setShortname(calcItem.getShortname());
-                    deviceConfigItemResp.setDisplayname(calcItem.getDisplayname());
-                    operationYaoxin.add(deviceConfigItemResp);
+
+        if(StringUtils.isNotEmpty(code2CalcImtes)){
+            for(Map.Entry<String, List<DeviceItem>> entry : code2CalcImtes.entrySet()) {
+                deviceConfigItemResp = new DeviceConfigItemResp();
+                for(DeviceItem calcItem : entry.getValue()) {
+                    int stype = calcItem.getStype().intValue();
+                    if(ItemStype.OPERATIONYC.id.intValue() == stype) {
+                        deviceConfigItemResp.setId(calcItem.getId());
+                        deviceConfigItemResp.setDisplayname(calcItem.getDisplayname());
+                        deviceConfigItemResp.setShortname(calcItem.getShortname());
+                        operationYaoce.add(deviceConfigItemResp);
+                    }else if(ItemStype.OPERATIONYX.id.intValue() == stype) {
+                        deviceConfigItemResp.setId(calcItem.getId());
+                        deviceConfigItemResp.setShortname(calcItem.getShortname());
+                        deviceConfigItemResp.setDisplayname(calcItem.getDisplayname());
+                        operationYaoxin.add(deviceConfigItemResp);
+                    }
                 }
             }
         }
