@@ -158,6 +158,12 @@
                 #{item,jdbcType=INTEGER}
             </foreach>
         </if>
+        <if test="itemIds != null and itemIds.size() > 0">
+            and i.item_id in
+            <foreach close=")" collection="itemIds" index="i" item="item" open="(" separator=",">
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+        </if>
     </select>
 
     <select id="countFaTypeNumByMap" parameterType="java.util.Map" resultType="java.util.Map">
