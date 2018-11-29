@@ -165,11 +165,20 @@ public class RoleServiceImpl extends BaseServiceImpl<Role,RoleMapper> implements
 
     private ResponseResult updateByRoleVo(RoleReq roleReq,Role oldRole, Collection<Role> roleList) {
         Integer roleId = roleReq.getId();
-        if((StringUtils.isNotEmpty(roleReq.getRoleKey()) && !roleReq.getRoleKey().equals(oldRole.getRoleKey())) ||
-                (StringUtils.isNotEmpty(roleReq.getRoleName()) && !roleReq.getRoleName().equals(oldRole.getRoleName()))){
-            //判断
-            if(checkUnique(roleReq.getRoleName(),roleReq.getRoleKey(),roleList)){
-                throw new RequestException(ResponseCode.FAIL.code,"角色名或权限字符重复");
+        if(StringUtils.isNotEmpty(roleList)) {
+            if (StringUtils.isNotEmpty(roleReq.getRoleKey()) && !roleReq.getRoleKey().equals(oldRole.getRoleKey())) {
+                for (Role role : roleList) {
+                    if(roleReq.getRoleKey().equals(role.getRoleKey())){
+                        throw new RequestException(ResponseCode.FAIL.code,"权限字符重复");
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(roleReq.getRoleName()) && !roleReq.getRoleName().equals(oldRole.getRoleName())) {
+                for (Role role : roleList) {
+                    if(roleReq.getRoleName().equals(role.getRoleName())){
+                        throw new RequestException(ResponseCode.FAIL.code,"角色名重复");
+                    }
+                }
             }
         }
 
