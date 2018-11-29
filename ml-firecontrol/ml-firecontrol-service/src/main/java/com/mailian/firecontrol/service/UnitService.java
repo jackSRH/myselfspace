@@ -13,6 +13,7 @@ import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UnitService extends BaseService<Unit> {
 
@@ -117,4 +118,12 @@ public interface UnitService extends BaseService<Unit> {
     List<UnitListResp> getUnitListByNameAndScope(String unitName, DataScope dataScope);
 
     int delUnitById(Integer unitId);
+
+    /**
+     * 获取单位状态
+     * @return
+     * @param unitIds
+     */
+    Map<Integer,Integer> getStatusByUnitIds(List<Integer> unitIds);
+
 }
