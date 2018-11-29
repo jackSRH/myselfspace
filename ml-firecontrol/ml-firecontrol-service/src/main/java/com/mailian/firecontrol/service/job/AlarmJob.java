@@ -54,7 +54,7 @@ public class AlarmJob {
         SysConfig sysConfig = sysConfigService.getConfigByType(SysConfigType.ALARM_RESPONSE_OVERTIME);
 
         int minute = -3;
-        if(StringUtils.isNotEmpty(sysConfig.getConfigValue())){
+        if(StringUtils.isNotNull(sysConfig) && StringUtils.isNotEmpty(sysConfig.getConfigValue())){
             minute = Integer.parseInt(sysConfig.getConfigValue());
         }
 
