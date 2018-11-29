@@ -3,14 +3,13 @@ package com.mailian.firecontrol.service.job;
 import com.mailian.core.util.DateUtil;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
+import com.mailian.firecontrol.common.enums.SysConfigType;
 import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
+import com.mailian.firecontrol.dao.auto.model.SysConfig;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.AlarmRemindInfo;
-import com.mailian.firecontrol.service.AlarmOpertionService;
-import com.mailian.firecontrol.service.FacilitiesAlarmService;
-import com.mailian.firecontrol.service.PrecinctService;
-import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.cache.RemindCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,8 @@ public class AlarmJob {
     private UnitService unitService;
     @Autowired
     private PrecinctService precinctService;
+    @Autowired
+    private SysConfigService sysConfigService;
 
     /**
      * 补全缺失的告警
@@ -50,8 +51,15 @@ public class AlarmJob {
      * 响应超时告警(3分钟)
      */
     public void dealTimeoutAlarm(){
+        SysConfig sysConfig = sysConfigService.getConfigByType(SysConfigType.ALARM_RESPONSE_OVERTIME);
+
+        int minute = -3;
+        if(StringUtils.isNotEmpty(sysConfig.getConfigValue())){
+            minute = Integer.parseInt(sysConfig.getConfigValue());
+        }
+
         Map<String,Object> queryMap = new HashMap<>();
-        queryMap.put("endAlarmTime",DateUtil.addMinute(new Date(),-3));
+        queryMap.put("endAlarmTime",DateUtil.addMinute(new Date(),minute));
         queryMap.put("handleStatus",AlarmHandleStatus.UNTREATED.id);
         List<FacilitiesAlarm> alarms = facilitiesAlarmService.selectFacilitiesAlarmByMap(queryMap);
         List<AlarmRemindInfo> remindInfos = new ArrayList<>();

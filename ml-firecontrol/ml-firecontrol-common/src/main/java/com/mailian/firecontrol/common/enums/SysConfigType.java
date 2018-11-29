@@ -9,7 +9,8 @@ import com.mailian.core.util.StringUtils;
  * @Description:
  */
 public enum SysConfigType {
-    ALARM_INFO(0,"sys.alarminfo","告警信息模板");
+    ALARM_INFO(0,"sys.alarminfo","告警信息模板"),
+    ALARM_RESPONSE_OVERTIME(1,"sys.alarmresponseovertime","响应告警超时时间");
 
     public Integer type;
     public String key;
