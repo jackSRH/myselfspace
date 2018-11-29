@@ -15,4 +15,14 @@ public enum OptType {
         this.id = id;
         this.desc = desc;
     }
+
+    public static String getDescById(Integer id){
+        OptType [] optTypes = OptType.values();
+        for (OptType optType : optTypes) {
+            if(optType.id.intValue() == id.intValue()){
+                return optType.desc;
+            }
+        }
+        return "";
+    }
 }

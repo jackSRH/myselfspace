@@ -133,7 +133,7 @@ public class RemindCache {
             for (Object object : objects) {
                 AlarmRemindInfo alarmRemindInfo = (AlarmRemindInfo) object;
 
-                if(unitId.equals(alarmRemindInfo.getUnitId())){
+                if(StringUtils.isNotEmpty(unitId) && alarmRemindInfo.getUnitId().equals(unitId)){
                     result = alarmRemindInfo;
                     break;
                 }
