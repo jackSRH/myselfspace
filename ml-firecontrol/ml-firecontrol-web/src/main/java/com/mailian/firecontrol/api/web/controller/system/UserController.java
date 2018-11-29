@@ -15,6 +15,7 @@ import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
+import com.mailian.firecontrol.framework.util.ShiroUtils;
 import com.mailian.firecontrol.service.RoleService;
 import com.mailian.firecontrol.service.UserRoleService;
 import com.mailian.firecontrol.service.UserService;
@@ -61,6 +62,8 @@ public class UserController extends BaseController {
     @RequestMapping(value="/insertOrUpdateUser",method = RequestMethod.POST)
     public ResponseResult insertOrUpdateUser(@RequestBody @Validated(ValidationManager.AddValidation.class) UserReq user){
         ResponseResult result = userService.insertOrUpdateUser(user);
+
+        ShiroUtils.clearCachedAuthorizationInfo();
         return result;
     }
 
@@ -112,6 +115,8 @@ public class UserController extends BaseController {
         }
 
         int result = userService.changePassword(uid,userDb.getUserName(),password);
+
+        ShiroUtils.clearCachedAuthorizationInfo();
         return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
@@ -131,6 +136,7 @@ public class UserController extends BaseController {
         }
 
         int result = userService.deleteByPrimaryKey(uid);
+        ShiroUtils.clearCachedAuthorizationInfo();
         return result>0?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
     }
 
