@@ -175,7 +175,7 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
 
         //获取RTU信息
         Map<String, Map<String, List<DeviceItem>>> code2Subs2Items = deviceItemRepository.getSubsAndItemsBycodes(deviceIds);
-        if(StringUtils.isEmpty(code2CalcImtes)){
+        if(StringUtils.isEmpty(code2Subs2Items)){
             return data;
         }
 
