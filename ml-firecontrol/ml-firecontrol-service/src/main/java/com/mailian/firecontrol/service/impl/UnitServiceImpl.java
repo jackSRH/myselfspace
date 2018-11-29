@@ -450,6 +450,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         appUnitDetailResp.setBusinessScope(unit.getBusinessScope());
         appUnitDetailResp.setItems(unit.getItems());
         appUnitDetailResp.setJoinTime(unit.getJoinTime());
+        appUnitDetailResp.setUnitType(unit.getUnitType());
 
         /*获取管辖区信息*/
         Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());

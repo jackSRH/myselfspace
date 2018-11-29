@@ -79,15 +79,9 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
         AreaService areaService = (AreaService) AopContext.currentProxy();
         List<AreaResp> areaResps = areaService.selectAll();
 
-        if(StringUtils.isNotNull(dataScope)){
-            List<Precinct> precincts = precinctMapper.selectBatchIds(dataScope.getDataIds());
-            appendPrecincts(areaResps, precincts);
-            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName,dataScope.getDataIds());
-        }else{
-            List<Precinct> precincts = precinctMapper.selectByMap(null);
-            appendPrecincts(areaResps, precincts);
-            return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
-        }
+        List<Precinct> precincts = StringUtils.isNull(dataScope)?precinctMapper.selectByMap(null):precinctMapper.selectBatchIds(dataScope.getDataIds());
+        appendPrecincts(areaResps, precincts);
+        return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
     }
 
     @Override
@@ -109,7 +103,7 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
             queryMap.put("precinctScope",dataScope);
             List<Unit> units = unitMapper.selectByMap(queryMap);
             appendUnits(newAreaList,units);
-            return TreeParser.getTreeListByFilter("0",newAreaList,true,areaName,dataScope.getDataIds());
+            return TreeParser.getTreeListByFilter("0",newAreaList,true,areaName);
         }else{
             List<Precinct> precincts = precinctMapper.selectByMap(null);
             appendPrecinctsExclude(newAreaList, precincts,areaRespMap);
