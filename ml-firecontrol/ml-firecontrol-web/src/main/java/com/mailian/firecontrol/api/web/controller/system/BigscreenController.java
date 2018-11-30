@@ -498,8 +498,14 @@ public class BigscreenController extends BaseController {
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("alarmId",alarmId);
         List<AlarmLog> alarmLogs = alarmLogService.selectByMap(queryMap);
-        
+
+        /*设置对应时间及操作人*/
         List<ProgressDetailResp> respList = new ArrayList<>();
+        ProgressDetailResp createResp = new ProgressDetailResp();
+        createResp.setOptTime(facilitiesAlarm.getAlarmTime());
+        createResp.setOptType(OptType.ALARM.id);
+        createResp.setOptTypeDesc(OptType.ALARM.desc);
+        respList.add(createResp);
         for (AlarmLog alarmLog : alarmLogs) {
             ProgressDetailResp resp = new ProgressDetailResp();
             resp.setOptTime(alarmLog.getOptTime());
@@ -510,12 +516,13 @@ public class BigscreenController extends BaseController {
             resp.setRoleName(alarmLog.getOptRole());
             respList.add(resp);
         }
-        /*设置对应时间及操作人*/
-        ProgressDetailResp createResp = new ProgressDetailResp();
-        createResp.setOptTime(facilitiesAlarm.getAlarmTime());
-        createResp.setOptType(OptType.ALARM.id);
-        createResp.setOptTypeDesc(OptType.ALARM.desc);
-        respList.add(createResp);
+
+        Collections.sort(respList, new Comparator<ProgressDetailResp>() {
+            @Override
+            public int compare(ProgressDetailResp o1, ProgressDetailResp o2) {
+                return o1.getOptTime().compareTo(o2.getOptTime());
+            }
+        });
         return ResponseResult.buildOkResult(respList);
     }
 
