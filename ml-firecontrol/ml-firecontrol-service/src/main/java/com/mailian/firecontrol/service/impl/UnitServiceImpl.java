@@ -36,6 +36,7 @@ import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.DeviceItemOpertionService;
+import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
@@ -73,8 +74,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private DeviceItemOpertionService deviceItemOpertionService;
     @Autowired
     private DeviceItemRepository deviceItemRepository;
-
-
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope, SearchReq searchReq) {
@@ -471,8 +470,15 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         }
 
         /*获取当前烟感、漏电状态*/
-        int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
-        int leakageAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.EARLY_WARNING.id);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("alarmType",AlarmType.ALARM.id);
+        queryMap.put("unitId",unitId);
+        int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByMap(queryMap);
+
+        queryMap.clear();
+        queryMap.put("alarmType",AlarmType.EARLY_WARNING.id);
+        queryMap.put("unitId",unitId);
+        int leakageAlarmCount = manageManualMapper.countUnfinishAlarmNumByMap(queryMap);
         appUnitDetailResp.setSomkeStatus(Status.NORMAL.id);
         if (somkeAlarmCount > 0) {
             appUnitDetailResp.setSomkeStatus(Status.DISABLE.id);
@@ -766,11 +772,28 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         UnitRealtimeDataResp unitRealtimeDataResp = new UnitRealtimeDataResp();
 
         /*获取当前烟感、漏电状态*/
-        int somkeAlarmCount = manageManualMapper.countUnfinishAlarmNumByType(AlarmType.ALARM.id);
-        unitRealtimeDataResp.setSomkeStatus(Status.NORMAL.id);
-        if (somkeAlarmCount > 0) {
-            unitRealtimeDataResp.setSomkeStatus(Status.DISABLE.id);
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("unitId",unitId);
+        queryMap.put("handleStatuses",Arrays.asList(0,1,2));
+        queryMap.put("alarmType",AlarmType.ALARM.id);
+        List<FacilitiesAlarm> facilitiesAlarms = manageManualMapper.selectFacilitiesAlarmByMap(queryMap);
+
+        List<String> alarmFaNames = new ArrayList<>();
+        if(StringUtils.isNotEmpty(facilitiesAlarms)){
+            List<String> itemIds = new ArrayList<>();
+            for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
+                itemIds.add(facilitiesAlarm.getAlarmItemId());
+            }
+
+            queryMap.clear();
+            queryMap.put("itemIds",itemIds);
+            List<DiagramItemDto> itemDtos = manageManualMapper.selectDiagramItemByMap(queryMap);
+
+            for(DiagramItemDto itemDto: itemDtos){
+                alarmFaNames.add(itemDto.getStructName());
+            }
         }
+        unitRealtimeDataResp.setAlarmFaNames(alarmFaNames);
 
         /*设置开关状态*/
         List<SwitchResp> switchResps = getSwitchResps(unitId);
