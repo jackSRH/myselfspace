@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -31,10 +32,10 @@ public class DataitemMessageHandler implements MqttMessageHandlerAdapter {
     public int handle(String message) {
         int result = 0;
         try {
-            List<DeviceItem> deviceItemList = JsonUtils.getObjectFromJsonString(message,new TypeReference<List<DeviceItem>>(){});
-            if(StringUtils.isNotEmpty(deviceItemList)){
+            Map<String,List<DeviceItem>> deviceItemMap = JsonUtils.getObjectFromJsonString(message,new TypeReference<Map<String,List<DeviceItem>>>(){});
+            if(StringUtils.isNotEmpty(deviceItemMap)){
                 DeviceItemRepository deviceItemRepository = (DeviceItemRepository) SpringContext.getBean("deviceItemRepository");
-                deviceItemRepository.updateDeviceItemInfosOfSub(deviceItemList);
+                deviceItemRepository.updateDeviceItemInfosOfSub(deviceItemMap);
             }
             result = 1;
         } catch (Exception e) {

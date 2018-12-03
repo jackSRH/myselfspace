@@ -42,20 +42,43 @@ public class DeviceItemRepository {
 
     /**
      * 通过RTU列表获取数据项信息
-     * @param subs
+     * @param rtuIds
      * @return
      */
-    public List<DeviceItem> getItemInfosBySubs(List<String> subs){
-        if(StringUtils.isEmpty(subs)) {
-            return  null;
+    public Map<String,List<DeviceItem>> getItemInfosBySubs(List<String> rtuIds){
+        Map<String,List<DeviceItem>> rtuId2Items = new HashMap<>();
+        if(StringUtils.isEmpty(rtuIds)) {
+            return  rtuId2Items;
         }
-        Map<String, Object> params = new HashMap<String, Object>();
+
+        Map<String, Object> params = new HashMap<>();
         params.put("appid", pushConfig.SYSTEM_ID);
-        params.put("rtuidcbs", CollectionUtil.join(subs,","));
+        params.put("rtuidcbs", CollectionUtil.join(rtuIds,","));
         String param = JSON.toJSONString(params);
         //请求后台接口获取数据
         String res = HttpClientUtil.postBody(pushConfig.getUrl(pushConfig.GET_ITEM_URI), param, null,false);
-        return PushResponseUtil.processResponseListData(res,DeviceItem.class);
+        if(StringUtils.isEmpty(res)){
+            return rtuId2Items;
+        }
+
+        List<DeviceItem> items = PushResponseUtil.processResponseListData(res,DeviceItem.class);
+        if(StringUtils.isEmpty(items)){
+            return rtuId2Items;
+        }
+
+        String rtuId;
+        List<DeviceItem> deviceItems;
+        for(DeviceItem item:items){
+            rtuId = item.getRtuidcb();
+            if(rtuId2Items.containsKey(rtuId)){
+                rtuId2Items.get(rtuId).add(item);
+            }else{
+                deviceItems = new ArrayList<>();
+                deviceItems.add(item);
+                rtuId2Items.put(rtuId,deviceItems);
+            }
+        }
+        return rtuId2Items;
     }
 
     /**
@@ -322,36 +345,21 @@ public class DeviceItemRepository {
 
     /**
      * 更新RTU底下的数据项信息
-     * @param deviceItemList
+     * @param deviceItemMap
      */
-    public Map<String,List<DeviceItem>> updateDeviceItemInfosOfSub(List<DeviceItem> deviceItemList) {
-        Map<String,List<DeviceItem>> deviceSubId2ItemInfos = new HashMap<>();
-        if(StringUtils.isNotEmpty(deviceItemList)) {
-            for (DeviceItem deviceItem : deviceItemList) {
-                String rtuidcb = deviceItem.getRtuidcb();
-                if (deviceSubId2ItemInfos.containsKey(rtuidcb)) {
-                    deviceSubId2ItemInfos.get(rtuidcb).add(deviceItem);
-                } else {
-                    List<DeviceItem> deviceItems = new ArrayList<>();
-                    deviceItems.add(deviceItem);
-                    deviceSubId2ItemInfos.put(rtuidcb, deviceItems);
+    public void updateDeviceItemInfosOfSub(Map<String,List<DeviceItem>> deviceItemMap) {
+        List<DeviceItem> deviceItemList = new ArrayList<>();
+        for (Map.Entry<String, List<DeviceItem>> deviceItemEntry : deviceItemMap.entrySet()) {
+            deviceItemList.addAll(deviceItemEntry.getValue());
+            CollectionUtil.sort(deviceItemEntry.getValue(), new Comparator<DeviceItem>() {
+                @Override
+                public int compare(DeviceItem o1, DeviceItem o2) {
+                    return o1.getSid().compareTo(o2.getSid());
                 }
-
-            }
-
-            for (Map.Entry<String, List<DeviceItem>> deviceItemEntry : deviceSubId2ItemInfos.entrySet()) {
-                CollectionUtil.sort(deviceItemEntry.getValue(), new Comparator<DeviceItem>() {
-                    @Override
-                    public int compare(DeviceItem o1, DeviceItem o2) {
-                        return o1.getSid().compareTo(o2.getSid());
-                    }
-                });
-            }
-
-            updateId2ItemInfo(deviceItemList);
-            redisUtils.addAllHashValue(CommonConstant.DEVICE_SUB_ITEM, deviceSubId2ItemInfos, CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+            });
         }
-        return deviceSubId2ItemInfos;
+        updateId2ItemInfo(deviceItemList);
+        redisUtils.addAllHashValue(CommonConstant.DEVICE_SUB_ITEM, deviceItemMap, CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
     }
 
     /**
@@ -395,12 +403,14 @@ public class DeviceItemRepository {
         }
 
         if(StringUtils.isNotEmpty(needFindSubId)) {
-            List<DeviceItem> apiDeviceItemList = getItemInfosBySubs(needFindSubId);
-            setItemsVal(apiDeviceItemList);
-            Map<String,List<DeviceItem>> deviceItemMapResult = updateDeviceItemInfosOfSub(apiDeviceItemList);
-            if(StringUtils.isNotEmpty(deviceItemMapResult)){
-                subId2Items.putAll(deviceItemMapResult);
+            Map<String,List<DeviceItem>> apiDeviceItemMap = getItemInfosBySubs(needFindSubId);
+            if(StringUtils.isNotEmpty(apiDeviceItemMap)){
+                for(Map.Entry<String,List<DeviceItem>> entry : apiDeviceItemMap.entrySet()){
+                    setItemsVal(entry.getValue());
+                }
             }
+            updateDeviceItemInfosOfSub(apiDeviceItemMap);
+            subId2Items.putAll(apiDeviceItemMap);
         }
         return subId2Items;
     }
@@ -638,8 +648,10 @@ public class DeviceItemRepository {
         if(StringUtils.isEmpty(rtuIds)){
             return;
         }
-        List<DeviceItem> rtuList = getItemInfosBySubs(rtuIds);
-        updateDeviceItemInfosOfSub(rtuList);
+        Map<String,List<DeviceItem>> deviceItemMap = getItemInfosBySubs(rtuIds);
+        if(StringUtils.isNotEmpty(deviceItemMap)){
+            updateDeviceItemInfosOfSub(deviceItemMap);
+        }
     }
 
     /**
