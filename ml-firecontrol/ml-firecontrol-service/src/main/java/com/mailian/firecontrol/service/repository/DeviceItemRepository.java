@@ -382,10 +382,13 @@ public class DeviceItemRepository {
         }
 
         Map<String,List<DeviceItem>> subId2Items = new HashMap<>();
+        List<DeviceItem> deviceItems;
         List<String> needFindSubId = new ArrayList<>();
         for(String subId:deviceSubIds){
             if(deviceItemMap.containsKey(subId)){
-                subId2Items.put(subId,deviceItemMap.get(subId));
+                deviceItems = deviceItemMap.get(subId);
+                setItemsVal(deviceItems);
+                subId2Items.put(subId,deviceItems);
             }else{
                 needFindSubId.add(subId);
             }
