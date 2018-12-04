@@ -67,13 +67,24 @@ public class RemindCache {
     /**
      * 获取最新提醒(根据区域)
      */
-    public AlarmRemindInfo getFristRemindByAreaId(Integer areaId){
+    public AlarmRemindInfo getFristRemindByAreaId(Integer areaId,List<Integer> precinctIds){
         List<Object> objects = redisUtils.listRange(CommonConstant.ALARM_REMIND,0,-1);
 
         AlarmRemindInfo result = null;
         if(StringUtils.isNotEmpty(objects)) {
             if(StringUtils.isNull(areaId)) {
-                result = (AlarmRemindInfo) objects.get(0);
+                //result = (AlarmRemindInfo) objects.get(0);
+                if(StringUtils.isNotNull(precinctIds)){
+                    for (Object object : objects) {
+                        AlarmRemindInfo alarmRemindInfo = (AlarmRemindInfo) object;
+                        if(precinctIds.contains(alarmRemindInfo.getPrecinctId())){
+                            result = alarmRemindInfo;
+                            break;
+                        }
+                    }
+                }else{
+                    result = (AlarmRemindInfo) objects.get(0);
+                }
             }else {
                 Area area = areaService.getAreaById(areaId);
                 Integer areaRank = area.getAreaRank();
@@ -81,13 +92,32 @@ public class RemindCache {
                     AlarmRemindInfo alarmRemindInfo = (AlarmRemindInfo) object;
 
                     if (AreaRank.PROVINCE.id.equals(areaRank) && areaId.equals(alarmRemindInfo.getProvinceId())) {
-                        result = alarmRemindInfo;
-                        break;
+                        if(StringUtils.isNotNull(precinctIds)){
+                            if(precinctIds.contains(alarmRemindInfo.getPrecinctId())){
+                                result = alarmRemindInfo;
+                                break;
+                            }
+                        }else {
+                            result = alarmRemindInfo;
+                            break;
+                        }
                     } else if (AreaRank.CITY.id.equals(areaRank) && areaId.equals(alarmRemindInfo.getCityId())) {
-                        result = alarmRemindInfo;
-                        break;
+                        if(StringUtils.isNotNull(precinctIds)){
+                            if(precinctIds.contains(alarmRemindInfo.getPrecinctId())){
+                                result = alarmRemindInfo;
+                                break;
+                            }
+                        }else {
+                            result = alarmRemindInfo;
+                            break;
+                        }
                     } else {
-                        if (areaId.equals(alarmRemindInfo.getAreaId())) {
+                        if(StringUtils.isNotNull(precinctIds)){
+                            if(precinctIds.contains(alarmRemindInfo.getPrecinctId())){
+                                result = alarmRemindInfo;
+                                break;
+                            }
+                        }else {
                             result = alarmRemindInfo;
                             break;
                         }
