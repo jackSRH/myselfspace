@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Auther: wangqiaoqing
@@ -29,6 +30,8 @@ public class JwtMatcher implements CredentialsMatcher {
     private RedisUtils redisUtils;
     @Autowired
     private SystemConfig systemConfig;
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     @Override
     public boolean doCredentialsMatch(AuthenticationToken authenticationToken, AuthenticationInfo authenticationInfo) {
@@ -48,18 +51,23 @@ public class JwtMatcher implements CredentialsMatcher {
             throw new AuthenticationException("密码错误"); // 令牌错误
         }
 
-        String redisToken = redisUtils.get(redisKey);
-        if(StringUtils.isEmpty(redisToken)){
-            throw new AuthenticationException("token失效"); // token失效
-        }
+        lock.lock();
+        try {
+            String redisToken = redisUtils.get(redisKey);
+            if (StringUtils.isEmpty(redisToken)) {
+                throw new AuthenticationException("token失效"); // token失效
+            }
 
-        if(!token.equals(redisToken)){
-            throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN+redisToken);
-        }
+            if (!token.equals(redisToken)) {
+                throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN + redisToken);
+            }
 
-        if(jwtUtils.isRefreshToken(claims)){
-            String newToken = jwtUtils.generateToken(UUID.randomUUID().toString(),userName,password);
-            throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN+newToken);
+            if (jwtUtils.isRefreshToken(claims)) {
+                String newToken = jwtUtils.generateToken(UUID.randomUUID().toString(), userName, password);
+                throw new AuthenticationException(CoreCommonConstant.REFRESH_TOKEN + newToken);
+            }
+        }finally {
+            lock.unlock();
         }
         return true;
     }
