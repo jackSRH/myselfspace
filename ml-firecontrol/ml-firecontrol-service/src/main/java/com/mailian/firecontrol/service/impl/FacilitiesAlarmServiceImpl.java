@@ -460,6 +460,7 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
             curAlarmResp.setUnitName(unitId2Name.get(facilitiesAlarm.getUnitId()));
             curAlarmResp.setAlarmType(facilitiesAlarm.getAlarmType());
             curAlarmResp.setAlarmDuration(DateUtils.getHourFromNow(facilitiesAlarm.getAlarmTime()));
+            curAlarmResp.setAlarmDurationStr(DateUtils.getHMFromNow(facilitiesAlarm.getAlarmTime()));
             curAlarmResp.setAlarmStatusDesc(AlarmHandleStatus.getValue(facilitiesAlarm.getHandleStatus()));
             curAlarmResps.add(curAlarmResp);
         }

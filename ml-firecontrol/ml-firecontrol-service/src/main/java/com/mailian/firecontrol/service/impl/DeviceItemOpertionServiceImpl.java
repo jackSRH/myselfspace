@@ -186,15 +186,23 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
                 subIds.addAll(subIdSet);
             }
         }
-        Map<String,DeviceSub> deviceSubMap = deviceSubCache.getDeviceSubsBySubIds(subIds);
-        Map<String, Map<String, List<DeviceConfigItemResp>>> sub2Types2Items = new HashMap<>();
 
+        Map<String,DeviceSub> deviceSubMap = deviceSubCache.getDeviceSubsBySubIds(subIds);
+
+        Map<String, Map<String, List<DeviceConfigItemResp>>> sub2Types2Items;
+        List<DeviceConfigItemResp> transportYaoce;
+        List<DeviceConfigItemResp> transportYaoxin;
+        List<DeviceConfigItemResp> transportYaokong;
+        Map<String, List<DeviceConfigItemResp>> type2Items;
+        DeviceSub sub;
+        Device device;
         for(Map.Entry<String, Map<String, List<DeviceItem>>> entry : code2Subs2Items.entrySet()) {
+            sub2Types2Items = new HashMap<>();
             for(Map.Entry<String, List<DeviceItem>> en : entry.getValue().entrySet()) {
-                List<DeviceConfigItemResp> transportYaoce = new ArrayList<>();
-                List<DeviceConfigItemResp> transportYaoxin = new ArrayList<>();
-                List<DeviceConfigItemResp> transportYaokong = new ArrayList<>();
-                Map<String, List<DeviceConfigItemResp>> type2Items = new HashMap<>();
+                transportYaoce = new ArrayList<>();
+                transportYaoxin = new ArrayList<>();
+                transportYaokong = new ArrayList<>();
+                type2Items = new HashMap<>();
 
                 for(DeviceItem deviceItem : en.getValue()) {
                     deviceConfigItemResp = new DeviceConfigItemResp();
@@ -215,14 +223,14 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
                 type2Items.put("传输遥信", transportYaoxin);
                 type2Items.put("传输遥控", transportYaokong);
 
-                DeviceSub sub = deviceSubMap.get(en.getKey());
+                sub = deviceSubMap.get(en.getKey());
                 String subName = en.getKey();
                 if(StringUtils.isNotNull(sub)  && StringUtils.isNotEmpty(sub.getRtuname())) {
                     subName = sub.getRtuname()+"("+ en.getKey() +")";
                 }
                 sub2Types2Items.put(subName, type2Items);
             }
-            Device device = deviceMap.get(entry.getKey());
+            device = deviceMap.get(entry.getKey());
             String deviceName = entry.getKey();
             if(StringUtils.isNotNull(device) &&  StringUtils.isNotEmpty(device.getName())) {
                 deviceName = device.getName() +"("+ entry.getKey() +")";
