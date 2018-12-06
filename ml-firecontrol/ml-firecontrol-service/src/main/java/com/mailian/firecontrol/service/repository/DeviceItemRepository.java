@@ -30,6 +30,8 @@ import java.util.*;
 public class DeviceItemRepository {
     private static final Logger log = LoggerFactory.getLogger(DeviceItemRepository.class);
 
+    private static final long RTDATA_EXPIRE_TIME = 300;
+
     @Autowired
     private DeviceSubCache deviceSubCache;
     @Autowired
@@ -715,7 +717,7 @@ public class DeviceItemRepository {
      * @param rtData
      */
     public void updateRealTime(DeviceItemRealTimeData rtData) {
-        redisUtils.addHashValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,rtData.getId(),rtData,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+        redisUtils.addHashValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,rtData.getId(),rtData,RTDATA_EXPIRE_TIME);
     }
 
     /**
@@ -729,7 +731,7 @@ public class DeviceItemRepository {
             rtDataMap.put(deviceItemRealTimeData.getId(),deviceItemRealTimeData);
         }
 
-        redisUtils.addAllHashValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,rtDataMap,CommonConstant.PUSH_REDIS_DEFAULT_EXPIRE);
+        redisUtils.addAllHashValue(CommonConstant.DEVICE_ITEM_REAL_TIME_DATA,rtDataMap,RTDATA_EXPIRE_TIME);
     }
 
 
