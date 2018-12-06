@@ -13,13 +13,15 @@ import java.util.Map;
 public class SmsUtils {
 	private static final Logger log = LoggerFactory.getLogger(SmsUtils.class);
 
-	private static String appkey = "5sT1CPY6";
-	private static String secretkey = "137262b21fd7f273ce2c125fa3840af9";
+	private static final String APPKEY = PropertiesUtil.getValue("yunma.appkey");
+	private static final String SECRETKEY = PropertiesUtil.getValue("yunma.secretkey");
+	private static final String SMSTEMPLATEID = PropertiesUtil.getValue("yunma.smstemplateid");
+
 
 	public static int sendSms(String phone, String did, String content,
 			String date, String name) {
 		String mstr = String.valueOf(System.currentTimeMillis());
-		YunmaClient client = new YunmaClient(appkey, secretkey, mstr);
+		YunmaClient client = new YunmaClient(APPKEY, SECRETKEY, mstr);
 		SmsSendRequest req = new SmsSendRequest();
 		
 		req.setRecNo(phone);
@@ -45,7 +47,7 @@ public class SmsUtils {
 		req.setSmsParam(param);
 		// {"code":"0988","product":"九五云码"}
 		req.setSmsSign("脉联云服务");
-		req.setSmsTemplateId("sms_479591");
+		req.setSmsTemplateId(SMSTEMPLATEID);
 		String smsContent = "发送短信:" + phone + param;
 		log.info(smsContent);
 		String resp = client.execute(req);

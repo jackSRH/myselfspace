@@ -246,7 +246,10 @@ public class BigscreenController extends BaseController {
         Integer itemCycle = null;
         Date now = new Date();
         Date startDate = DateUtil.getStartDate(StringUtils.nvl(bgSearchReq.getStartDate(),now));
-        Date endDate = StringUtils.nvl(bgSearchReq.getEndDate(),now);
+        Date endDate = bgSearchReq.getEndDate();
+        if(StringUtils.isNull(endDate) || endDate.after(now)){
+            endDate = now;
+        }
 
         //获取时间点
         List<DayTime> dates;
