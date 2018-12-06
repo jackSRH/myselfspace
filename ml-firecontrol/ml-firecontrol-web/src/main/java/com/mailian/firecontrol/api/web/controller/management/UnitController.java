@@ -25,6 +25,7 @@ import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
+import com.mailian.firecontrol.framework.util.MqttTopicUtil;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
@@ -72,7 +73,16 @@ public class UnitController extends BaseController {
             unitInfo.setUnitPic(filePath);
         }
         Boolean insertOrUpdateRes = unitService.insertOrUpdate(unitInfo);
-        return insertOrUpdateRes?ResponseResult.buildOkResult():ResponseResult.buildFailResult();
+        if(insertOrUpdateRes){
+            if(StringUtils.isNotEmpty(unitInfo.getDeviceIds())){
+                for(String deviceId : unitInfo.getDeviceIds()){
+                    MqttTopicUtil.addTopic(deviceId);
+                }
+            }
+            return ResponseResult.buildOkResult();
+        }else{
+            return ResponseResult.buildFailResult();
+        }
     }
 
     @Log(title = "配置管理",action = "修改单位状态")
