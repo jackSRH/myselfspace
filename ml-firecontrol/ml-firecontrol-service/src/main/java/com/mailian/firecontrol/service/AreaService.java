@@ -47,5 +47,5 @@ public interface AreaService extends BaseService<Area> {
      * @param dataScope
      * @return
      */
-    List<AreaResp> selectAreaAndUnitList(String areaName, DataScope dataScope);
+    List<AreaResp> selectAreaAndUnitList(String areaName, DataScope dataScope,Integer showRank);
 }

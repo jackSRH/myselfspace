@@ -3,6 +3,7 @@ package com.mailian.firecontrol.framework.config;
 import com.mailian.core.annotation.AppAPI;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.constants.CoreCommonConstant;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.firecontrol.dto.ShiroUser;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +47,7 @@ public class SwaggerConfig {
         List<ResponseMessage> responseMessages = ResponseCode.getResponseMessageList();
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(webApiInfo())
                 .groupName("WebAPI")
-                .ignoredParameterTypes(ShiroUser.class) //忽略公共参数
+                .ignoredParameterTypes(ShiroUser.class,DataScope.class) //忽略公共参数
                 .useDefaultResponseMessages(false) //禁用默认的状态码
                 .globalOperationParameters(pars)
                 .globalResponseMessage(RequestMethod.GET,responseMessages) //设置公共响应参数

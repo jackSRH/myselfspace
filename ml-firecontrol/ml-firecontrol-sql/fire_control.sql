@@ -685,3 +685,6 @@ CREATE TABLE `t_power_monitoring` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用电监测配置表';
 
+
+-- 12-06 sql语句
+alter table t_sys_role add COLUMN show_rank int(4) default null COMMENT '角色可见级别 0:省,1:市,2:区域,97:管辖区,98:单位,99:其它' after role_key;

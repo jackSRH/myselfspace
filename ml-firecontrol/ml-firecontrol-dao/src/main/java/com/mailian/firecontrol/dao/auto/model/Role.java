@@ -2,7 +2,7 @@
 *
 * Role.java
 * Copyright(C) 2018-2099 深圳市脉联电子有限公司
-* @date 2018-10-26
+* @date 2018-12-06
 */
 package com.mailian.firecontrol.dao.auto.model;
 
@@ -24,6 +24,11 @@ public class Role extends BaseDomain implements Serializable {
      * 角色权限字符串
      */
     private String roleKey;
+
+    /**
+     * 角色可见级别 0:省,1:市,2:区域,97:管辖区,98:单位,99:其它
+     */
+    private Integer showRank;
 
     /**
      * 显示顺序
@@ -67,6 +72,14 @@ public class Role extends BaseDomain implements Serializable {
 
     public void setRoleKey(String roleKey) {
         this.roleKey = roleKey == null ? null : roleKey.trim();
+    }
+
+    public Integer getShowRank() {
+        return showRank;
+    }
+
+    public void setShowRank(Integer showRank) {
+        this.showRank = showRank;
     }
 
     public Integer getRoleSort() {

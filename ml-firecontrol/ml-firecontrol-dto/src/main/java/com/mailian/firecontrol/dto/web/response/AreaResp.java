@@ -136,6 +136,12 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
 
     @JsonIgnore
     @Override
+    public Integer getRank() {
+        return this.areaRank;
+    }
+
+    @JsonIgnore
+    @Override
     public void setChildList(List<AreaResp> childList) {
         this.childAreaList = childList;
     }

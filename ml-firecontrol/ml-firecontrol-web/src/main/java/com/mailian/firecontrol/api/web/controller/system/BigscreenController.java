@@ -24,6 +24,7 @@ import com.mailian.firecontrol.dto.push.DeviceItemHistoryData;
 import com.mailian.firecontrol.dto.web.ProgressDetailResp;
 import com.mailian.firecontrol.dto.web.request.BgSearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
 import com.mailian.firecontrol.framework.util.ConvertDateUtil;
 import com.mailian.firecontrol.service.*;
 import com.mailian.firecontrol.service.cache.RemindCache;
@@ -89,17 +90,10 @@ public class BigscreenController extends BaseController {
 
     @ApiOperation(value = "获取单位数结构，用于大屏单位展示", httpMethod = "GET")
     @GetMapping(value = "getAreaAndUnitList")
-    public ResponseResult<List<AreaResp>> getAreaAndUnitList(@CurUser ShiroUser shiroUser,
+    public ResponseResult<List<AreaResp>> getAreaAndUnitList(@PrecinctUnitScope DataScope dataScope,
+                                                                 @CurUser ShiroUser shiroUser,
                                                                  @ApiParam(value="区域名") @RequestParam(value = "areaName",required = false) String areaName){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult();
-            }
-            dataScope = new DataScope("precinct_id",precinctIds);
-        }
-        return ResponseResult.buildOkResult(areaService.selectAreaAndUnitList(areaName,dataScope));
+        return ResponseResult.buildOkResult(areaService.selectAreaAndUnitList(areaName,dataScope,shiroUser.getRank()));
     }
 
 

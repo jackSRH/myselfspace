@@ -3,6 +3,9 @@ package com.mailian.firecontrol.framework.shiro;
 import com.mailian.core.enums.Status;
 import com.mailian.core.shiro.JwtToken;
 import com.mailian.core.util.JwtUtils;
+import com.mailian.core.util.StringUtils;
+import com.mailian.firecontrol.common.enums.AreaRank;
+import com.mailian.firecontrol.dao.auto.model.Role;
 import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.service.MenuService;
@@ -24,7 +27,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * shiro 认证
@@ -99,7 +105,20 @@ public class MlShiroRealm extends AuthorizingRealm {
 
         ShiroUser shiroUser = new ShiroUser();
         BeanUtils.copyProperties(user,shiroUser);
-        shiroUser.setRoles(roleService.selectRoleNamesByUserId(user.getId()));
+
+        List<Role> roleList = roleService.selectRolesByUserId(user.getId());
+        Set<String> permsSet = new HashSet<>();
+        Integer minRank = AreaRank.OTHER.id;
+        for (Role role : roleList) {
+            if (StringUtils.isNotEmpty(role.getRoleKey())) {
+                permsSet.addAll(Arrays.asList(role.getRoleKey().trim().split(",")));
+            }
+            if(StringUtils.isNotNull(role.getShowRank()) && role.getShowRank() < minRank){
+                minRank = role.getShowRank();
+            }
+        }
+        shiroUser.setRoles(permsSet);
+        shiroUser.setRank(minRank);
         shiroUser.setPrecinctIds(userService.getPrecinctIds(user.getId()));
 
         //设置盐值(保证用户密码一样的情况的下加密后的内容不一致)

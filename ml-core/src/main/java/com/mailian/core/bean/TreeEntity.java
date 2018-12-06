@@ -12,6 +12,7 @@ public interface TreeEntity<T> {
     public String getParentIdStr();
     public Integer getSortNo();
     public String getNameStr();
+    public Integer getRank();
     public void setChildList(List<T> childList);
 
     /**

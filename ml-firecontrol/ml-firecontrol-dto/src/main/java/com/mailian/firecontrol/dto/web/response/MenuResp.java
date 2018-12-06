@@ -189,6 +189,12 @@ public class MenuResp extends BaseInfo implements TreeEntity<MenuResp> {
 
     @JsonIgnore
     @Override
+    public Integer getRank() {
+        return 0;
+    }
+
+    @JsonIgnore
+    @Override
     public void setChildList(List<MenuResp> childList) {
         childMenu = childList;
     }

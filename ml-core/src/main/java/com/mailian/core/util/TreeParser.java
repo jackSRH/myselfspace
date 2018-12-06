@@ -62,6 +62,55 @@ public class TreeParser {
     }
 
     /**
+     * 解析树形数据
+     * @param rank
+     * @param entityList
+     * @return
+     * @author wangqiaoqing
+     */
+    public static <E extends TreeEntity<E>> List<E> getTreeListByRankId(Integer rank, List<E> entityList, boolean needSort) {
+        List<E> resultList=new ArrayList<>();
+
+        Map<String,List<E>> entityMap = new HashMap<>();
+        //获取顶层元素集合
+        String parentId;
+        List<E> entitys;
+        for (E entity : entityList) {
+            parentId=entity.getParentIdStr();
+            if(entity.getRank().intValue() == rank.intValue()){
+                resultList.add(entity);
+            }
+            parentId = StringUtils.nvl(parentId,"0");
+            if(entityMap.containsKey(parentId)) {
+                entityMap.get(parentId).add(entity);
+            }else{
+                entitys = new ArrayList<>();
+                entityMap.put(parentId,entitys);
+                entitys.add(entity);
+            }
+        }
+
+        Map<String,Object> childResultMap;
+        //获取每个顶层元素的子数据集合
+        for (E entity : resultList) {
+            childResultMap = getSubList(entity.getIdStr(), entityMap,needSort);
+            entity.setChildList((List<E>) childResultMap.get("list"));
+            entity.setChildBizCount((Integer) childResultMap.get("count"));
+        }
+
+        if(needSort){
+            Collections.sort(resultList, new Comparator<E>() {
+                @Override
+                public int compare(E o1, E o2) {
+                    return o1.getSortNo() - o2.getSortNo();
+                }
+            });
+        }
+
+        return resultList;
+    }
+
+    /**
      * 获取子数据集合
      * @param id
      * @return
@@ -289,6 +338,43 @@ public class TreeParser {
         return treeList;
     }
 
+
+    /**
+     * 过滤并且返回树
+     * @param rank
+     * @param entityList
+     * @param needSort
+     * @param params
+     * @param <E>
+     * @return
+     */
+    public static <E extends TreeEntity<E>> List<E> getRankTreeListByFilter(Integer rank,List<E> entityList,boolean needSort,Object ... params) {
+        Map<String,E> allMap = new HashMap<>();
+        Map<String,E> existsMap = new HashMap<>();
+        List<E> treeList = new ArrayList<>();
+        List<E> tempList = new ArrayList<>();
+
+        for (E e : entityList) {
+            allMap.put(e.getIdStr(),e);
+
+            if(e.filterByParam(params)){
+                treeList.add(e);
+                tempList.add(e);
+                existsMap.put(e.getIdStr(),e);
+            }
+        }
+
+
+        if(StringUtils.isNotEmpty(treeList)){
+            for (E e : treeList) {
+                //递归获取父级
+                addParentToListByRank(rank, allMap, existsMap, tempList,e);
+            }
+            treeList = getTreeListByRankId(rank,tempList,needSort);
+        }
+        return treeList;
+    }
+
     /**
      * 递归添加父级
      * @param topIdStr
@@ -305,6 +391,27 @@ public class TreeParser {
                     existsMap.put(e.getParentIdStr(), parentE);
                     entityList.add(parentE);
                     addParentToList(topIdStr, allMap, existsMap, entityList, parentE);
+                }
+            }
+        }
+    }
+
+    /**
+     * 递归添加父级
+     * @param rank
+     * @param allMap
+     * @param existsMap
+     * @param entityList
+     * @param <E>
+     */
+    private static <E extends TreeEntity<E>> void addParentToListByRank(Integer rank,Map<String,E> allMap, Map<String,E> existsMap, List<E> entityList,E e) {
+        if(StringUtils.isNotEmpty(e.getParentIdStr()) && e.getRank().intValue() != rank.intValue()){
+            if(!existsMap.containsKey(e.getParentIdStr())) {
+                E parentE = allMap.get(e.getParentIdStr());
+                if(StringUtils.isNotNull(parentE)) {
+                    existsMap.put(e.getParentIdStr(), parentE);
+                    entityList.add(parentE);
+                    addParentToListByRank(rank, allMap, existsMap, entityList, parentE);
                 }
             }
         }

@@ -173,6 +173,12 @@ public class DictDataResp implements TreeEntity<DictDataResp> {
 
     @JsonIgnore
     @Override
+    public Integer getRank() {
+        return this.dictRank;
+    }
+
+    @JsonIgnore
+    @Override
     public void setChildList(List<DictDataResp> childList) {
         this.childDictDataList = childList;
     }
