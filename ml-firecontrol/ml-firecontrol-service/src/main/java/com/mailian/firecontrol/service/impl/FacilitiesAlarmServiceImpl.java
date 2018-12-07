@@ -243,7 +243,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
 
 
         if(StringUtils.isNotNull(dataScope)){
-            queryMap.put("precinctIds",dataScope.getDataIds());
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
         }
         queryMap.put("misreport",misreport);
         queryMap.put("startDate",startTime);
@@ -291,10 +295,17 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     }
 
     @Override
-    public FireAlarmCountResp getFireAlarmCountByArea(Integer areaId) {
+    public FireAlarmCountResp getFireAlarmCountByArea(Integer areaId,DataScope dataScope) {
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
         queryMap.put("alarmType",AlarmType.ALARM.id);
+        if(StringUtils.isNotNull(dataScope)){
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
+        }
         List<Map<String,Object>> alarmResultList = manageManualMapper.countFaRealNumByMap(queryMap);
 
         FireAlarmCountResp fireAlarmCountResp = new FireAlarmCountResp();
@@ -411,7 +422,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         queryMap.put("endDate",endDate);
         queryMap.put("startDate",startDate);
         if(StringUtils.isNotNull(dataScope)){
-            queryMap.put("precinctIds",dataScope.getDataIds());
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
         }
         List<AlarmIndustryShareResp> alarmIndustryShareResps = manageManualMapper.countAlarmIndustryShare(queryMap);
         if(StringUtils.isNotEmpty(alarmIndustryShareResps)){
@@ -427,7 +442,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         Map<String,Object> queryMap = new HashMap<>();
         BuildDefaultResultUtil.putAreaSearchMap(areaId, queryMap);
         if(StringUtils.isNotNull(dataScope)){
-            queryMap.put("precinctIds",dataScope.getDataIds());
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
         }
         queryMap.put("alarmType",AlarmType.ALARM.id);
 //        queryMap.put("misreport",FaMisreportType.EFFECTIVE.id);
@@ -587,7 +606,11 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         queryMap.put("endDate",endDate);
         queryMap.put("startDate",startDate);
         if(StringUtils.isNotNull(dataScope)){
-            queryMap.put("precinctIds",dataScope.getDataIds());
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
         }
 
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);

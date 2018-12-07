@@ -22,10 +22,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther: wangqiaoqing
@@ -59,10 +56,10 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
     public List<AreaResp> selectProvinceAndCityList(String areaName) {
         AreaService areaService = (AreaService) AopContext.currentProxy();
         List<AreaResp> areaResps = areaService.selectAll();
-        CollectionUtil.filter(areaResps, new Filter<AreaResp>() {
+        areaResps = (List<AreaResp>)CollectionUtil.filter(areaResps, new Filter<AreaResp>() {
             @Override
             public boolean accept(AreaResp areaResp) {
-                return AreaRank.AREA.id.equals(areaResp.getAreaRank());
+                return AreaRank.PROVINCE.id.equals(areaResp.getAreaRank()) || AreaRank.CITY.id.equals(areaResp.getAreaRank());
             }
         });
         return TreeParser.getTreeListByFilter("0",areaResps,true,areaName);
@@ -97,31 +94,49 @@ public class AreaServiceImpl extends BaseServiceImpl<Area,AreaMapper> implements
         
         List<AreaResp> newAreaList = new ArrayList<>();
         if(StringUtils.isNotNull(dataScope)){
-            if(AreaRank.PRECINCT.id>=showRank) {
-                List<Precinct> precincts = precinctMapper.selectBatchIds(dataScope.getDataIds());
-                appendPrecinctsExclude(newAreaList, precincts, areaRespMap);
-            }
+            List<Integer> dataIds = dataScope.getDataIds();
+            if(StringUtils.isNotEmpty(dataIds)) {
+                if ("unit_id".equals(dataScope.getScopeName())) {
+                    Unit unit = unitMapper.selectByPrimaryKey(dataIds.get(0));
+                    Precinct precinct = precinctMapper.selectByPrimaryKey(unit.getPrecinctId());
+                    appendPrecinctsExclude(newAreaList,Arrays.asList(precinct),areaRespMap);
 
-            if(AreaRank.UNIT.id>=showRank) {
-                //添加对应单位
-                Map<String, Object> queryMap = new HashMap<>();
-                queryMap.put("precinctScope", dataScope);
-                List<Unit> units = unitMapper.selectByMap(queryMap);
-                appendUnits(newAreaList, units);
+                    appendUnits(newAreaList, Arrays.asList(unit));
+                }else {
+                    List<Precinct> precincts = precinctMapper.selectBatchIds(dataIds);
+                    appendPrecinctsExclude(newAreaList, precincts, areaRespMap);
+
+                    //添加对应单位
+                    Map<String, Object> queryMap = new HashMap<>();
+                    queryMap.put("precinctScope", dataScope);
+                    List<Unit> units = unitMapper.selectByMap(queryMap);
+                    appendUnits(newAreaList, units);
+                }
             }
         }else{
-            if(AreaRank.PRECINCT.id>=showRank) {
-                List<Precinct> precincts = precinctMapper.selectByMap(null);
-                appendPrecinctsExclude(newAreaList, precincts, areaRespMap);
-            }
+            List<Precinct> precincts = precinctMapper.selectByMap(null);
+            appendPrecinctsExclude(newAreaList, precincts, areaRespMap);
 
-            if(AreaRank.UNIT.id>=showRank) {
-                List<Unit> units = unitMapper.selectByMap(null);
-                appendUnits(newAreaList, units);
-            }
+            List<Unit> units = unitMapper.selectByMap(null);
+            appendUnits(newAreaList, units);
         }
 
-        return TreeParser.getRankTreeListByFilter(showRank,newAreaList,true,areaName);
+        newAreaList = (List<AreaResp>)CollectionUtil.filter(newAreaList, new Filter<AreaResp>() {
+            @Override
+            public boolean accept(AreaResp areaResp) {
+                return areaResp.getAreaRank().intValue()>=showRank;
+            }
+        });
+        Integer minRank = null;
+        for (AreaResp areaResp : newAreaList) {
+            if(StringUtils.isNull(minRank) || areaResp.getAreaRank().intValue() < minRank.intValue()){
+                minRank = areaResp.getAreaRank();
+            }
+        }
+        if(StringUtils.isNotNull(minRank)){
+            return TreeParser.getRankTreeListByFilter(minRank,newAreaList,true,areaName);
+        }
+        return new ArrayList<>();
     }
 
     private void appendPrecinctsExclude(List<AreaResp> newAreaList, List<Precinct> precincts, Map<Integer,AreaResp> areaRespMap) {

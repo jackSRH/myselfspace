@@ -274,6 +274,9 @@
             <if test="cityId != null">
                 and city_id = #{cityId,jdbcType=INTEGER}
             </if>
+            <if test="unitId != null">
+                and unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
             <if test="precinctId != null">
                 and precinct_id = #{precinctId,jdbcType=INTEGER}
             </if>

@@ -65,7 +65,7 @@ public interface FacilitiesAlarmService extends BaseService<FacilitiesAlarm> {
      * @param areaId
      * @return
      */
-    FireAlarmCountResp getFireAlarmCountByArea(Integer areaId);
+    FireAlarmCountResp getFireAlarmCountByArea(Integer areaId,DataScope dataScope);
 
     /**
      * 告警统计

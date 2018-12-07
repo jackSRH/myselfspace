@@ -94,6 +94,7 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
         this.childAreaList = childAreaList;
     }
 
+    @JsonIgnore
     public String getDisStr() {
         return disStr;
     }
@@ -102,6 +103,7 @@ public class AreaResp implements TreeEntity<AreaResp>,Serializable {
         this.disStr = disStr;
     }
 
+    @JsonIgnore
     public String getParentDisStr() {
         return parentDisStr;
     }

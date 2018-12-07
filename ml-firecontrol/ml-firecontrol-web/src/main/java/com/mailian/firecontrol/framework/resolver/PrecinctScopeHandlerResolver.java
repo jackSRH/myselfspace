@@ -1,11 +1,15 @@
 package com.mailian.firecontrol.framework.resolver;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mailian.core.bean.SpringContext;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.manager.SystemManager;
+import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
+import com.mailian.firecontrol.service.UnitService;
+import com.mailian.firecontrol.service.impl.UnitServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.core.MethodParameter;
@@ -15,9 +19,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Auther: wangqiaoqing
@@ -69,8 +71,15 @@ public class PrecinctScopeHandlerResolver implements HandlerMethodArgumentResolv
             List<Integer> dataIds = new ArrayList<>();
             if(StringUtils.isNotEmpty(shiroUser.getUnitId())){
                 scopeName = precinctUnitScope.ualias();
-                if(StringUtils.isEmpty(pUnitId) || pUnitId.equals(pUnitId)){
+                if(StringUtils.isEmpty(pUnitId) || shiroUser.getUnitId().equals(pUnitId)){
                     dataIds = Arrays.asList(shiroUser.getUnitId());
+                }
+                if(StringUtils.isNotEmpty(pPrecinctId)) {
+                    UnitService unitService = SpringContext.getBean(UnitServiceImpl.class);
+                    Unit unit = unitService.selectByPrimaryKey(shiroUser.getUnitId());
+                    if(!pPrecinctId.equals(unit.getPrecinctId()) && StringUtils.isNotEmpty(dataIds)) {
+                        dataIds = new ArrayList<>();
+                    }
                 }
             }else {
                 if(StringUtils.isNotEmpty(shiroUser.getPrecinctIds())){
@@ -78,7 +87,15 @@ public class PrecinctScopeHandlerResolver implements HandlerMethodArgumentResolv
                         if(shiroUser.getPrecinctIds().contains(pPrecinctId)){
                             dataIds = Arrays.asList(pPrecinctId);
                         }
-                    }else{
+                    }
+                    if(StringUtils.isNotEmpty(pUnitId)){
+                        UnitService unitService = SpringContext.getBean(UnitServiceImpl.class);
+                        Unit unit = unitService.selectByPrimaryKey(shiroUser.getUnitId());
+                        if(shiroUser.getPrecinctIds().contains(unit.getPrecinctId())){
+                            dataIds = Arrays.asList(unit.getPrecinctId());
+                        }
+                    }
+                    if(StringUtils.isEmpty(pPrecinctId) && StringUtils.isEmpty(pUnitId)){
                         dataIds = shiroUser.getPrecinctIds();
                     }
                 }
