@@ -7,6 +7,7 @@ import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.manager.ValidationManager;
 import com.mailian.core.manager.ViewManager;
 import com.mailian.core.util.StringUtils;
@@ -15,6 +16,7 @@ import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
+import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
 import com.mailian.firecontrol.framework.util.ShiroUtils;
 import com.mailian.firecontrol.service.RoleService;
 import com.mailian.firecontrol.service.UserRoleService;
@@ -51,8 +53,8 @@ public class UserController extends BaseController {
     @ApiImplicitParam(name = "userQueryReq", value = "用户查询参数", required = false, dataType = "UserReq")
     @RequestMapping(value="/getList",method = RequestMethod.POST)
     @JsonView(value = ViewManager.WebSimpleView.class)
-    public ResponseResult<PageBean<UserInfo>> getList(UserReq userQueryReq){
-        return ResponseResult.buildOkResult(userService.selectUsersByPage(userQueryReq));
+    public ResponseResult<PageBean<UserInfo>> getList(@PrecinctUnitScope DataScope dataScope, UserReq userQueryReq){
+        return ResponseResult.buildOkResult(userService.selectUsersByPage(userQueryReq,dataScope));
     }
 
 

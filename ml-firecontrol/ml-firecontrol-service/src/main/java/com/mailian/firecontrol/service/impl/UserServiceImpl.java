@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.Status;
 import com.mailian.core.util.JwtUtils;
 import com.mailian.core.util.MD5Util;
@@ -12,6 +13,7 @@ import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.mapper.UserMapper;
 import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
+import com.mailian.firecontrol.dao.manual.model.UserVo;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
 import com.mailian.firecontrol.service.*;
@@ -64,7 +66,7 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
     }
 
     @Override
-    public PageBean<UserInfo> selectUsersByPage(UserReq userQueryReq) {
+    public PageBean<UserInfo> selectUsersByPage(UserReq userQueryReq,DataScope dataScope) {
         Map<String,Object> queryMap = new HashMap<>();
         if(StringUtils.isNotEmpty(userQueryReq.getUserName())) {
             queryMap.put("userName",userQueryReq.getUserName());
@@ -75,10 +77,16 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
         if(StringUtils.isNotEmpty(userQueryReq.getPhone())){
             queryMap.put("phone",userQueryReq.getPhone());
         }
-
+        if(StringUtils.isNotNull(dataScope)){
+            if("precinct_id".equals(dataScope.getScopeName())){
+                queryMap.put("precinctIds",dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
+        }
         Page page = PageHelper.startPage(userQueryReq.getCurrentPage(),userQueryReq.getPageSize());
-        page.setOrderBy(" id desc ");
-        List<User> userList = selectByMap(queryMap);
+        page.setOrderBy(" u.id desc ");
+        List<UserVo> userList = systemManualMapper.selectUsersByMap(queryMap);
 
         List<UserInfo> userInfoList = new ArrayList<>();
         UserInfo userInfo;
@@ -90,25 +98,28 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
             roleMap.put(role.getId(),role);
         }
 
-        for (User user : userList) {
+        for (UserVo user : userList) {
             userInfo = new UserInfo();
             BeanUtils.copyProperties(user,userInfo);
             userInfoList.add(userInfo);
 
-            List<Integer> precinctIds = getPrecinctIds(user.getId());
+            String precinctIds = user.getPids();
             if(StringUtils.isNotEmpty(precinctIds)){
-                userInfo.setPrecinctIds(precinctIds);
-                for (Integer precinctId : precinctIds) {
-                    precinctMap.put(precinctId,null);
+                String [] pids = precinctIds.split(",");
+                List<Integer> pidList = new ArrayList<>();
+                for (String precinctId : pids) {
+                    Integer pid = Integer.parseInt(precinctId);
+                    precinctMap.put(pid,null);
+                    pidList.add(pid);
                 }
+                userInfo.setPrecinctIds(pidList);
             }
 
-            List<Integer> roleIds = userRoleService.selectRoleIdsByUid(user.getId());
-            if(StringUtils.isNotEmpty(roleIds)) {
-                userInfo.setRoleIds(roleIds);
+            if(StringUtils.isNotEmpty(user.getRids())) {
                 userInfo.setRoleNames(new ArrayList<>());
-                for (Integer roleId : roleIds) {
-                    userInfo.getRoleNames().add(roleMap.get(roleId).getRoleName());
+                String [] roleIds = user.getRids().split(",");
+                for (String roleId : roleIds) {
+                    userInfo.getRoleNames().add(roleMap.get(Integer.parseInt(roleId)).getRoleName());
                 }
             }
         }

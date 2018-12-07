@@ -53,7 +53,6 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     public PageBean<FacilitiesAlarmListResp> getFacilitiesAlarmList(DataScope dataScope, SearchReq searchReq){
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        queryMap.put("unitId",searchReq.getUnitId());
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -98,7 +97,6 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
     public PageBean<FireAlarmListResp> getFireAlarmList(DataScope dataScope, SearchReq searchReq){
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        queryMap.put("unitId",searchReq.getUnitId());
 
         Date startDate = searchReq.getStartDate();
         Date endDate = searchReq.getEndDate();
@@ -150,8 +148,6 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
         String unitName = searchReq.getUnitName();
         Map<String,Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        queryMap.put("unitId",searchReq.getUnitId());
-
         queryMap.put("alarmType",AlarmType.ALARM.id);
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();

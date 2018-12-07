@@ -1,6 +1,5 @@
 package com.mailian.firecontrol.api.web.controller.management;
 
-import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
@@ -9,13 +8,12 @@ import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.FaSystemType;
-import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.Facilities;
-import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.FacilitiesInfo;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DictDataResp;
 import com.mailian.firecontrol.dto.web.response.FacilitiesListResp;
+import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.component.DictDataComponent;
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RestController
 @RequestMapping("/management/facilities")
@@ -55,15 +52,7 @@ public class FacilitiesController extends BaseController {
     @Log(title = "配置管理",action = "获取设施列表")
     @ApiOperation(value = "获取设施列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getFacilitiesList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult();
-            }
-            dataScope = new DataScope("precinct_id",precinctIds);
-        }
+    public ResponseResult<PageBean<FacilitiesListResp>> getFacilitiesList(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope, SearchReq searchReq){
         PageBean<FacilitiesListResp> res = facilitiesService.getFacilitiesList(searchReq,dataScope);
         return ResponseResult.buildOkResult(res);
     }

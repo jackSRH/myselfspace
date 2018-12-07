@@ -93,4 +93,43 @@
     <select id="selectUidsByUnitId" resultType="java.lang.Integer">
         select id from t_user where unit_id=#{unitId,jdbcType=INTEGER}
     </select>
+
+    <resultMap id="UserVoResultMap" type="com.mailian.firecontrol.dao.manual.model.UserVo" extends="com.mailian.firecontrol.dao.auto.mapper.UserMapper.BaseResultMap">
+        <result column="pids" jdbcType="VARCHAR" property="pids" />
+        <result column="rids" jdbcType="VARCHAR" property="rids" />
+    </resultMap>
+
+    <select id="selectUsersByMap" resultMap="UserVoResultMap">
+        select u.*,pt.pids,rt.rids from t_user u
+        left join
+            (select up.uid,GROUP_CONCAT(up.precinct_id) as pids from t_user_precinct up
+            <where>
+                <if test="precinctIds != null">
+                    and up.precinct_id in
+                    <foreach close=")" collection="precinctIds" index="i" item="item" open="(" separator=",">
+                        #{item,jdbcType=INTEGER}
+                    </foreach>
+                </if>
+            </where>
+            group by up.uid) pt on u.id=pt.uid
+        left join
+            (select ur.user_id,GROUP_CONCAT(ur.role_id) as rids from t_sys_user_role ur group by ur.user_id)  as rt on u.id=rt.user_id
+        <where>
+            <if test="precinctIds != null">
+                and pt.pids is not null
+            </if>
+            <if test="userName != null">
+                and u.user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="fullNameLike != null">
+                and u.full_name like concat('%',#{fullNameLike,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="phone != null">
+                and u.phone = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="unitId != null">
+                and u.unit_id = #{unitId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
 </mapper>

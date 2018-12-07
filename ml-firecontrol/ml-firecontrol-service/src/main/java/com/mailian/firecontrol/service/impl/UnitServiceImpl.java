@@ -36,7 +36,6 @@ import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.DeviceItemOpertionService;
-import com.mailian.firecontrol.service.FacilitiesService;
 import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
@@ -80,19 +79,22 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         Integer currentPage = searchReq.getCurrentPage();
         Integer pageSize = searchReq.getPageSize();
         String unitName = searchReq.getUnitName();
-        Page page = PageHelper.startPage(currentPage, pageSize);
-        page.setOrderBy("update_time desc");
         List<Unit> units;
+        int total = 0;
         if (StringUtils.isEmpty(searchReq.getUnitId())) {
             Map<String, Object> queryMap = new HashMap<>();
             queryMap.put("precinctScope", dataScope);
             if (StringUtils.isNotEmpty(unitName)) {
                 queryMap.put("unitNameLike", unitName);
             }
+            Page page = PageHelper.startPage(currentPage, pageSize);
+            page.setOrderBy("update_time desc");
             units = super.selectByMap(queryMap);
+            total = (int) page.getTotal();
         } else {
             units = new ArrayList<>();
             units.add(selectByPrimaryKey(searchReq.getUnitId()));
+            total = 1;
         }
         if (StringUtils.isEmpty(units)) {
             return new PageBean<>();
@@ -161,7 +163,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             unitListResps.add(unitListResp);
         }
 
-        PageBean<UnitListResp> pageBean = new PageBean<>(currentPage, pageSize, (int) page.getTotal(), unitListResps);
+        PageBean<UnitListResp> pageBean = new PageBean<>(currentPage, pageSize,total , unitListResps);
         return pageBean;
     }
 
@@ -620,7 +622,6 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     public PageBean<List<UnitSwitchResp>> getUnitSwitchList(DataScope dataScope, SearchReq searchReq) {
         Map<String, Object> queryMap = new HashMap<>();
         queryMap.put("precinctScope", dataScope);
-        queryMap.put("unitId", searchReq.getUnitId());
         queryMap.put("type", StructType.REMOTE.id);
         List<DiagramItemDto> diagramItems = manageManualMapper.selectDiagramItemByMap(queryMap);
         if (StringUtils.isEmpty(diagramItems)) {

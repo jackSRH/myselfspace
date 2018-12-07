@@ -1,6 +1,7 @@
 package com.mailian.firecontrol.dao.manual.mapper;
 
 import com.mailian.firecontrol.dao.auto.model.Role;
+import com.mailian.firecontrol.dao.manual.model.UserVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface SystemManualMapper {
     List<Integer> selectAdminUserIds();
 
     List<Integer> selectUidsByUnitId(@Param(value = "unitId") Integer unitId);
+
+    List<UserVo> selectUsersByMap(Map<String,Object> map);
 }

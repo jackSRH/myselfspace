@@ -52,7 +52,6 @@ public class FacilitiesServiceImpl extends BaseServiceImpl<Facilities, Facilitie
         Map<String,Object> queryMap = new HashMap<>();
         Page page = PageHelper.startPage(currentPage,pageSize);
         page.setOrderBy("update_time desc");
-        queryMap.put("unitId",searchReq.getUnitId());
         queryMap.put("precinctScope",dataScope);
         List<Facilities> facilitiess =  super.selectByMap(queryMap);
         if(StringUtils.isEmpty(facilitiess)){

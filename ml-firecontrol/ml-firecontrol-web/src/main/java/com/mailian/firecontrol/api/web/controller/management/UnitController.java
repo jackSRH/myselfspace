@@ -2,7 +2,6 @@ package com.mailian.firecontrol.api.web.controller.management;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.mailian.core.annotation.CurUser;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
@@ -13,11 +12,9 @@ import com.mailian.core.db.DataScope;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.StructType;
-import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.common.util.FileNameUtils;
 import com.mailian.firecontrol.dao.auto.model.Unit;
 import com.mailian.firecontrol.dao.auto.model.UnitDevice;
-import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.UnitInfo;
 import com.mailian.firecontrol.dto.web.request.DiagramStructReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
@@ -25,6 +22,7 @@ import com.mailian.firecontrol.dto.web.response.DeviceResp;
 import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.UnitListResp;
 import com.mailian.firecontrol.dto.web.response.UnitSwitchResp;
+import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
 import com.mailian.firecontrol.framework.util.MqttTopicUtil;
 import com.mailian.firecontrol.service.DiagramStructService;
 import com.mailian.firecontrol.service.UnitDeviceService;
@@ -114,15 +112,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位列表")
     @ApiOperation(value = "获取单位列表", httpMethod = "GET",notes = "支持分页")
     @RequestMapping(value="/getUnitList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<UnitListResp>> getUnitList(@CurUser ShiroUser shiroUser,SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds);
-        }
+    public ResponseResult<PageBean<UnitListResp>> getUnitList(@PrecinctUnitScope(ualias = "id",hasPrecinctOrUnit = true) DataScope dataScope,SearchReq searchReq){
         PageBean<UnitListResp> res = unitService.getUnitList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }
@@ -140,16 +130,8 @@ public class UnitController extends BaseController {
 
     @ApiOperation(value = "获取单位列表,权限范围内", httpMethod = "GET")
     @RequestMapping(value="/getUnitListByName",method = RequestMethod.GET)
-    public ResponseResult<List<UnitListResp>> getUnitListByName(@CurUser ShiroUser shiroUser,
+    public ResponseResult<List<UnitListResp>> getUnitListByName(@PrecinctUnitScope(ualias = "id") DataScope dataScope,
                                                                 @ApiParam(value = "单位名") @RequestParam(value = "unitName",required = false) String unitName){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds);
-        }
         List<UnitListResp> unitListResps = unitService.getUnitListByNameAndScope(unitName,dataScope);
         return ResponseResult.buildOkResult(unitListResps);
     }
@@ -157,7 +139,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位详情")
     @ApiOperation(value = "获取单位详情", httpMethod = "GET")
     @RequestMapping(value="/getUnitInfoById/{unitId}",method = RequestMethod.GET)
-    public ResponseResult<UnitInfo> getUnitInfoById(@ApiParam(value = "单位id",required = true) @PathVariable("unitId") Integer unitId){
+    public ResponseResult<UnitInfo> getUnitInfoById(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope,@ApiParam(value = "单位id",required = true) @PathVariable("unitId") Integer unitId){
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
@@ -245,16 +227,7 @@ public class UnitController extends BaseController {
     @Log(title = "配置管理",action = "获取单位开关列表")
     @ApiOperation(value = "获取单位开关列表", httpMethod = "GET")
     @GetMapping(value = "/getUnitSwitchList")
-    public ResponseResult<PageBean<List<UnitSwitchResp>>> getUnitSwitchList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds,"s",false);
-        }
-
+    public ResponseResult<PageBean<List<UnitSwitchResp>>> getUnitSwitchList(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope, SearchReq searchReq){
         PageBean<List<UnitSwitchResp>> res = unitService.getUnitSwitchList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }

@@ -3,6 +3,7 @@ package com.mailian.firecontrol.service;
 import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
+import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.User;
 import com.mailian.firecontrol.dto.web.request.UserReq;
 import com.mailian.firecontrol.dto.web.response.UserInfo;
@@ -35,7 +36,7 @@ public interface UserService extends BaseService<User> {
      * @param userQueryReq
      * @return
      */
-    PageBean<UserInfo> selectUsersByPage(UserReq userQueryReq);
+    PageBean<UserInfo> selectUsersByPage(UserReq userQueryReq,DataScope dataScope);
 
     /**
      * 新增或修改用户

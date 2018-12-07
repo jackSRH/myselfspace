@@ -11,13 +11,13 @@ import com.mailian.core.enums.BooleanEnum;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.enums.AlarmHandleStatus;
 import com.mailian.firecontrol.common.enums.AlarmMisreport;
-import com.mailian.firecontrol.common.manager.SystemManager;
 import com.mailian.firecontrol.dao.auto.model.*;
 import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.dto.web.request.AlarmHandleReq;
 import com.mailian.firecontrol.dto.web.request.FireAlarmReq;
 import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.*;
+import com.mailian.firecontrol.framework.annotation.PrecinctUnitScope;
 import com.mailian.firecontrol.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,15 +52,8 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "查找设施告警列表")
     @ApiOperation(value = "查找设施告警列表", httpMethod = "GET")
     @RequestMapping(value="/getFacilitiesAlarmList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FacilitiesAlarmListResp>> getFacilitiesAlarmList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds);
-        }
+    public ResponseResult<PageBean<FacilitiesAlarmListResp>> getFacilitiesAlarmList(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope,
+                                                                                    SearchReq searchReq){
         PageBean<FacilitiesAlarmListResp> res =  facilitiesAlarmService.getFacilitiesAlarmList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }
@@ -98,15 +91,7 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "查找火灾告警列表")
     @ApiOperation(value = "查找火灾告警列表", httpMethod = "GET")
     @RequestMapping(value="/getFireAlarmList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FireAlarmListResp>> getFireAlarmList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds);
-        }
+    public ResponseResult<PageBean<FireAlarmListResp>> getFireAlarmList(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope, SearchReq searchReq){
         PageBean<FireAlarmListResp> res = facilitiesAlarmService.getFireAlarmList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }
@@ -138,15 +123,8 @@ public class FacilitiesAlarmController extends BaseController {
     @Log(title = "单位监控",action = "查找火灾自动报警列表")
     @ApiOperation(value = "查找火灾自动报警列表", httpMethod = "GET")
     @RequestMapping(value="/getFireAutoAlarmList",method = RequestMethod.GET)
-    public ResponseResult<PageBean<FireAutoAlarmListResp>> getFireAutoAlarmList(@CurUser ShiroUser shiroUser, SearchReq searchReq){
-        DataScope dataScope = null;
-        if(!SystemManager.isAdminRole(shiroUser.getRoles())){
-            List<Integer> precinctIds = shiroUser.getPrecinctIds();
-            if(StringUtils.isEmpty(precinctIds)){
-                return ResponseResult.buildOkResult(new PageBean<>());
-            }
-            dataScope = new DataScope("precinct_id", precinctIds);
-        }
+    public ResponseResult<PageBean<FireAutoAlarmListResp>> getFireAutoAlarmList(@PrecinctUnitScope(hasPrecinctOrUnit = true) DataScope dataScope,
+                                                                                SearchReq searchReq){
         PageBean<FireAutoAlarmListResp> res = facilitiesAlarmService.getFireAutoAlarmList(dataScope,searchReq);
         return ResponseResult.buildOkResult(res);
     }
