@@ -424,11 +424,26 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
                 queryMap.put("unitId",dataScope.getDataIds().get(0));
             }
         }
+        UnitType[] unitTypes = UnitType.values();
+        Set<Integer> unitTypeSet = new HashSet<>();
+        for (UnitType unitType : unitTypes) {
+            unitTypeSet.add(unitType.id);
+        }
+
         List<AlarmIndustryShareResp> alarmIndustryShareResps = manageManualMapper.countAlarmIndustryShare(queryMap);
         if(StringUtils.isNotEmpty(alarmIndustryShareResps)){
             for(AlarmIndustryShareResp alarmIndustryShareResp :alarmIndustryShareResps){
                 alarmIndustryShareResp.setUnitTypeDesc(UnitType.getValue(alarmIndustryShareResp.getUnitType()));
+                unitTypeSet.remove(alarmIndustryShareResp.getUnitType());
             }
+        }
+
+        for (Integer unitType : unitTypeSet) {
+            AlarmIndustryShareResp alarmIndustryShareResp = new AlarmIndustryShareResp();
+            alarmIndustryShareResp.setUnitTypeDesc(UnitType.getValue(unitType));
+            alarmIndustryShareResp.setUnitType(unitType);
+            alarmIndustryShareResp.setAlarmNum(0);
+            alarmIndustryShareResps.add(alarmIndustryShareResp);
         }
         return alarmIndustryShareResps;
     }
@@ -608,61 +623,44 @@ public class FacilitiesAlarmServiceImpl extends BaseServiceImpl<FacilitiesAlarm,
                 queryMap.put("unitId",dataScope.getDataIds().get(0));
             }
         }
-
         List<FacilitiesAlarm> facilitiesAlarms = selectFacilitiesAlarmByMap(queryMap);
-        List<AlarmStatusTrendResp> alarmStatusTrendResps = new ArrayList<>();
-        AlarmStatusTrendResp alarm = new AlarmStatusTrendResp();
-        alarm.setAlarmType(AlarmType.ALARM.desc);
-        alarm.setDateValues(new ArrayList<>());
-        alarmStatusTrendResps.add(alarm);
 
-        AlarmStatusTrendResp earlyWarning = new AlarmStatusTrendResp();
-        earlyWarning.setAlarmType(AlarmType.EARLY_WARNING.desc);
-        earlyWarning.setDateValues(new ArrayList<>());
-        alarmStatusTrendResps.add(earlyWarning);
+        List<AlarmStatusTrendResp> alarmStatusTrendResps = new ArrayList<>();
+        List<String> dates = DateUtil.getDaysBetween(startDate,endDate);
+        Map<String,AlarmStatisticsResp> respMap = new HashMap<>();
+        String key = "%s&&%s";
+        AlarmType [] alarmTypes = AlarmType.values();
+        for (AlarmType alarmType : alarmTypes) {
+            AlarmStatusTrendResp trendResp = new AlarmStatusTrendResp();
+            trendResp.setAlarmType(alarmType.desc);
+            trendResp.setDateValues(new ArrayList<>());
+            for(String date: dates){
+                AlarmStatisticsResp resp = new AlarmStatisticsResp();
+                resp.setDate(date);
+                resp.setAlarmNum(0);
+                trendResp.getDateValues().add(resp);
+
+                String alarmKey = String.format(key,date,alarmType.id);
+                respMap.put(alarmKey,resp);
+            }
+            alarmStatusTrendResps.add(trendResp);
+        }
+
         if(StringUtils.isEmpty(facilitiesAlarms)){
             return alarmStatusTrendResps;
         }
 
-        Map<Integer,Map<String,Integer>> typedateMap = new HashMap();
-        Map<String,Integer> date2AlarmNum ;
         String day;
         Integer alarmType;
         for(FacilitiesAlarm facilitiesAlarm : facilitiesAlarms){
             alarmType = facilitiesAlarm.getAlarmType();
-            date2AlarmNum = typedateMap.containsKey(alarmType)?typedateMap.get(alarmType):new HashMap<>();
             day = DateUtil.toString(facilitiesAlarm.getAlarmTime(),DateUtil.DATE_PATTERN);
-            int alarmNum = date2AlarmNum.containsKey(day)?date2AlarmNum.get(day):0;
-            alarmNum += 1;
-            date2AlarmNum.put(day,alarmNum);
-            typedateMap.put(alarmType,date2AlarmNum);
+            String alarmKey = String.format(key,day,alarmType);
+            if(respMap.containsKey(alarmKey)){
+                AlarmStatisticsResp resp = respMap.get(alarmKey);
+                resp.setAlarmNum(resp.getAlarmNum()+1);
+            }
         }
-
-        List<String> dates = DateUtil.getDaysBetween(startDate,endDate);
-        date2AlarmNum = StringUtils.isNotEmpty(typedateMap.get(AlarmType.ALARM.id))?typedateMap.get(AlarmType.ALARM.id):new HashMap<>();
-        List<AlarmStatisticsResp> alarmStatisticsResps = new ArrayList<>();
-        AlarmStatisticsResp alarmStatisticsResp;
-        for(String date: dates){
-            alarmStatisticsResp = new AlarmStatisticsResp();
-            alarmStatisticsResp.setDate(date);
-            int alarmNum = StringUtils.isNotEmpty(date2AlarmNum.get(date))?date2AlarmNum.get(date):0;
-            alarmStatisticsResp.setAlarmNum(alarmNum);
-            alarmStatisticsResps.add(alarmStatisticsResp);
-        }
-        alarmStatusTrendResps.get(0).setDateValues(alarmStatisticsResps);
-
-
-        date2AlarmNum = StringUtils.isNotEmpty(typedateMap.get(AlarmType.EARLY_WARNING.id))?typedateMap.get(AlarmType.EARLY_WARNING.id):new HashMap<>();
-        List<AlarmStatisticsResp> earlyWarningStatisticsResps = new ArrayList<>();
-        AlarmStatisticsResp earlyWarningStatisticsResp;
-        for(String date: dates){
-            earlyWarningStatisticsResp = new AlarmStatisticsResp();
-            earlyWarningStatisticsResp.setDate(date);
-            int alarmNum = StringUtils.isNotEmpty(date2AlarmNum.get(date))?date2AlarmNum.get(date):0;
-            earlyWarningStatisticsResp.setAlarmNum(alarmNum);
-            earlyWarningStatisticsResps.add(earlyWarningStatisticsResp);
-        }
-        alarmStatusTrendResps.get(1).setDateValues(earlyWarningStatisticsResps);
         return alarmStatusTrendResps;
     }
 

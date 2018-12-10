@@ -4,10 +4,12 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.PageBean;
+import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.exception.RequestException;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper;
+import com.mailian.firecontrol.dao.auto.mapper.UnitMapper;
 import com.mailian.firecontrol.dao.auto.model.Area;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.manual.mapper.SystemManualMapper;
@@ -37,10 +39,12 @@ public class PrecinctServiceImpl extends BaseServiceImpl<Precinct,PrecinctMapper
     @Autowired
     private AreaService areaService;
     @Resource
+    private UnitMapper unitMapper;
+    @Resource
     private SystemManualMapper systemManualMapper;
 
     @Override
-    public PageBean<PrecinctResp> queryByPage(PrecinctQueryReq queryReq) {
+    public PageBean<PrecinctResp> queryByPage(PrecinctQueryReq queryReq, DataScope dataScope) {
         Integer currentPage = queryReq.getCurrentPage();
         Integer pageSize = queryReq.getPageSize();
         Page page = PageHelper.startPage(currentPage,pageSize);
@@ -50,8 +54,14 @@ public class PrecinctServiceImpl extends BaseServiceImpl<Precinct,PrecinctMapper
         queryMap.put("provinceId",queryReq.getProvinceId());
         queryMap.put("cityId",queryReq.getCityId());
         queryMap.put("areaId",queryReq.getAreaId());
-        List<Precinct> precinctList = selectByMap(queryMap);
-
+        if(StringUtils.isNotNull(dataScope)) {
+            if("precinct_id".equals(dataScope.getScopeName())) {
+                queryMap.put("ids", dataScope.getDataIds());
+            }else{
+                queryMap.put("unitId",dataScope.getDataIds().get(0));
+            }
+        }
+        List<Precinct> precinctList = systemManualMapper.selectPrecinctsByMap(queryMap);
         List<PrecinctResp> precinctRespList = new ArrayList<>();
 
         List<Integer> areaIds = new ArrayList<>();

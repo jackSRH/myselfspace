@@ -2,6 +2,7 @@ package com.mailian.firecontrol.service;
 
 import com.mailian.core.base.service.BaseService;
 import com.mailian.core.bean.PageBean;
+import com.mailian.core.db.DataScope;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dto.web.request.PrecinctQueryReq;
 import com.mailian.firecontrol.dto.web.request.PrecinctReq;
@@ -18,7 +19,7 @@ public interface PrecinctService extends BaseService<Precinct> {
      * @param queryReq
      * @return
      */
-    PageBean<PrecinctResp> queryByPage(PrecinctQueryReq queryReq);
+    PageBean<PrecinctResp> queryByPage(PrecinctQueryReq queryReq, DataScope dataScope);
 
     /**
      * 新增或修改管辖区

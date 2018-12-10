@@ -132,4 +132,53 @@
             </if>
         </where>
     </select>
+    <select id="selectPrecinctsByMap" resultMap="com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper.BaseResultMap">
+        select
+        <include refid="com.mailian.firecontrol.dao.auto.mapper.PrecinctMapper.Base_Column_List" />
+        from t_precinct
+        <where>
+            <if test="precinctName != null">
+                and precinct_name = #{precinctName,jdbcType=VARCHAR}
+            </if>
+            <if test="dutyName != null">
+                and duty_name = #{dutyName,jdbcType=VARCHAR}
+            </if>
+            <if test="dutyPhone != null">
+                and duty_phone = #{dutyPhone,jdbcType=VARCHAR}
+            </if>
+            <if test="areaId != null">
+                and area_id = #{areaId,jdbcType=INTEGER}
+            </if>
+            <if test="provinceId != null">
+                and province_id = #{provinceId,jdbcType=INTEGER}
+            </if>
+            <if test="cityId != null">
+                and city_id = #{cityId,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createBy != null">
+                and create_by = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="updateBy != null">
+                and update_by = #{updateBy,jdbcType=VARCHAR}
+            </if>
+            <if test="ids != null">
+                and id in
+                <foreach close=")" collection="ids" index="i" item="item" open="(" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="unitId != null">
+                and id in (select u.precinct_id from t_unit as u where u.id=#{unitId,jdbcType=INTEGER})
+            </if>
+        </where>
+    </select>
 </mapper>

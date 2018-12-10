@@ -166,6 +166,9 @@ public class UserServiceImpl extends BaseServiceImpl<User,UserMapper> implements
             }
         }else{
             user.setPassword(null);
+            if(StringUtils.isEmpty(user.getUnitId())){
+                user.setUnitId(-1);
+            }
             result = updateByPrimaryKeySelective(user);
             Integer uid = user.getId();
             if(result>0){
