@@ -114,11 +114,12 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
 
                 selectDto.setValue(Integer.valueOf(type[0]));
                 selectDto.setName(type[1]);
-            }else {
+                data.add(selectDto);
+            }else if(type.length >= 3){
                 selectDto.setName(type[3]);
                 selectDto.setValue(Integer.valueOf(type[1]));
+                data.add(selectDto);
             }
-            data.add(selectDto);
         }
         return data;
     }
