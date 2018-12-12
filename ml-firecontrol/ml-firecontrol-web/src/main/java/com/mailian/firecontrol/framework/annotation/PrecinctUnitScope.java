@@ -25,5 +25,8 @@ public @interface PrecinctUnitScope {
     String unitParamName() default "unitId";
     /** 参数是否json格式 */
     boolean isJson() default false;
-
+    /** 响应参数类型*/
+    Class resultType() default Object.class;
+    /** 是否需要自动处理返回*/
+    boolean needDealResult() default true;
 }
