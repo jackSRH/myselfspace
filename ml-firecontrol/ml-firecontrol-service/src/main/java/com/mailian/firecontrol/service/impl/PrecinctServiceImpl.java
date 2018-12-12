@@ -18,6 +18,7 @@ import com.mailian.firecontrol.dto.web.request.PrecinctReq;
 import com.mailian.firecontrol.dto.web.response.PrecinctResp;
 import com.mailian.firecontrol.service.AreaService;
 import com.mailian.firecontrol.service.PrecinctService;
+import com.mailian.firecontrol.service.component.DbSyncComponent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class PrecinctServiceImpl extends BaseServiceImpl<Precinct,PrecinctMapper
     private UnitMapper unitMapper;
     @Resource
     private SystemManualMapper systemManualMapper;
+    @Autowired
+    private DbSyncComponent dbSyncComponent;
 
     @Override
     public PageBean<PrecinctResp> queryByPage(PrecinctQueryReq queryReq, DataScope dataScope) {
@@ -132,6 +135,11 @@ public class PrecinctServiceImpl extends BaseServiceImpl<Precinct,PrecinctMapper
 
         Precinct precinct = new Precinct();
         BeanUtils.copyProperties(precinctReq,precinct);
+        if((StringUtils.isNotEmpty(precinctReq.getAreaId()) && !precinctReq.getAreaId().equals(precinctDb.getAreaId())) ||
+                (StringUtils.isNotEmpty(precinctReq.getProvinceId()) && !precinctReq.getProvinceId().equals(precinctDb.getProvinceId())) ||
+                (StringUtils.isNotEmpty(precinctReq.getCityId()) && !precinctReq.getCityId().equals(precinctDb.getCityId()))){
+            dbSyncComponent.syncPrecinctArea(precinct);
+        }
         return updateByPrimaryKeySelective(precinct);
     }
 

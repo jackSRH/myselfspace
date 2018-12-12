@@ -1,5 +1,6 @@
 package com.mailian.firecontrol.dao.manual.mapper;
 
+import com.mailian.firecontrol.dao.auto.model.FacilitiesAlarm;
 import com.mailian.firecontrol.dao.auto.model.Precinct;
 import com.mailian.firecontrol.dao.auto.model.Role;
 import com.mailian.firecontrol.dao.manual.model.UserVo;
@@ -35,4 +36,16 @@ public interface SystemManualMapper {
     List<UserVo> selectUsersByMap(Map<String,Object> map);
 
     List<Precinct> selectPrecinctsByMap(Map<String,Object> queryMap);
+
+    void updateFacilitiesPrecinctIdByUnitId(@Param(value = "precinctId") Integer precinctId, @Param(value = "unitId") Integer unitId);
+
+    void updateStructPrecinctIdByUnitId(@Param(value = "precinctId") Integer precinctId, @Param(value = "unitId") Integer unitId);
+
+    void updateCameraPrecinctIdByUnitId(@Param(value = "precinctId") Integer precinctId, @Param(value = "unitId") Integer unitId);
+
+    void updatePatrolPrecinctIdByUnitId(@Param(value = "precinctId") Integer precinctId, @Param(value = "unitId") Integer unitId);
+
+    void updateAlarmInfoByUnitId(FacilitiesAlarm facilitiesAlarm);
+
+    void updateAlarmInfoByPrecinctId(FacilitiesAlarm facilitiesAlarm);
 }

@@ -40,6 +40,7 @@ import com.mailian.firecontrol.service.UnitDeviceService;
 import com.mailian.firecontrol.service.UnitService;
 import com.mailian.firecontrol.service.cache.DeviceCache;
 import com.mailian.firecontrol.service.cache.UnitDeviceCache;
+import com.mailian.firecontrol.service.component.DbSyncComponent;
 import com.mailian.firecontrol.service.repository.DeviceItemRepository;
 import com.mailian.firecontrol.service.repository.DeviceRepository;
 import com.mailian.firecontrol.service.util.BuildDefaultResultUtil;
@@ -73,6 +74,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
     private DeviceItemOpertionService deviceItemOpertionService;
     @Autowired
     private DeviceItemRepository deviceItemRepository;
+    @Autowired
+    private DbSyncComponent dbSyncComponent;
 
     @Override
     public PageBean<UnitListResp> getUnitList(DataScope dataScope, SearchReq searchReq) {
@@ -186,6 +189,13 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
         } else {
             updateUnitDevice(unitInfo, unitInfo.getId());
 
+            Unit unitDb = selectByPrimaryKey(unitInfo.getId());
+            if(StringUtils.isNotEmpty(unitInfo.getPrecinctId()) && !unitInfo.getPrecinctId().equals(unitDb.getPrecinctId())){
+                dbSyncComponent.syncPrecinctId(unitInfo.getId(),unitInfo.getPrecinctId());
+            }
+            if(StringUtils.isNotEmpty(unitInfo.getUnitType()) && !unitInfo.getUnitType().equals(unitDb.getUnitType())){
+                dbSyncComponent.syncUnitType(unitInfo.getId(),unitInfo.getUnitType());
+            }
             return super.updateByPrimaryKeySelective(unit) > 0;
         }
     }
