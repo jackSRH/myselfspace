@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Auther: wangqiaoqing
@@ -33,14 +35,16 @@ public class LogAspect {
     }
 
     /**
-     * 前置通知 用于拦截操作
+     * 后置通知 用于拦截操作
      *
      * @param joinPoint 切点
      */
     @AfterReturning(pointcut = "logPointCut()")
     public void doBefore(JoinPoint joinPoint) {
         HttpServletRequest request = Tools.getRequest();
-        logAsync.handleLog(request.getRequestURI(),request.getParameterMap(),joinPoint, null);
+        Map<String, String[]> paramMap = new HashMap<>();
+        paramMap.putAll(request.getParameterMap());
+        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint, null);
     }
 
     /**
@@ -52,7 +56,9 @@ public class LogAspect {
     @AfterThrowing(value = "logPointCut()", throwing = "e")
     public void doAfter(JoinPoint joinPoint, Exception e) {
         HttpServletRequest request = Tools.getRequest();
-        logAsync.handleLog(request.getRequestURI(),request.getParameterMap(),joinPoint, e);
+        Map<String, String[]> paramMap = new HashMap<>();
+        paramMap.putAll(request.getParameterMap());
+        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint, e);
     }
 
 }

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.mailian.core.base.service.impl.BaseServiceImpl;
 import com.mailian.core.bean.BasePage;
 import com.mailian.core.bean.PageBean;
+import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.db.DataScope;
 import com.mailian.core.enums.BooleanEnum;
 import com.mailian.core.enums.ResponseCode;
@@ -172,7 +173,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean insertOrUpdate(UnitInfo unitInfo) {
+    public ResponseResult insertOrUpdate(UnitInfo unitInfo) {
         Unit unit = new Unit();
         BeanUtils.copyProperties(unitInfo, unit);
 
@@ -185,7 +186,7 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
                 Integer unitId = unit.getId();
                 addUnitDevices(unitId, deviceIds);
             }
-            return result > 0;
+            return ResponseResult.buildOkResult(unit.getId());
         } else {
             updateUnitDevice(unitInfo, unitInfo.getId());
 
@@ -196,7 +197,8 @@ public class UnitServiceImpl extends BaseServiceImpl<Unit, UnitMapper> implement
             if(StringUtils.isNotEmpty(unitInfo.getUnitType()) && !unitInfo.getUnitType().equals(unitDb.getUnitType())){
                 dbSyncComponent.syncUnitType(unitInfo.getId(),unitInfo.getUnitType());
             }
-            return super.updateByPrimaryKeySelective(unit) > 0;
+            super.updateByPrimaryKeySelective(unit);
+            return ResponseResult.buildOkResult(unit.getId());
         }
     }
 

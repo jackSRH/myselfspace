@@ -9,6 +9,7 @@ import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.constants.CoreCommonConstant;
 import com.mailian.core.db.DataScope;
+import com.mailian.core.enums.ResponseCode;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.common.constants.CommonConstant;
 import com.mailian.firecontrol.common.enums.StructType;
@@ -70,17 +71,15 @@ public class UnitController extends BaseController {
             String filePath = uploadComponent.upload(CommonConstant.UPLOAD_IMG_DIR, true, attachFile,null);
             unitInfo.setUnitPic(filePath);
         }
-        Boolean insertOrUpdateRes = unitService.insertOrUpdate(unitInfo);
-        if(insertOrUpdateRes){
+        ResponseResult responseResult = unitService.insertOrUpdate(unitInfo);
+        if(ResponseCode.OK.code.equals(responseResult.getCode())){
             if(StringUtils.isNotEmpty(unitInfo.getDeviceIds())){
                 for(String deviceId : unitInfo.getDeviceIds()){
                     MqttTopicUtil.addTopic(deviceId);
                 }
             }
-            return ResponseResult.buildOkResult();
-        }else{
-            return ResponseResult.buildFailResult();
         }
+        return responseResult;
     }
 
     @Log(title = "配置管理",action = "修改单位状态")
