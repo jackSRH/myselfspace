@@ -1,14 +1,19 @@
 package com.mailian.firecontrol.api.web.controller.management;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.mailian.core.annotation.Log;
 import com.mailian.core.annotation.WebAPI;
 import com.mailian.core.base.controller.BaseController;
+import com.mailian.core.bean.PageBean;
 import com.mailian.core.bean.ResponseResult;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.model.PowerMonitoring;
 import com.mailian.firecontrol.dto.push.DeviceItem;
 import com.mailian.firecontrol.dto.web.request.PowerMonitoringReq;
+import com.mailian.firecontrol.dto.web.request.SearchReq;
 import com.mailian.firecontrol.dto.web.response.DeviceItemResp;
+import com.mailian.firecontrol.dto.web.response.DiagramStructResp;
 import com.mailian.firecontrol.dto.web.response.LoadComparedResp;
 import com.mailian.firecontrol.dto.web.response.PowerMonitoringResp;
 import com.mailian.firecontrol.dto.web.response.VoltageComparedResp;
@@ -59,11 +64,15 @@ public class PowerMonitoringController extends BaseController {
     @Log(title = "配置管理",action = "通过单位id获取用电监测配置")
     @ApiOperation(value = "通过单位id获取用电监测配置", httpMethod = "GET")
     @RequestMapping(value="/getByUnitId",method = RequestMethod.GET)
-    public ResponseResult<List<PowerMonitoringResp>> getByUnitId(@ApiParam(value = "单位id",required = true) @RequestParam(value = "unitId") Integer unitId){
+    public ResponseResult<PageBean<PowerMonitoringResp>> getByUnitId(SearchReq searchReq){
+        Integer unitId = searchReq.getUnitId();
         if(StringUtils.isEmpty(unitId)){
             return error("单位id不能为空");
         }
 
+        Integer currentPage = searchReq.getCurrentPage();
+        Integer pageSize = searchReq.getPageSize();
+        Page page = PageHelper.startPage(currentPage,pageSize);
         Map<String,Object> query = new HashMap<>();
         query.put("unitId",unitId);
         List<PowerMonitoring> powerMonitorings = powerMonitoringService.selectByMap(query);
@@ -179,7 +188,9 @@ public class PowerMonitoringController extends BaseController {
             }
             powerMonitoringResps.add(powerMonitoringResp);
         }
-        return ResponseResult.buildOkResult(powerMonitoringResps);
+
+        PageBean<PowerMonitoringResp> pageBean = new PageBean<>(currentPage,pageSize,(int)page.getTotal(),powerMonitoringResps);
+        return ResponseResult.buildOkResult(pageBean);
     }
 
     @Log(title = "配置管理",action = "删除用电监测配置")
