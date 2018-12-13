@@ -51,4 +51,8 @@ public class ShiroUtils {
         }
         return null;
     }
+
+    public static ShiroUser getUser() {
+        return (ShiroUser) getSubjct().getPrincipal();
+    }
 }

@@ -6,7 +6,6 @@ import com.mailian.core.enums.Status;
 import com.mailian.core.util.StringUtils;
 import com.mailian.firecontrol.dao.auto.model.OperLog;
 import com.mailian.firecontrol.dto.ShiroUser;
-import com.mailian.firecontrol.framework.util.ShiroUtils;
 import com.mailian.firecontrol.service.OperLogService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -35,7 +34,7 @@ public class LogAsync {
     private OperLogService operLogService;
 
     @Async
-    public void handleLog(final String requestUrl,final Map<String, String[]> paramMap, final JoinPoint joinPoint, final Exception e) {
+    public void handleLog(String requestUrl, Map<String, String[]> paramMap, JoinPoint joinPoint, ShiroUser currentUser, String ip, Exception e) {
         try {
             // 获得注解
             Log controllerLog = getAnnotationLog(joinPoint);
@@ -44,13 +43,11 @@ public class LogAsync {
             }
 
             // 获取当前的用户
-            ShiroUser currentUser = ShiroUtils.getCurUser();
 
             // *========数据库日志=========*//
             OperLog operLog = new OperLog();
             operLog.setStatus(Status.NORMAL.id);
             // 请求的地址
-            String ip = ShiroUtils.getIp();
             operLog.setOperIp(ip);
             // 操作地点
             //operLog.setOperLocation(AddressUtils.getRealAddressByIP(ip));

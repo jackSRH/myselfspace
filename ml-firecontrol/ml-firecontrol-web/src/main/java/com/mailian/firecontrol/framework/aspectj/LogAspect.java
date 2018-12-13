@@ -1,7 +1,9 @@
 package com.mailian.firecontrol.framework.aspectj;
 
 import com.mailian.core.util.Tools;
+import com.mailian.firecontrol.dto.ShiroUser;
 import com.mailian.firecontrol.framework.component.LogAsync;
+import com.mailian.firecontrol.framework.util.ShiroUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -44,7 +46,9 @@ public class LogAspect {
         HttpServletRequest request = Tools.getRequest();
         Map<String, String[]> paramMap = new HashMap<>();
         paramMap.putAll(request.getParameterMap());
-        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint, null);
+        ShiroUser currentUser = ShiroUtils.getUser();
+        String ip = ShiroUtils.getIp();
+        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint,currentUser,ip, null);
     }
 
     /**
@@ -58,7 +62,9 @@ public class LogAspect {
         HttpServletRequest request = Tools.getRequest();
         Map<String, String[]> paramMap = new HashMap<>();
         paramMap.putAll(request.getParameterMap());
-        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint, e);
+        ShiroUser currentUser = ShiroUtils.getUser();
+        String ip = ShiroUtils.getIp();
+        logAsync.handleLog(request.getRequestURI(),paramMap,joinPoint, currentUser, ip, e);
     }
 
 }
