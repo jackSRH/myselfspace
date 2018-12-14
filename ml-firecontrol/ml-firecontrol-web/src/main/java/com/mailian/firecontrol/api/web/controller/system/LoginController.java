@@ -101,12 +101,4 @@ public class LoginController {
     public ResponseResult upLoadApp(AppInfo appInfo, MultipartFile appFile) throws Exception {
         return appService.upLoadApp(appInfo,appFile);
     }
-
-    @ApiOperation(value = "造告警数据（上线前删掉）", httpMethod = "POST")
-    @RequestMapping(value = "/pushAlarms", method = RequestMethod.POST)
-    public ResponseResult pushAlarms(@RequestBody List<Alarm> alarms){
-        alarmOpertionService.dealRealTimeAlarm(alarms);
-        return ResponseResult.buildOkResult();
-    }
-
 }

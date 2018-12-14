@@ -147,8 +147,8 @@ public class DeviceItemOpertionServiceImpl implements DeviceItemOpertionService 
 
         if(StringUtils.isNotEmpty(code2CalcImtes)){
             for(Map.Entry<String, List<DeviceItem>> entry : code2CalcImtes.entrySet()) {
-                deviceConfigItemResp = new DeviceConfigItemResp();
                 for(DeviceItem calcItem : entry.getValue()) {
+                    deviceConfigItemResp = new DeviceConfigItemResp();
                     int stype = calcItem.getStype().intValue();
                     if(ItemStype.OPERATIONYC.id.intValue() == stype) {
                         deviceConfigItemResp.setId(calcItem.getId());
